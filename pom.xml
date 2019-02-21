@@ -33,15 +33,15 @@
             <version>${jsoup.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.github.suosi-inc</groupId>
+            <artifactId>commons-helper</artifactId>
+            <version>${suosi.commons-helper.version}</version>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.suosi-inc</groupId>
-            <artifactId>commons-helper</artifactId>
-            <version>${suosi.commons-helper.version}</version>
         </dependency>
     </dependencies>
 
