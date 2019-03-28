@@ -1,4 +1,4 @@
-package com.github.suosi.commons.spider.extractor.webcollector;
+package com.github.suosi.commons.spider.extract.content.webcollector;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -20,10 +20,10 @@ import java.util.regex.Pattern;
  *
  * @author hu
  */
-public class ContentExtractor {
+public class Content {
     protected Document doc;
 
-    ContentExtractor(Document doc) {
+    Content(Document doc) {
         this.doc = doc;
     }
 
@@ -145,22 +145,22 @@ public class ContentExtractor {
         return content;
     }
 
-    public News getNews() throws Exception {
-        News news = new News();
+    public Article getNews() throws Exception {
+        Article article = new Article();
         Element contentElement;
         try {
             contentElement = getContentElement();
-            news.setContentElement(contentElement);
+            article.setContentElement(contentElement);
         } catch (Exception ex) {
             throw new Exception(ex);
         }
 
         if (doc.baseUri() != null) {
-            news.setUrl(doc.baseUri());
+            article.setUrl(doc.baseUri());
         }
 
         try {
-            news.setTime(getTime(contentElement));
+            article.setTime(getTime(contentElement));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -168,11 +168,11 @@ public class ContentExtractor {
         Thread.sleep(10000);
 
         try {
-            news.setTitle(getTitle(contentElement));
+            article.setTitle(getTitle(contentElement));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return news;
+        return article;
     }
 
     protected String getTime(Element contentElement) throws Exception {
@@ -414,7 +414,7 @@ public class ContentExtractor {
 
     /*输入Jsoup的Document，获取正文所在Element*/
     public static Element getContentElementByDoc(Document doc) throws Exception {
-        ContentExtractor ce = new ContentExtractor(doc);
+        Content ce = new Content(doc);
         return ce.getContentElement();
     }
 
@@ -432,7 +432,7 @@ public class ContentExtractor {
 
     /*输入Jsoup的Document，获取正文文本*/
     public static String getContentByDoc(Document doc) throws Exception {
-        ContentExtractor ce = new ContentExtractor(doc);
+        Content ce = new Content(doc);
         return ce.getContentElement().text();
     }
 
@@ -449,19 +449,19 @@ public class ContentExtractor {
     }
 
     /*输入Jsoup的Document，获取结构化新闻信息*/
-    public static News getNewsByDoc(Document doc) throws Exception {
-        ContentExtractor ce = new ContentExtractor(doc);
+    public static Article getNewsByDoc(Document doc) throws Exception {
+        Content ce = new Content(doc);
         return ce.getNews();
     }
 
     /*输入HTML，获取结构化新闻信息*/
-    public static News getNewsByHtml(String html) throws Exception {
+    public static Article getNewsByHtml(String html) throws Exception {
         Document doc = Jsoup.parse(html);
         return getNewsByDoc(doc);
     }
 
     /*输入HTML和URL，获取结构化新闻信息*/
-    public static News getNewsByHtml(String html, String url) throws Exception {
+    public static Article getNewsByHtml(String html, String url) throws Exception {
         Document doc = Jsoup.parse(html, url);
         return getNewsByDoc(doc);
     }

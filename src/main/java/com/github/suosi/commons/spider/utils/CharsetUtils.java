@@ -1,4 +1,4 @@
-package com.github.suosi.commons.spider.charset;
+package com.github.suosi.commons.spider.utils;
 
 import org.mozilla.universalchardet.UniversalDetector;
 

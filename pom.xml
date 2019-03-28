@@ -46,7 +46,7 @@
         <dependency>
             <groupId>com.github.suosi-inc</groupId>
             <artifactId>commons-helper</artifactId>
-            <version>0.7</version>
+            <version>0.8</version>
         </dependency>
     </dependencies>
 

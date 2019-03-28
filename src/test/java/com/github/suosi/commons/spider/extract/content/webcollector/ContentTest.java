@@ -1,7 +1,7 @@
-package com.github.suosi.commons.spider.extractor.webcollector;
+package com.github.suosi.commons.spider.extract.content.webcollector;
 
-import com.github.suosi.commons.spider.charset.CharsetUtils;
-import com.github.suosi.commons.spider.https.HttpsUtils;
+import com.github.suosi.commons.spider.utils.CharsetUtils;
+import com.github.suosi.commons.spider.utils.HttpsUtils;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
-public class ContentExtractorTest {
+public class ContentTest {
     @Test
     public void test() {
         HttpsUtils.SSLParams sslSocketFactory = HttpsUtils.getSslSocketFactory(null, null, null);
@@ -41,10 +41,10 @@ public class ContentExtractorTest {
                         String charset = CharsetUtils.guessEncoding(bytes);
                         String html = new String(bytes, charset);
 
-                        News news = ContentExtractor.getNewsByHtml(html);
-                        System.out.println(news.getTitle());
-                        System.out.println(news.getTime());
-                        System.out.println(news.getContent());
+                        Article article = Content.getNewsByHtml(html);
+                        System.out.println(article.getTitle());
+                        System.out.println(article.getTime());
+                        System.out.println(article.getContent());
                     }
                 }
 

@@ -1,4 +1,4 @@
-package com.github.suosi.commons.spider.https;
+package com.github.suosi.commons.spider.utils;
 
 import javax.net.ssl.*;
 import java.io.IOException;

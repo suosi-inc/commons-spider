@@ -1,8 +1,8 @@
-package com.github.suosi.commons.spider.extractor.webcollector;
+package com.github.suosi.commons.spider.extract.content.webcollector;
 
 import org.jsoup.nodes.Element;
 
-public class News {
+public class Article {
 
     protected String url = null;
     protected String title = null;
