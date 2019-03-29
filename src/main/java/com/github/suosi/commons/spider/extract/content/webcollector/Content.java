@@ -165,8 +165,6 @@ public class Content {
             e.printStackTrace();
         }
 
-        Thread.sleep(10000);
-
         try {
             article.setTitle(getTitle(contentElement));
         } catch (Exception e) {

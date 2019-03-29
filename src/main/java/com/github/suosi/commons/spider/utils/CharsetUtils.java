@@ -32,7 +32,7 @@ public class CharsetUtils {
     private static String guessEncodingByNutch(byte[] content) {
         int length = Math.min(content.length, CHUNK_SIZE);
 
-        String str = "";
+        String str;
         try {
             str = new String(content, "ascii");
         } catch (UnsupportedEncodingException e) {
@@ -44,13 +44,13 @@ public class CharsetUtils {
         if (metaMatcher.find()) {
             Matcher charsetMatcher = charsetPattern.matcher(metaMatcher.group(1));
             if (charsetMatcher.find()) {
-                encoding = new String(charsetMatcher.group(1));
+                encoding = charsetMatcher.group(1);
             }
         }
         if (encoding == null) {
             metaMatcher = charsetPatternHTML5.matcher(str);
             if (metaMatcher.find()) {
-                encoding = new String(metaMatcher.group(1));
+                encoding = metaMatcher.group(1);
             }
         }
         if (encoding == null) {
@@ -76,15 +76,15 @@ public class CharsetUtils {
      * @param bytes 待检测的字节数组
      * @return 可能的字符集，如果检测失败，返回utf-8
      */
-    public static String guessEncodingByMozilla(byte[] bytes) {
-        String DEFAULT_ENCODING = "UTF-8";
+    private static String guessEncodingByMozilla(byte[] bytes) {
+        String defaultEncoding = "UTF-8";
         UniversalDetector detector = new UniversalDetector(null);
         detector.handleData(bytes, 0, bytes.length);
         detector.dataEnd();
         String encoding = detector.getDetectedCharset();
         detector.reset();
         if (encoding == null) {
-            encoding = DEFAULT_ENCODING;
+            encoding = defaultEncoding;
         }
         return encoding;
     }
