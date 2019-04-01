@@ -9,6 +9,9 @@ public class SiteExtractTest {
                 "baidu.com",
                 "zjol.com.cn",
                 "jieju.cn",
+                "iteye.com",
+                "naver.com",
+                "yuque.com",
         };
         for (String domain : domains) {
             Site site = SiteExtract.domain(domain);
