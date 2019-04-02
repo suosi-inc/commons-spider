@@ -14,7 +14,10 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -72,13 +75,13 @@ public class SiteExtract {
                         String keywords = parseKeywords(document);
                         String description = parseDescription(document);
                         String icp = parseIcp(html);
-                        Set<String> links = parseLinks(document, url);
+                        Set<String> links = parseLinks(document, domain, url);
                         Set<String> subDomains = parseSubDomain(document, mainDomain, domain, url);
 
                         return Site.builder().protocol(protocol)
                                 .mainDomain(mainDomain)
                                 .charset(charset)
-                                //.html(html)
+                                .html(html)
                                 .title(title)
                                 .cleanTitle(cleanTitle)
                                 .keywords(keywords)
@@ -156,34 +159,49 @@ public class SiteExtract {
     }
 
     /**
-     * 获取当前页面链接
+     * 获取当前页面所有链接
      *
      * @param document
      * @param url
      * @return
      */
-    public static Set<String> parseLinks(Document document, String url) {
+    public static Set<String> parseLinks(Document document, String domain, String url) {
         Set<String> links = new HashSet<>();
         Elements elements = document.select("a");
         if (elements.size() > 0) {
             for (Element element : elements) {
                 String link = StringUtils.trimToEmpty(element.attr("href"));
-                if (UrlUtils.verifyUrl(link)) {
-                    // 转换相对路径
-                    if (!StringUtils.startsWithIgnoreCase(link, HTTP_PROTOCOL) && !StringUtils.startsWithIgnoreCase(link, HTTPS_PROTOCOL)) {
-                        try {
-                            URL absoluteUrl = new URL(url);
-                            URL parseUrl = new URL(absoluteUrl, link);
-                            link = parseUrl.toString();
-                        } catch (MalformedURLException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    links.add(link);
+
+                // 验证URL有效性
+                if (!UrlUtils.verifyUrl(link)) {
+                    continue;
                 }
+
+                // 转换相对路径
+                if (!StringUtils.startsWithIgnoreCase(link, HTTP_PROTOCOL)
+                        && !StringUtils.startsWithIgnoreCase(link, HTTPS_PROTOCOL)) {
+                    try {
+                        URL absoluteUrl = new URL(url);
+                        URL parseUrl = new URL(absoluteUrl, link);
+                        link = parseUrl.toString();
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                // 排除非本站域名的链接
+                URL parse = UrlUtils.parse(link);
+                if (parse == null) {
+                    continue;
+                }
+                String host = parse.getHost();
+                if (!StringUtils.endsWithIgnoreCase(host, domain)) {
+                    continue;
+                }
+
+                links.add(link);
             }
         }
-
         return links;
     }
 
@@ -194,9 +212,9 @@ public class SiteExtract {
      * @param url
      * @return
      */
-    public static Set<String> parseLinksFromHtml(String html, String url) {
+    public static Set<String> parseLinksFromHtml(String html, String domain, String url) {
         Document document = Jsoup.parse(html);
-        return parseLinks(document, url);
+        return parseLinks(document, domain, url);
     }
 
     /**
@@ -210,7 +228,7 @@ public class SiteExtract {
      */
     private static Set<String> parseSubDomain(Document document, String mainDomain, String domain, String url) {
         Set<String> subDomains = new HashSet<>();
-        Set<String> links = parseLinks(document, url);
+        Set<String> links = parseLinks(document, domain, url);
         if (!links.isEmpty()) {
             for (String link : links) {
                 try {
@@ -238,6 +256,12 @@ public class SiteExtract {
         return StringUtils.trimToEmpty(keywords);
     }
 
+    /**
+     * 获取域名关键词
+     *
+     * @param html
+     * @return
+     */
     public static String parseKeywordsFromHtml(String html) {
         Document document = Jsoup.parse(html);
         return parseKeywords(document);
