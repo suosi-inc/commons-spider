@@ -17,7 +17,5 @@ public class SiteExtractTest {
             Site site = SiteExtract.domain(domain);
             System.out.println(site);
         }
-
-
     }
 }
