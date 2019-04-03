@@ -5,17 +5,19 @@ import org.junit.Test;
 public class UrlUtilsTest {
 
     @Test
-    public void guessArticleUrl() {
-        String[] urls = urls();
-//        String[] urls = {
+    public void guessContentUrl() {
+        //String[] urls = urls();
+        String[] urls = {
 //                "http://www.ccn.com.cn/m/view.php?aid=445524",
 //                "http://auto.sina.com.cn/newcar/j/2019-04-02/detail-ihsxncvh7685904.shtml?hpid=00011",
 //                "http://www.thepaper.cn/newsDetail_forward_3194458",
 //                "http://bbs.cnhubei.com/forum-33-1.html",
-//                "http://bbs.cnhubei.com/thread-4631257-1-1.html"
-//        };
+//                "http://bbs.cnhubei.com/thread-4631257-1-1.html",
+                "http://www.huxiu.com/moment",
+//                "http://www.huxiu.com/channel/2.html"
+        };
         for (String url : urls) {
-            if (!UrlUtils.guessContentUrl(url)) {
+            if (!UrlUtils.guessArticleUrl(url, null)) {
                 System.out.println(url);
             }
         }

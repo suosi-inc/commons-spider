@@ -1,5 +1,7 @@
 package com.github.suosi.commons.spider.utils;
 
+import okhttp3.Response;
+import org.apache.commons.lang3.StringUtils;
 import org.mozilla.universalchardet.UniversalDetector;
 
 import java.io.UnsupportedEncodingException;
@@ -12,15 +14,19 @@ import java.util.regex.Pattern;
 public class CharsetUtils {
     private static final int CHUNK_SIZE = 2000;
 
-    private static Pattern metaPattern = Pattern.compile(
+    private static final Pattern META_PATTERN = Pattern.compile(
             "<meta\\s+([^>]*http-equiv=(\"|')?content-type(\"|')?[^>]*)>",
             Pattern.CASE_INSENSITIVE);
 
-    private static Pattern charsetPattern = Pattern.compile(
+    private static final Pattern CHARSET_PATTERN = Pattern.compile(
             "charset=\\s*([a-z][_\\-0-9a-z]*)", Pattern.CASE_INSENSITIVE);
 
-    private static Pattern charsetPatternHTML5 = Pattern.compile(
+    private static final Pattern CHARSET_PATTERN_HTML5 = Pattern.compile(
             "<meta\\s+charset\\s*=\\s*[\"']?([a-z][_\\-0-9a-z]*)[^>]*>",
+            Pattern.CASE_INSENSITIVE);
+
+    private static final Pattern CHARSET_PATTERN_HEADER = Pattern.compile(
+            "charset=\\s*([a-z][_\\-0-9a-z]*)",
             Pattern.CASE_INSENSITIVE);
 
     /**
@@ -39,16 +45,16 @@ public class CharsetUtils {
             return null;
         }
 
-        Matcher metaMatcher = metaPattern.matcher(str);
+        Matcher metaMatcher = META_PATTERN.matcher(str);
         String encoding = null;
         if (metaMatcher.find()) {
-            Matcher charsetMatcher = charsetPattern.matcher(metaMatcher.group(1));
+            Matcher charsetMatcher = CHARSET_PATTERN.matcher(metaMatcher.group(1));
             if (charsetMatcher.find()) {
                 encoding = charsetMatcher.group(1);
             }
         }
         if (encoding == null) {
-            metaMatcher = charsetPatternHTML5.matcher(str);
+            metaMatcher = CHARSET_PATTERN_HTML5.matcher(str);
             if (metaMatcher.find()) {
                 encoding = metaMatcher.group(1);
             }
@@ -89,6 +95,19 @@ public class CharsetUtils {
         return encoding;
     }
 
+    public static String guessResponseEncoding(Response response) {
+        String encoding = null;
+        String contentType = response.header("Content-Type");
+        if (contentType != null) {
+            Matcher matcher = CHARSET_PATTERN_HEADER.matcher(contentType);
+            if (matcher.find()) {
+                encoding = matcher.group(1);
+            }
+        }
+
+        return encoding;
+    }
+
     /**
      * 根据字节数组，猜测可能的字符集，如果检测失败，返回utf-8
      *
@@ -109,5 +128,13 @@ public class CharsetUtils {
         } else {
             return encoding;
         }
+    }
+
+    public static String guessEncoding(byte[] content, Response response) {
+        String encoding = guessResponseEncoding(response);
+        if (encoding == null) {
+            return guessEncoding(content);
+        }
+        return encoding;
     }
 }

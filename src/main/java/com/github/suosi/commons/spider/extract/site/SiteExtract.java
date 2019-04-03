@@ -22,10 +22,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * 根据域名，尝试抽取站点关键信息
+ *
  * @author niuchaoqun
  */
 public class SiteExtract {
-    private static final Pattern ICP_PATTERN = Pattern.compile("(京|津|冀|晋|蒙|辽|吉|黑|沪|苏|浙|皖|闽|赣|鲁|豫|鄂|湘|粤|桂|琼|川|蜀|贵|黔|云|滇|渝|藏|陇|甘|陕|秦|青|宁|新)ICP(备|证)(.*)号", Pattern.CASE_INSENSITIVE);
+    private static final Pattern ICP_PATTERN = Pattern.compile(
+            "(京|津|冀|晋|蒙|辽|吉|黑|沪|苏|浙|皖|闽|赣|鲁|豫|鄂|湘|粤|桂|琼|川|蜀|贵|黔|云|滇|渝|藏|陇|甘|陕|秦|青|宁|新)ICP(备|证)(.*)号",
+            Pattern.CASE_INSENSITIVE
+    );
+
+    private static final Pattern ARTICLE_KEYWORD_PATTERN = Pattern.compile(
+            "(新闻|资讯|报道|动态|政策|财经|政经)",
+            Pattern.CASE_INSENSITIVE
+    );
 
     private static final String WWW_PREFIX = "www.";
 
@@ -34,18 +44,19 @@ public class SiteExtract {
     private static final String HTTPS_PROTOCOL = "https";
 
     /**
-     * 根据顶级域名，获取站点主要信息
+     * 站点关键信息
      *
-     * @param domain
+     * @param domain 域名
+     * @param subDomain 是否为子域名， true 不进行 WWW_PREFIX 补全
      * @return
      */
-    public static Site domain(String domain) {
+    public static Site domain(String domain, boolean subDomain) {
         if (StringUtils.isNotBlank(domain)) {
 
             String mainDomain = domain;
             HashMap<String, String> urls = new HashMap<>();
 
-            if (!StringUtils.startsWithIgnoreCase(domain, WWW_PREFIX)) {
+            if (!subDomain && !StringUtils.startsWithIgnoreCase(domain, WWW_PREFIX)) {
                 mainDomain = WWW_PREFIX + domain;
                 urls.put(HTTP_PROTOCOL, HTTP_PROTOCOL + "://" + mainDomain);
                 urls.put(HTTPS_PROTOCOL, HTTPS_PROTOCOL + "://" + mainDomain);
@@ -63,7 +74,7 @@ public class SiteExtract {
 
                         // 编码
                         byte[] htmlBytes = response.body().bytes();
-                        String charset = StringUtils.upperCase(CharsetUtils.guessEncoding(htmlBytes));
+                        String charset = StringUtils.upperCase(CharsetUtils.guessEncoding(htmlBytes, response));
                         if (StringUtils.startsWith(charset, "GB")) {
                             charset = "GBK";
                         }
@@ -95,11 +106,10 @@ public class SiteExtract {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
             }
         }
 
-        return null;
+        return Site.builder().build();
     }
 
     /**
@@ -186,10 +196,11 @@ public class SiteExtract {
                         link = parseUrl.toString();
                     } catch (MalformedURLException e) {
                         e.printStackTrace();
+                        continue;
                     }
                 }
 
-                // 排除非本站域名的链接
+                // 排除主域名的链接
                 URL parse = UrlUtils.parse(link);
                 if (parse == null) {
                     continue;
@@ -202,6 +213,7 @@ public class SiteExtract {
                 links.add(link);
             }
         }
+
         return links;
     }
 
@@ -276,5 +288,25 @@ public class SiteExtract {
     public static String parseDescription(Document document) {
         String description = document.select("meta[name=description]").attr("content");
         return StringUtils.trimToEmpty(description);
+    }
+
+    public static boolean guessArticleSite(Site site) {
+        String title = site.getTitle();
+        String keywords = site.getKeywords();
+        String description = site.getDescription();
+
+        if (StringUtils.isNotBlank(title) && ARTICLE_KEYWORD_PATTERN.matcher(title).find()) {
+            return true;
+        }
+
+        if (StringUtils.isNotBlank(keywords) && ARTICLE_KEYWORD_PATTERN.matcher(keywords).find()) {
+            return true;
+        }
+
+        if (StringUtils.isNotBlank(description) && ARTICLE_KEYWORD_PATTERN.matcher(description).find()) {
+            return true;
+        }
+
+        return false;
     }
 }
