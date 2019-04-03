@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  * @author niuchaoqun
  */
 public class UrlUtils {
-    private static Pattern CONTENT_STATIC_PATTERN = Pattern.compile("[\\w\\d\\-]*\\d{2,}[\\w\\d\\-]*\\.(html|shtml|htm|shtm)$", Pattern.CASE_INSENSITIVE);
+    private static Pattern CONTENT_STATIC_PATTERN = Pattern.compile("[\\w\\d\\-]*\\d{1,}[\\w\\d\\-]*\\.(html|shtml|htm|shtm)$", Pattern.CASE_INSENSITIVE);
 
     private static Pattern CONTENT_DYNAMIC_PATTERN = Pattern.compile("[\\w\\d\\-]*\\.(php|jsp|asp|aspx|do|html|shtml|htm)$", Pattern.CASE_INSENSITIVE);
 
@@ -61,7 +61,8 @@ public class UrlUtils {
 
         // 静态
         if (CONTENT_STATIC_PATTERN.matcher(path).find()) {
-            if (StringUtils.startsWithIgnoreCase(path, "forum-")) {
+            if (StringUtils.startsWithIgnoreCase(path, "forum-")
+                    || StringUtils.startsWithIgnoreCase(path, "list")) {
                 return false;
             }
             return true;
@@ -85,6 +86,4 @@ public class UrlUtils {
 
         return false;
     }
-
-
 }
