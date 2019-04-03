@@ -32,8 +32,8 @@ public class SiteExtract {
             Pattern.CASE_INSENSITIVE
     );
 
-    private static final Pattern ARTICLE_KEYWORD_PATTERN = Pattern.compile(
-            "(新闻|资讯|报道|动态|政策|财经|政经)",
+    private static final Pattern DOMAIN_FILTER_PATTERN = Pattern.compile(
+            "(user\\.|mail\\.)",
             Pattern.CASE_INSENSITIVE
     );
 
@@ -290,23 +290,11 @@ public class SiteExtract {
         return StringUtils.trimToEmpty(description);
     }
 
-    public static boolean guessArticleSite(Site site) {
-        String title = site.getTitle();
-        String keywords = site.getKeywords();
-        String description = site.getDescription();
-
-        if (StringUtils.isNotBlank(title) && ARTICLE_KEYWORD_PATTERN.matcher(title).find()) {
-            return true;
+    public static boolean filterDomain(String domain) {
+        if (DOMAIN_FILTER_PATTERN.matcher(domain).find()) {
+            return false;
         }
 
-        if (StringUtils.isNotBlank(keywords) && ARTICLE_KEYWORD_PATTERN.matcher(keywords).find()) {
-            return true;
-        }
-
-        if (StringUtils.isNotBlank(description) && ARTICLE_KEYWORD_PATTERN.matcher(description).find()) {
-            return true;
-        }
-
-        return false;
+        return true;
     }
 }

@@ -15,9 +15,13 @@ public class SiteExtractTest {
         for (String domain : domains) {
             Site site = SiteExtract.domain(domain, false);
             Set<String> subDomains = site.getSubDomain();
+            System.out.println(site.getMainDomain());
             for (String subDomain : subDomains) {
-                Site subSite = SiteExtract.domain(subDomain, true);
-                System.out.println((SiteExtract.guessArticleSite(subSite) ? "OK:" : "   ") + subDomain + "->" + subSite.getDescription());
+                //if (SiteExtract.filterDomain(subDomain)) {
+                    Site subSite = SiteExtract.domain(subDomain, true);
+                    System.out.println(subDomain + "->" + subSite.getTitle());
+                    System.out.println(UrlUtils.countArticleUrls(subSite.getLinks(), subDomain));
+                //}
             }
         }
     }
@@ -31,7 +35,7 @@ public class SiteExtractTest {
             Set<String> links = site.getLinks();
             Set<String> subDomains = site.getSubDomain();
             for (String link : links) {
-                System.out.println((UrlUtils.guessArticleUrl(link, null) ? "OK:" : "   ") + domain + " -> " + link);
+                System.out.println(domain + " -> " + link);
             }
 
             for (String subDomain : subDomains) {

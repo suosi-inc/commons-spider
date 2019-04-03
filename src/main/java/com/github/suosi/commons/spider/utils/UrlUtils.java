@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -142,5 +143,15 @@ public class UrlUtils {
         }
 
         return false;
+    }
+    
+    public static int countArticleUrls(Set<String> links, String strictDomain) {
+        int count = 0;
+        for (String link : links) {
+            if (guessArticleUrl(link, strictDomain)) {
+                count++;
+            }
+        }
+        return count;
     }
 }
