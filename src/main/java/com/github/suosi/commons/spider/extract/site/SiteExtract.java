@@ -98,7 +98,8 @@ public class SiteExtract {
                         Set<String> links = Parse.parseLinks(document, domain, url);
                         Set<String> subDomains = Parse.parseSubDomain(document, domain, url);
 
-                        return Site.builder().protocol(protocol)
+                        return Site.builder()
+                                .protocol(protocol)
                                 .mainDomain(mainDomain)
                                 .charset(charset)
                                 .html(html)
