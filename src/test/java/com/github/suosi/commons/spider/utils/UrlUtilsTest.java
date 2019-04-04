@@ -5,7 +5,7 @@ import org.junit.Test;
 public class UrlUtilsTest {
 
     @Test
-    public void guessContentUrl() {
+    public void guessArticleUrl() {
         //String[] urls = urls();
         String[] urls = {
 //                "http://www.ccn.com.cn/m/view.php?aid=445524",
@@ -13,11 +13,13 @@ public class UrlUtilsTest {
 //                "http://www.thepaper.cn/newsDetail_forward_3194458",
 //                "http://bbs.cnhubei.com/forum-33-1.html",
 //                "http://bbs.cnhubei.com/thread-4631257-1-1.html",
-                "http://www.huxiu.com/moment",
+//                "http://www.huxiu.com/moment",
 //                "http://www.huxiu.com/channel/2.html"
+//                "http://www.sohu.com/a/305852261_119038"
+                "http://beijing.edushi.com/info/161.html"
         };
         for (String url : urls) {
-            if (!UrlUtils.guessArticleUrl(url, null)) {
+            if (UrlUtils.guessArticleUrl(url, null)) {
                 System.out.println(url);
             }
         }

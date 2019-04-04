@@ -1,4 +1,4 @@
-package com.github.suosi.commons.spider.extract.site;
+package com.github.suosi.commons.spider.extract.site.meta;
 
 import lombok.Builder;
 import lombok.Data;

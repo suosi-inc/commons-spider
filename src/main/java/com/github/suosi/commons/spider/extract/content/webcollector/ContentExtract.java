@@ -20,10 +20,10 @@ import java.util.regex.Pattern;
  *
  * @author hu
  */
-public class Content {
+public class ContentExtract {
     protected Document doc;
 
-    Content(Document doc) {
+    ContentExtract(Document doc) {
         this.doc = doc;
     }
 
@@ -412,7 +412,7 @@ public class Content {
 
     /*输入Jsoup的Document，获取正文所在Element*/
     public static Element getContentElementByDoc(Document doc) throws Exception {
-        Content ce = new Content(doc);
+        ContentExtract ce = new ContentExtract(doc);
         return ce.getContentElement();
     }
 
@@ -430,7 +430,7 @@ public class Content {
 
     /*输入Jsoup的Document，获取正文文本*/
     public static String getContentByDoc(Document doc) throws Exception {
-        Content ce = new Content(doc);
+        ContentExtract ce = new ContentExtract(doc);
         return ce.getContentElement().text();
     }
 
@@ -448,7 +448,7 @@ public class Content {
 
     /*输入Jsoup的Document，获取结构化新闻信息*/
     public static Article getNewsByDoc(Document doc) throws Exception {
-        Content ce = new Content(doc);
+        ContentExtract ce = new ContentExtract(doc);
         return ce.getNews();
     }
 

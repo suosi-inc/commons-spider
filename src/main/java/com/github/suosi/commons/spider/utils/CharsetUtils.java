@@ -1,7 +1,6 @@
 package com.github.suosi.commons.spider.utils;
 
 import okhttp3.Response;
-import org.apache.commons.lang3.StringUtils;
 import org.mozilla.universalchardet.UniversalDetector;
 
 import java.io.UnsupportedEncodingException;
@@ -95,6 +94,12 @@ public class CharsetUtils {
         return encoding;
     }
 
+    /**
+     * 根据 OkHttpClient Response 返回字符集，如果没有则返回 null
+     *
+     * @param response
+     * @return
+     */
     public static String guessResponseEncoding(Response response) {
         String encoding = null;
         String contentType = response.header("Content-Type");
@@ -130,6 +135,13 @@ public class CharsetUtils {
         }
     }
 
+    /**
+     * 猜测可能的字符集，以 Response 为准
+     *
+     * @param content
+     * @param response
+     * @return
+     */
     public static String guessEncoding(byte[] content, Response response) {
         String encoding = guessResponseEncoding(response);
         if (encoding == null) {
