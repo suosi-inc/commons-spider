@@ -18,7 +18,7 @@ public class UrlUtils {
     );
 
     private static Pattern CONTENT_STATIC_PATTERN = Pattern.compile(
-            "(\\d*)\\.(html|shtml|htm|shtm)$",
+            "^([\\d]*)\\.(html|shtml|htm|shtm)$",
             Pattern.CASE_INSENSITIVE
     );
 
@@ -38,7 +38,7 @@ public class UrlUtils {
     );
 
     private static Pattern CONTENT_DICT_PATTERN = Pattern.compile(
-            "(detail|article|view|show)$",
+            "(detail|article|view|show|s)$",
             Pattern.CASE_INSENSITIVE
     );
 
@@ -58,7 +58,7 @@ public class UrlUtils {
     );
 
     private static Pattern ARTICLE_KEYWORD_FILTER_PATTERN = Pattern.compile(
-            "(video|photo|pic|member|channel|list|category|user|tag|topic|upload)",
+            "(video|movie|photo|pic|member|channel|list|category|user|tag|topic|upload)",
             Pattern.CASE_INSENSITIVE
     );
 
@@ -141,7 +141,7 @@ public class UrlUtils {
             Matcher matcher = CONTENT_STATIC_PATTERN.matcher(path);
             if (matcher.find()) {
                 String id = matcher.group(1);
-                if (id.length() < 5) {
+                if (id.length() < 4) {
                     return false;
                 }
                 return true;
@@ -196,6 +196,30 @@ public class UrlUtils {
             }
 
             return true;
+        }
+
+        return false;
+    }
+
+
+    /**
+     * 尝试验证列表页 URL
+     *
+     * @param url
+     * @param strictDomain
+     * @return
+     */
+    public static boolean guessListUrl(String url, String strictDomain) {
+        if (!guessContentUrl(url, strictDomain)) {
+            URL parseUrl = parse(url);
+            if (parseUrl != null) {
+                String fullPath = parseUrl.getPath();
+                String path = StringUtils.removeEnd(fullPath, "/");
+                if (StringUtils.isBlank(path)) {
+                    return false;
+                }
+                return true;
+            }
         }
 
         return false;

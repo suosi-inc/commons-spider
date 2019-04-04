@@ -8,7 +8,7 @@ import java.util.Set;
 
 public class SiteExtractTest {
     private static String[] domains = {
-            "qianlima.com",
+            "baidu.com",
     };
 
     /**
@@ -40,7 +40,7 @@ public class SiteExtractTest {
     }
 
     /**
-     * 获取站点域名链接信息
+     * 获取站点子域名，以及链接信息
      */
     @Test
     public void articleUrls() {
@@ -63,7 +63,7 @@ public class SiteExtractTest {
     }
 
     /**
-     * 域名验证
+     * 域名规则验证
      */
     @Test
     public void filterDomain() {

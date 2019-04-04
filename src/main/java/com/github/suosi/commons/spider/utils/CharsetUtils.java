@@ -1,6 +1,7 @@
 package com.github.suosi.commons.spider.utils;
 
 import okhttp3.Response;
+import org.apache.commons.lang3.StringUtils;
 import org.mozilla.universalchardet.UniversalDetector;
 
 import java.io.UnsupportedEncodingException;
@@ -119,20 +120,19 @@ public class CharsetUtils {
      * @param content 待检测的字节数组
      * @return 可能的字符集，如果检测失败，返回utf-8
      */
-    public static String guessEncoding(byte[] content) {
+    public static String guessCharset(byte[] content) {
         String encoding;
         try {
             encoding = guessEncodingByNutch(content);
         } catch (Exception ex) {
-            return guessEncodingByMozilla(content);
+            return formatEncoding(guessEncodingByMozilla(content));
         }
 
         if (encoding == null) {
             encoding = guessEncodingByMozilla(content);
-            return encoding;
-        } else {
-            return encoding;
         }
+
+        return formatEncoding(encoding);
     }
 
     /**
@@ -142,11 +142,27 @@ public class CharsetUtils {
      * @param response
      * @return
      */
-    public static String guessEncoding(byte[] content, Response response) {
+    public static String guessCharset(byte[] content, Response response) {
         String encoding = guessResponseEncoding(response);
         if (encoding == null) {
-            return guessEncoding(content);
+            encoding = guessCharset(content);
         }
-        return encoding;
+
+        return formatEncoding(encoding);
+    }
+
+    /**
+     * 格式化
+     *
+     * @param encoding
+     * @return
+     */
+    public static String formatEncoding(String encoding) {
+        String charset = StringUtils.upperCase(encoding);
+        if (StringUtils.startsWith(charset, "GB")) {
+            charset = "GBK";
+        }
+
+        return charset;
     }
 }

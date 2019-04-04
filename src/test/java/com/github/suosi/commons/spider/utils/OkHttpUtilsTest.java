@@ -27,7 +27,7 @@ public class OkHttpUtilsTest {
                 System.out.println(response.code());
                 if (response.isSuccessful() && response.body() != null) {
                     byte[] bytes = response.body().bytes();
-                    String charset = CharsetUtils.guessEncoding(bytes, response);
+                    String charset = CharsetUtils.guessCharset(bytes, response);
                     String html = new String(bytes, charset);
 
                     Document document = Jsoup.parse(html);
