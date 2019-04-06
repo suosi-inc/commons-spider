@@ -55,7 +55,7 @@ public class SiteExtract {
      * @return
      */
     public static Site domain(String domain) {
-        String[] protocols = {HTTPS_PROTOCOL, HTTP_PROTOCOL};
+        String[] protocols = {HTTP_PROTOCOL, HTTPS_PROTOCOL};
 
         if (StringUtils.isNotBlank(domain)) {
             String mainDomain = domain;

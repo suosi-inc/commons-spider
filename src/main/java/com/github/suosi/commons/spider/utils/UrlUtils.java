@@ -84,6 +84,7 @@ public class UrlUtils {
     public static boolean filterUrl(String url) {
         return StringUtils.isNotBlank(url)
                 && !StringUtils.startsWithIgnoreCase(url, "java")
+                && !StringUtils.startsWithIgnoreCase(url, "tencent")
                 && !StringUtils.startsWithIgnoreCase(url, "ftp:")
                 && !StringUtils.startsWithIgnoreCase(url, "tel:")
                 && !StringUtils.startsWithIgnoreCase(url, "mailto:")
