@@ -11,6 +11,13 @@ public class SiteExtractTest {
             "baidu.com",
     };
 
+    @Test
+    public void domain() {
+        Site domain = SiteExtract.domain("lewell.cn");
+        domain.setHtml("");
+        System.out.println(domain);
+    }
+
     /**
      * 获取站点子域名信息
      */

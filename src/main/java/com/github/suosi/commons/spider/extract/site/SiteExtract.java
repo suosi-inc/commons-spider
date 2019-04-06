@@ -10,8 +10,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -57,28 +55,25 @@ public class SiteExtract {
      * @return
      */
     public static Site domain(String domain) {
+        String[] protocols = {HTTPS_PROTOCOL, HTTP_PROTOCOL};
+
         if (StringUtils.isNotBlank(domain)) {
             String mainDomain = domain;
-            HashMap<String, String> urls = new HashMap<>();
 
-            // 是否是顶级域名，如果是顶级域名会进行www前缀主域名探测
+            // 是否是顶级域名，如果是顶级域名会进行 www 前缀主域名探测
             boolean top = false;
             String topDomain = DomainUtils.topDomain(domain);
-            if (topDomain != null && domain.equals(topDomain)) {
+            if (domain.equals(topDomain)) {
                 top = true;
             }
+
             if (top && !StringUtils.startsWithIgnoreCase(domain, WWW_PREFIX)) {
                 mainDomain = WWW_PREFIX + domain;
-                urls.put(HTTP_PROTOCOL, HTTP_PROTOCOL + "://" + mainDomain);
-                urls.put(HTTPS_PROTOCOL, HTTPS_PROTOCOL + "://" + mainDomain);
-            } else {
-                urls.put(HTTP_PROTOCOL, HTTP_PROTOCOL + "://" + mainDomain);
-                urls.put(HTTPS_PROTOCOL, HTTPS_PROTOCOL + "://" + mainDomain);
             }
 
-            for (Map.Entry<String, String> urlEntry : urls.entrySet()) {
-                String protocol = urlEntry.getKey();
-                String url = urlEntry.getValue();
+            for (String protocol : protocols) {
+                // 构造 URL
+                String url = protocol + "://" + mainDomain;
 
                 try (Response response = OkHttpUtils.client().newCall(OkHttpUtils.request(url)).execute()) {
                     if (response.isSuccessful() && response.body() != null) {
