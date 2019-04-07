@@ -159,6 +159,9 @@ public class CharsetUtils {
      */
     public static String formatEncoding(String encoding) {
         String charset = StringUtils.upperCase(encoding);
+        if ("UTF8".equals(charset)) {
+            charset = "UTF-8";
+        }
         if (StringUtils.startsWith(charset, "GB")) {
             charset = "GBK";
         }
