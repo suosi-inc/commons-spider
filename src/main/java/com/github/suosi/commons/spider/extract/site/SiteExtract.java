@@ -38,6 +38,8 @@ public class SiteExtract {
             "photo",
             "photos",
             "pic",
+            "picture",
+            "pictures",
             "video",
             "film",
             "v",
@@ -46,7 +48,13 @@ public class SiteExtract {
             "hr",
             "help",
             "search",
-            "zhibo"
+            "zhibo",
+            "live",
+            "vip",
+            "110",
+            "map",
+            "ad",
+            "weather"
     };
 
     /**
