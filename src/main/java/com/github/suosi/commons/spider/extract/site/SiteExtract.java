@@ -46,6 +46,7 @@ public class SiteExtract {
             "hr",
             "help",
             "search",
+            "zhibo"
     };
 
     /**
