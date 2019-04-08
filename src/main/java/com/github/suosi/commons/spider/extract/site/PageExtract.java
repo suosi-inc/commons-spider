@@ -58,6 +58,6 @@ public class PageExtract {
             }
         }
 
-        return Page.builder().build();
+        return null;
     }
 }

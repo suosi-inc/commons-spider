@@ -123,7 +123,7 @@ public class SiteExtract {
             }
         }
 
-        return Site.builder().build();
+        return null;
     }
 
     /**
