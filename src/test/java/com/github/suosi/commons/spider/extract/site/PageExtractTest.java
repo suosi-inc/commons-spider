@@ -13,20 +13,23 @@ public class PageExtractTest {
      */
     @Test
     public void url() {
-        String url = "http://news.baidu.com/";
+        String url = "http://www.shanghai.gov.cn/nw2/nw2314/nw2319/nw2407/nw42927/index.html";
 
         Page page = PageExtract.url(url);
-        Set<String> links = page.getLinks();
-        if (links != null) {
-            for (String link : links) {
-                if (UrlUtils.guessArticleUrl(link, null)) {
-                    System.out.println("A -> " + link);
-                } else if (UrlUtils.guessListUrl(link, null)) {
-                    System.out.println("L -> " + link);
-                } else {
-                    System.out.println("N -> " + link);
+        if (page != null) {
+            Set<String> links = page.getLinks();
+            if (links != null) {
+                for (String link : links) {
+                    if (UrlUtils.guessArticleUrl(link, null)) {
+                        System.out.println("A -> " + link);
+                    } else if (UrlUtils.guessListUrl(link, null)) {
+                        //System.out.println("L -> " + link);
+                    } else {
+                        //System.out.println("N -> " + link);
+                    }
                 }
             }
         }
+
     }
 }

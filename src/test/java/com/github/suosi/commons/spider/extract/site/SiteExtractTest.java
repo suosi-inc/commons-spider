@@ -8,7 +8,7 @@ import java.util.Set;
 
 public class SiteExtractTest {
     private static String[] domains = {
-            "xinhuanet.com",
+            "loupan.com",
     };
 
     @Test
