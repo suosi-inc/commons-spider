@@ -47,6 +47,7 @@ public class OkHttpUtilsTest {
     @Test
     public void proxyUserPassword() {
         String url = "http://test.abuyun.com";
+//        String url = "https://weixin.sogou.com/weixin?type=2&tsn=1&query=%E7%BD%97%E6%9D%B0";
 
         // 开启代理模式
         Authenticator proxyAuthenticator = (route, r) -> {
@@ -61,36 +62,13 @@ public class OkHttpUtilsTest {
                 .proxyAuthenticator(proxyAuthenticator)
                 .build();
 
+        Request request = OkHttpUtils.requestBuilder(url)
+                .header("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.0 Safari/537.36")
+                .header("Referer", "https://weixin.sogou.com/weixin?type=2&tsn=1&query=")
+                .build();
+
         for (int i = 0; i < 3; i++) {
             try (Response response = client.newCall(OkHttpUtils.request(url)).execute()) {
-                System.out.println(response.code());
-                if (response.isSuccessful() && response.body() != null) {
-                    byte[] bytes = response.body().bytes();
-                    String charset = CharsetUtils.guessCharset(bytes, response);
-                    String html = new String(bytes, charset);
-
-                    System.out.println(html);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Test
-    public void proxyHeader() {
-        String url = "http://test.abuyun.com";
-
-        OkHttpClient client = OkHttpUtils.builder()
-                .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("http-dyn.abuyun.com", 9020)))
-                .build();
-
-        Request request = OkHttpUtils.requestBuilder(url)
-                .header("Proxy-Authorization", "Basic " + base64Encode("HG686Y9765V56R8D:491953B253B48306"))
-                .build();
-
-        for (int i = 0; i < 3; i++) {
-            try (Response response = client.newCall(request).execute()) {
                 System.out.println(response.code());
                 if (response.isSuccessful() && response.body() != null) {
                     byte[] bytes = response.body().bytes();
