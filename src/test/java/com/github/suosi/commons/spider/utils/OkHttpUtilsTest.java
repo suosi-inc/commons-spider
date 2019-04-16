@@ -51,7 +51,7 @@ public class OkHttpUtilsTest {
 
         // 开启代理模式
         Authenticator proxyAuthenticator = (route, r) -> {
-            String credential = Credentials.basic("HG686Y9765V56R8D", "491953B253B48306");
+            String credential = Credentials.basic("HG686Y9765V56R8D", "");
             return r.request().newBuilder()
                     .header("Proxy-Authorization", credential)
                     .build();
