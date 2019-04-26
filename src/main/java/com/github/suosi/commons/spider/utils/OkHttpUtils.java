@@ -28,14 +28,13 @@ public class OkHttpUtils {
         return builder(connectionPool).build();
     }
 
-    public static Request.Builder requestBuilder(String url) {
+    public static Request.Builder requestBuilder() {
         return new Request.Builder()
-                .header("User-Agent", USER_AGENT)
-                .url(url);
+                .header("User-Agent", USER_AGENT);
     }
 
     public static Request request(String url) {
-        return requestBuilder(url).build();
+        return requestBuilder().url(url).build();
     }
 
     public static OkHttpClient.Builder builder(ConnectionPool connectionPool) {
