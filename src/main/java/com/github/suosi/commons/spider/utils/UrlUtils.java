@@ -38,7 +38,7 @@ public class UrlUtils {
     );
 
     private static Pattern CONTENT_DICT_PATTERN = Pattern.compile(
-            "(detail|article|view|show|s)$",
+            "(detail|article|view|show)$",
             Pattern.CASE_INSENSITIVE
     );
 
@@ -47,8 +47,13 @@ public class UrlUtils {
             Pattern.CASE_INSENSITIVE
     );
 
+    private static Pattern CONTENT_NONSTATIC_ENGLISH_PATTERN = Pattern.compile(
+            "[\\w\\d]*\\-[\\w\\d]*\\-[\\w\\d]*\\-[\\w\\d]*",
+            Pattern.CASE_INSENSITIVE
+    );
+
     private static Pattern CONTENT_HASH_PATTERN = Pattern.compile(
-            "[\\w\\d-]*\\d+[\\w\\d\\-]",
+            "[\\w\\d\\-]*\\d+[\\w\\d]",
             Pattern.CASE_INSENSITIVE
     );
 
@@ -58,7 +63,7 @@ public class UrlUtils {
     );
 
     private static Pattern ARTICLE_KEYWORD_FILTER_PATTERN = Pattern.compile(
-            "(video|movie|photo|pic|member|channel|list|category|user|tag|topic|upload)",
+            "^(video|movie|photo|pic|member|channel|sublist|list|category|user|tag|topic|upload|footer|header|login|register|logout)",
             Pattern.CASE_INSENSITIVE
     );
 
@@ -88,6 +93,7 @@ public class UrlUtils {
                 && !StringUtils.startsWithIgnoreCase(url, "ftp:")
                 && !StringUtils.startsWithIgnoreCase(url, "tel:")
                 && !StringUtils.startsWithIgnoreCase(url, "mailto:")
+                && !StringUtils.startsWithIgnoreCase(url, "sms:")
                 && !StringUtils.startsWithIgnoreCase(url, "#");
     }
 
@@ -166,9 +172,11 @@ public class UrlUtils {
                 return true;
                 // HASH
             } else if (CONTENT_HASH_PATTERN.matcher(path).find()) {
-                if (path.length() >= 10) {
+                if (path.length() >= 10 && !StringUtils.contains(path, ".")) {
                     return true;
                 }
+            } else if (CONTENT_NONSTATIC_ENGLISH_PATTERN.matcher(path).find()) {
+                return true;
             }
         }
 

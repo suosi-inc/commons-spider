@@ -2,6 +2,8 @@ package com.github.suosi.commons.spider.utils;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 public class UrlUtilsTest {
 
     /**
@@ -11,14 +13,32 @@ public class UrlUtilsTest {
     public void guessArticleList() {
         String[] urls = urls();
         int count = 0;
+
+        ArrayList<String> articles = new ArrayList<>();
+        ArrayList<String> lists = new ArrayList<>();
+        ArrayList<String> nones = new ArrayList<>();
+
         for (String url : urls) {
             if (UrlUtils.guessArticleUrl(url, null)) {
-                System.out.println("A -> " + url);
+                articles.add(url);
                 count++;
+            } else if (UrlUtils.guessListUrl(url, null)) {
+                lists.add(url);
             } else {
-                System.out.println("N -> " + url);
+                nones.add(url);
             }
         }
+
+        for (String article : articles) {
+            System.out.println("A -> " + article);
+        }
+        for (String list : lists) {
+            System.out.println("L -> " + list);
+        }
+        for (String none : nones) {
+            System.out.println("N -> " + none);
+        }
+
         System.out.println(urls.length);
         System.out.println(count);
 
@@ -29,10 +49,12 @@ public class UrlUtilsTest {
      */
     @Test
     public void guessArticleUrl() {
-        String url = "http://3g.163.com/news/article/E9S67F7H05373XN2.html";
+        String url = "https://www.express.co.uk/news/world/1119036/tennessee-baby-death-not-father-us-news";
 
         if (UrlUtils.guessArticleUrl(url, null)) {
             System.out.println("A -> " + url);
+        } else if (UrlUtils.guessListUrl(url, null)) {
+            System.out.println("L -> " + url);
         } else {
             System.out.println("N -> " + url);
         }
@@ -48,6 +70,7 @@ public class UrlUtilsTest {
                 "http://beijing.edushi.com/info/",
                 "http://beijing.edushi.com",
                 "http://beijing.edushi.com/",
+                "http://beijing.edushi.com/list_1234.html",
         };
         for (String url : urls) {
             if (UrlUtils.guessListUrl(url, null)) {

@@ -4,6 +4,7 @@ import com.github.suosi.commons.spider.extract.site.meta.Page;
 import com.github.suosi.commons.spider.utils.UrlUtils;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 public class PageExtractTest {
@@ -13,7 +14,12 @@ public class PageExtractTest {
      */
     @Test
     public void url() {
-        String url = "http://www.shanghai.gov.cn/nw2/nw2314/nw2319/nw2407/nw42927/index.html";
+        String url = "https://www.pinalcentral.com/";
+
+        ArrayList<String> articles = new ArrayList<>();
+        ArrayList<String> lists = new ArrayList<>();
+        ArrayList<String> nones = new ArrayList<>();
+
 
         Page page = PageExtract.url(url);
         if (page != null) {
@@ -21,15 +27,26 @@ public class PageExtractTest {
             if (links != null) {
                 for (String link : links) {
                     if (UrlUtils.guessArticleUrl(link, null)) {
-                        System.out.println("A -> " + link);
+                        articles.add(link);
                     } else if (UrlUtils.guessListUrl(link, null)) {
-                        //System.out.println("L -> " + link);
+                        lists.add(link);
                     } else {
-                        //System.out.println("N -> " + link);
+                        nones.add(link);
                     }
                 }
             }
         }
 
+        for (String article : articles) {
+            System.out.println("A -> " + article);
+        }
+
+        for (String list : lists) {
+            System.out.println("L -> " + list);
+        }
+
+        for (String none : nones) {
+            System.out.println("N -> " + none);
+        }
     }
 }
