@@ -10,11 +10,11 @@ import java.util.concurrent.TimeUnit;
  * @author niuchaoqun
  */
 public class OkHttpUtils {
-    private static final ConnectionPool DEFAULT_CONNECTION_POOL = new ConnectionPool(15, 15, TimeUnit.SECONDS);
+    private static final ConnectionPool DEFAULT_CONNECTION_POOL = new ConnectionPool(30, 10, TimeUnit.SECONDS);
 
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36";
 
-    private static final long TIMEOUT = 10;
+    private static final long TIMEOUT = 5;
 
     public static OkHttpClient.Builder builder() {
        return builder(DEFAULT_CONNECTION_POOL);
@@ -39,6 +39,7 @@ public class OkHttpUtils {
 
     public static OkHttpClient.Builder builder(ConnectionPool connectionPool) {
         HttpsUtils.SSLParams sslSocketFactory = HttpsUtils.getSslSocketFactory(null, null, null);
+
         OkHttpClient.Builder builder = new OkHttpClient().newBuilder();
         builder.connectionPool(connectionPool);
         builder.sslSocketFactory(sslSocketFactory.sSLSocketFactory, sslSocketFactory.trustManager);
