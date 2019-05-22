@@ -5,7 +5,6 @@ import com.github.suosi.commons.spider.utils.CharsetUtils;
 import com.github.suosi.commons.spider.utils.OkHttpUtils;
 import com.github.suosi.commons.spider.utils.UrlUtils;
 import okhttp3.Response;
-import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -25,7 +24,7 @@ public class PageExtract {
      * @return
      */
     public static Page url(String url) {
-        if (StringUtils.isNotBlank(url) && UrlUtils.verifyUrl(url)) {
+        if (UrlUtils.verifyUrl(url))  {
             URL parseUrl = UrlUtils.parse(url);
             if (parseUrl != null) {
                 String host = parseUrl.getHost();
@@ -54,6 +53,7 @@ public class PageExtract {
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
+                    System.out.println("page extract exception:" + url);
                 }
             }
         }

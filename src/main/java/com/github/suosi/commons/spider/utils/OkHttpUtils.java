@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
  * @author niuchaoqun
  */
 public class OkHttpUtils {
-    private static final ConnectionPool DEFAULT_CONNECTION_POOL = new ConnectionPool(30, 10, TimeUnit.SECONDS);
+    private static final ConnectionPool DEFAULT_CONNECTION_POOL = new ConnectionPool(100, 10, TimeUnit.SECONDS);
 
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36";
 

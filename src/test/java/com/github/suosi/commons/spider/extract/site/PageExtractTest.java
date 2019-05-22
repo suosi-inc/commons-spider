@@ -14,7 +14,7 @@ public class PageExtractTest {
      */
     @Test
     public void url() {
-        String url = "https://www.pinalcentral.com/";
+        String url = "http://gov.163.com";
 
         ArrayList<String> articles = new ArrayList<>();
         ArrayList<String> lists = new ArrayList<>();
