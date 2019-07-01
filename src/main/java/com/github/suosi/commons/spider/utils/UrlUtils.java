@@ -194,6 +194,7 @@ public class UrlUtils {
                     }
                 }
                 return true;
+
             // 静态关键词
             } else if (CONTENT_STATIC_WORD_PATTERN.matcher(path).find()) {
                 if (StringUtils.startsWithIgnoreCase(path, "forum-")
@@ -201,17 +202,21 @@ public class UrlUtils {
                     return false;
                 }
                 return true;
+
             // 动态
             } else if (CONTENT_DYNAMIC_PATTERN.matcher(path).find() || CONTENT_DICT_PATTERN.matcher(path).find()) {
                 if (StringUtils.isNotBlank(query) && CONTENT_QUERY_PATTERN.matcher(query).find()) {
                     return true;
                 }
+
             // 伪静态数字
             } else if (CONTENT_NONSTATIC_PATTERN.matcher(path).find()) {
                 return true;
+
             // 伪静态关键词
             } else if (CONTENT_NONSTATIC_KEYWORD_PATTERN.matcher(path).find()) {
                 return true;
+
             // HASH
             } else if (CONTENT_HASH_PATTERN.matcher(path).find()) {
                 if (path.length() >= 10 && !StringUtils.contains(path, ".")) {
