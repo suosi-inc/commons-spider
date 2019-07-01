@@ -17,51 +17,89 @@ public class UrlUtils {
             Pattern.CASE_INSENSITIVE
     );
 
-    private static Pattern CONTENT_STATIC_PATTERN = Pattern.compile(
-            "^([\\d]*)\\.(html|shtml|htm|shtm)$",
+    /**
+     * 静态纯数字格式，匹配URL带有日期的 /0521/123.html
+     */
+    private static Pattern CONTENT_STATIC_DATE_PATTERN = Pattern.compile(
+            "/([\\d]*)/([\\d]*)\\.(html|shtml|htm|shtm|jhtml)$",
             Pattern.CASE_INSENSITIVE
     );
 
+    /**
+     * 静态纯数字格式，过滤长度小于4的（小于4可能是列表页的分页，并且一个网站应该有>1000篇内容才正常）
+     */
+    private static Pattern CONTENT_STATIC_PATTERN = Pattern.compile(
+            "^([\\d]*)\\.(html|shtml|htm|shtm|jhtml)$",
+            Pattern.CASE_INSENSITIVE
+    );
+
+    /**
+     * 静态格式，一般是 hashid.html 结尾，如 /RLNwb07lRm4nOX.html
+     */
     private static Pattern CONTENT_STATIC_WORD_PATTERN = Pattern.compile(
             "[\\w\\d\\-]*\\d{1,}[\\w\\d\\-]*\\.(html|shtml|htm|shtm)$",
             Pattern.CASE_INSENSITIVE
     );
 
+    /**
+     * 动态格式后缀，配合有限字典使用
+     */
     private static Pattern CONTENT_DYNAMIC_PATTERN = Pattern.compile(
             "[\\w\\d\\-]*\\.(php|jsp|asp|aspx|do|html|shtml|htm)$",
             Pattern.CASE_INSENSITIVE
     );
 
-    private static Pattern CONTENT_NONSTATIC_PATTERN = Pattern.compile(
-            "^[\\d_\\-]{4,}$",
-            Pattern.CASE_INSENSITIVE
-    );
-
+    /**
+     * 动态格式字典，包含有限字典的结尾，同时配合query参数。如 show.php?id=xxx
+     */
     private static Pattern CONTENT_DICT_PATTERN = Pattern.compile(
             "(detail|article|view|show)$",
             Pattern.CASE_INSENSITIVE
     );
 
+    /**
+     * 参数列表，限定>3个，为了过滤可能的列表页
+     */
+    private static Pattern CONTENT_QUERY_PATTERN = Pattern.compile(
+            "id=\\d{3,}",
+            Pattern.CASE_INSENSITIVE
+    );
+
+    /**
+     * 伪静态格式，如 /p/1234，限定长度
+     */
+    private static Pattern CONTENT_NONSTATIC_PATTERN = Pattern.compile(
+            "^[\\d_\\-]{4,}$",
+            Pattern.CASE_INSENSITIVE
+    );
+
+    /**
+     * 伪静态关键词，可能是：/article-12345
+     */
     private static Pattern CONTENT_NONSTATIC_KEYWORD_PATTERN = Pattern.compile(
             "[\\w\\d\\-]*(detail|article)[\\w\\d\\-]*\\d{4,}$",
             Pattern.CASE_INSENSITIVE
     );
 
+    /**
+     * 英文网站，可能是多个单词连接 hi-china-hello-world
+     */
     private static Pattern CONTENT_NONSTATIC_ENGLISH_PATTERN = Pattern.compile(
             "[\\w\\d]*\\-[\\w\\d]*\\-[\\w\\d]*\\-[\\w\\d]*",
             Pattern.CASE_INSENSITIVE
     );
 
+    /**
+     * 伪静态纯 Hash 格式，限定长度如 /md5
+     */
     private static Pattern CONTENT_HASH_PATTERN = Pattern.compile(
             "[\\w\\d\\-]*\\d+[\\w\\d]",
             Pattern.CASE_INSENSITIVE
     );
 
-    private static Pattern CONTENT_QUERY_PATTERN = Pattern.compile(
-            "id=\\d{4,}",
-            Pattern.CASE_INSENSITIVE
-    );
-
+    /**
+     * URL关键词过滤
+     */
     private static Pattern ARTICLE_KEYWORD_FILTER_PATTERN = Pattern.compile(
             "^(video|movie|photo|pic|member|channel|sublist|list|category|user|tag|topic|upload|footer|header|login|register|logout)",
             Pattern.CASE_INSENSITIVE
@@ -147,9 +185,13 @@ public class UrlUtils {
             // 静态纯数字
             Matcher matcher = CONTENT_STATIC_PATTERN.matcher(path);
             if (matcher.find()) {
-                String id = matcher.group(1);
-                if (id.length() < 4) {
-                    return false;
+                if (CONTENT_STATIC_DATE_PATTERN.matcher(parseUrl.toString()).find()) {
+                    return true;
+                } else {
+                    String id = matcher.group(1);
+                    if (id.length() < 4) {
+                        return false;
+                    }
                 }
                 return true;
             // 静态关键词
@@ -159,18 +201,18 @@ public class UrlUtils {
                     return false;
                 }
                 return true;
-                // 动态
+            // 动态
             } else if (CONTENT_DYNAMIC_PATTERN.matcher(path).find() || CONTENT_DICT_PATTERN.matcher(path).find()) {
                 if (StringUtils.isNotBlank(query) && CONTENT_QUERY_PATTERN.matcher(query).find()) {
                     return true;
                 }
-                // 伪静态数字
+            // 伪静态数字
             } else if (CONTENT_NONSTATIC_PATTERN.matcher(path).find()) {
                 return true;
-                // 伪静态关键词
+            // 伪静态关键词
             } else if (CONTENT_NONSTATIC_KEYWORD_PATTERN.matcher(path).find()) {
                 return true;
-                // HASH
+            // HASH
             } else if (CONTENT_HASH_PATTERN.matcher(path).find()) {
                 if (path.length() >= 10 && !StringUtils.contains(path, ".")) {
                     return true;

@@ -1,6 +1,5 @@
 package com.github.suosi.commons.spider.utils;
 
-import com.sun.tools.internal.xjc.reader.xmlschema.bindinfo.BIConversion;
 import org.junit.Test;
 
 public class UserAgentUtilsTest {

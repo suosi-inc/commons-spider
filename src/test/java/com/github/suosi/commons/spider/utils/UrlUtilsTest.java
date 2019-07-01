@@ -49,7 +49,7 @@ public class UrlUtilsTest {
      */
     @Test
     public void guessArticleUrl() {
-        String url = "https://www.express.co.uk/news/world/1119036/tennessee-baby-death-not-father-us-news";
+        String url = "http://www.jktzb.gov.cn/gangaotaihaiwai/2016/1226/73.html";
 
         if (UrlUtils.guessArticleUrl(url, null)) {
             System.out.println("A -> " + url);
