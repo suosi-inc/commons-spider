@@ -108,7 +108,7 @@ public class UrlUtils {
             try {
                 return new URL(url);
             } catch (MalformedURLException e) {
-                e.printStackTrace();
+                System.out.println(e.getLocalizedMessage());
             }
         }
         return null;

@@ -134,7 +134,7 @@ public class Parse {
                         URL parseUrl = new URL(absoluteUrl, link);
                         link = parseUrl.toString();
                     } catch (MalformedURLException e) {
-                        e.printStackTrace();
+                        System.out.println(e.getLocalizedMessage() + url + link);
                         continue;
                     }
                 }

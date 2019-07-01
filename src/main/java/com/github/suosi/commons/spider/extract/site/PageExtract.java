@@ -52,8 +52,7 @@ public class PageExtract {
                                 .build();
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
-                    System.out.println("page extract exception:" + url);
+                    System.out.println(e.getLocalizedMessage() + url);
                 }
             }
         }
