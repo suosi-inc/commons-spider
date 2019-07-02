@@ -13,7 +13,7 @@ public class SiteExtractTest {
 
     @Test
     public void domain() {
-        Site domain = SiteExtract.domain("nbbochi.cn");
+        Site domain = SiteExtract.domain("114ic.com");
         domain.setHtml("");
         System.out.println(domain);
     }

@@ -183,6 +183,7 @@ public class Parse {
 
                     if (topDomain != null) {
                         if (!host.equals(topDomain) && StringUtils.endsWithIgnoreCase(host, topDomain)) {
+                            host = StringUtils.lowerCase(host);
                             subDomains.add(host);
                         }
                     }
