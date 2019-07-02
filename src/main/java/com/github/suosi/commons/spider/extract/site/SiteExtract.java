@@ -129,7 +129,7 @@ public class SiteExtract {
 
                     }
                 } catch (IOException e) {
-                    System.out.println(e.getLocalizedMessage() + url);
+                    System.out.println(e.getLocalizedMessage() + ":" + url);
                 }
             }
         }

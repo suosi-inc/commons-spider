@@ -16,11 +16,16 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * @author niuchaoqun
+ */
 public class Parse {
     private static final Pattern ICP_PATTERN = Pattern.compile(
             "(京|津|冀|晋|蒙|辽|吉|黑|沪|苏|浙|皖|闽|赣|鲁|豫|鄂|湘|粤|桂|琼|川|蜀|贵|黔|云|滇|渝|藏|陇|甘|陕|秦|青|宁|新)ICP(备|证)(.*)号",
             Pattern.CASE_INSENSITIVE
     );
+
+    private static final Pattern DOMAIN_PATTERN = Pattern.compile("^[a-z0-9A-Z][a-z0-9A-Z\\.\\-]*$");
 
     private static final String HTTP_PROTOCOL = "http";
 
@@ -134,7 +139,7 @@ public class Parse {
                         URL parseUrl = new URL(absoluteUrl, link);
                         link = parseUrl.toString();
                     } catch (MalformedURLException e) {
-                        System.out.println(e.getLocalizedMessage() + url + link);
+                        System.out.println(e.getLocalizedMessage() + ":" + url + ":" + link);
                         continue;
                     }
                 }
@@ -184,7 +189,9 @@ public class Parse {
                     if (topDomain != null) {
                         if (!host.equals(topDomain) && StringUtils.endsWithIgnoreCase(host, topDomain)) {
                             host = StringUtils.lowerCase(host);
-                            subDomains.add(host);
+                            if (DOMAIN_PATTERN.matcher(host).find()) {
+                                subDomains.add(host);
+                            }
                         }
                     }
                 }
