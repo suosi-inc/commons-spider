@@ -156,7 +156,7 @@ public class UrlUtils {
      * 尝试验证为内容页URL
      *
      * @param url          URL
-     * @param strictDomain 如果提供域名，则过滤域名以外的链接
+     * @param strictDomain 如果提供域名，则过滤域名后缀以外的链接
      * @return
      */
     public static boolean guessContentUrl(String url, String strictDomain) {
@@ -167,7 +167,7 @@ public class UrlUtils {
             String query = parseUrl.getQuery();
 
             // 限定域名
-            if (StringUtils.isNotBlank(strictDomain) && !StringUtils.equals(host, strictDomain)) {
+            if (StringUtils.isNotBlank(strictDomain) && !StringUtils.endsWithIgnoreCase(host, strictDomain)) {
                 return false;
             }
 
@@ -277,7 +277,7 @@ public class UrlUtils {
                     return false;
                 }
 
-                if (strictDomain != null && !StringUtils.equals(host, strictDomain)) {
+                if (strictDomain != null && !StringUtils.endsWithIgnoreCase(host, strictDomain)) {
                     return false;
                 }
                 return true;

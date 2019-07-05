@@ -74,7 +74,7 @@ public class UrlUtilsTest {
                 "http://www.edushi.com/list_1234.html",
         };
         for (String url : urls) {
-            if (UrlUtils.guessListUrl(url, "beijing.edushi.com")) {
+            if (UrlUtils.guessListUrl(url, "edushi.com")) {
                 System.out.println(url);
             }
         }
