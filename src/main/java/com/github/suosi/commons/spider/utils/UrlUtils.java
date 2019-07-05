@@ -269,9 +269,15 @@ public class UrlUtils {
         if (!guessContentUrl(url, strictDomain)) {
             URL parseUrl = parse(url);
             if (parseUrl != null) {
+                String host = parseUrl.getHost();
                 String fullPath = parseUrl.getPath();
                 String path = StringUtils.removeEnd(fullPath, "/");
+
                 if (StringUtils.isBlank(path)) {
+                    return false;
+                }
+
+                if (strictDomain != null && !StringUtils.equals(host, strictDomain)) {
                     return false;
                 }
                 return true;
