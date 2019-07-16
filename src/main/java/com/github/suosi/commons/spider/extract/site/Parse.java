@@ -1,5 +1,6 @@
 package com.github.suosi.commons.spider.extract.site;
 
+import com.github.suosi.commons.helper.Static;
 import com.github.suosi.commons.spider.utils.DomainUtils;
 import com.github.suosi.commons.spider.utils.UrlUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -11,7 +12,9 @@ import org.jsoup.select.Elements;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -89,6 +92,72 @@ public class Parse {
     }
 
     /**
+     * 获取文章发布时间
+     *
+     * @param html
+     * @return
+     */
+    public static String parsePublishTime(String html) {
+        String res = "";
+        String match = "";
+        String[] str = {
+                "(发布|创建|出版|来源|发表)(时间|于)?(.*\\s){0,2}",
+                "(publish|create)(.{0,10})(time|at|date)?",
+                "时间",
+                "time",
+                "日期",
+                "date",
+                "at\\W",
+        };
+        String timeReg = "(20\\d{2})\\D.?([0-1]\\d)\\D?([0-3]\\d)((\\D{0,2})?(\\d{1,2}\\D\\d{1,2})(\\D\\d{1,2})?)?";
+        for (String pattern : str) {
+            pattern += ".{0,30}" + timeReg;
+            Pattern r = Pattern.compile(pattern);
+            Matcher matcher = r.matcher(html);
+            if (matcher.find()) {
+                match = matcher.group();
+                break;
+            }
+        }
+        if (!match.equals("")) {
+            Pattern patternTime = Pattern.compile(timeReg);
+            Matcher matcherTime = patternTime.matcher(match);
+            if (matcherTime.find()) {
+                res = matcherTime.group();
+            }
+        } else {
+                Matcher m = Pattern.compile(timeReg).matcher(html);
+                List<String> time = new ArrayList<>();
+                while (m.find()) {
+                    String item = m.group(0);
+                    time.add(item);
+                }
+                if (time.size() == 1){
+                    res=time.get(0);
+                }else {
+                    for (String item : time) {
+                        long ts = Static.strtotime(item);
+                        if (ts != 0 && ts%10 !=0) {
+                            res = item;
+                            break;
+                        }
+                    }
+                }
+                if (res.equals("")){
+                    res = time.get(0);
+                }
+
+        }
+
+        res = Pattern.compile("[\u4e00-\u9fa5]").matcher(res).replaceAll("-");
+        long timeStamp = Static.strtotime(res);
+        if (timeStamp > 0) {
+            return Static.date("yyyy-MM-dd HH:mm:ss", timeStamp);
+        }
+        return "";
+    }
+
+    /**
      * 尝试解析 ICP 信息
      *
      * @param html
@@ -113,8 +182,8 @@ public class Parse {
      * 获取当前页面所有链接集合
      *
      * @param document
-     * @param domain  顶级域名
-     * @param url    当前请求URL
+     * @param domain   顶级域名
+     * @param url      当前请求URL
      * @return
      */
     public static Set<String> parseLinks(Document document, String domain, String url) {
