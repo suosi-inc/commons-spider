@@ -112,7 +112,7 @@ public class Parse {
                 "date",
                 "at\\W",
         };
-        String timeReg = "(20\\d{2})\\D.?([0-1]\\d)\\D?([0-3]\\d)((\\D{0,2})?(\\d{1,2}\\D\\d{1,2})(\\D\\d{1,2})?)?";
+        String timeReg = "(20\\d{2})\\D.?([0-1]\\d)\\D?([0-3]\\d)((\\D{0,2})?(\\d{2}\\D\\d{1,2})(\\D\\d{1,2})?)?";
         for (String pattern : str) {
             pattern = "("+pattern+".{0,30}" + timeReg+")|("+timeReg+".{0,30}"+pattern+")";
             Pattern r = Pattern.compile(pattern);
@@ -139,6 +139,9 @@ public class Parse {
                     res=time.get(0);
                 }else {
                     for (String item : time) {
+                        item = Pattern.compile("[年|月]").matcher(item).replaceAll("-");
+                        item = Pattern.compile("日").matcher(item).replaceAll("");
+                        item = Pattern.compile("T\\s?").matcher(item).replaceAll(" ");
                         long ts = Static.strtotime(item);
                         if (ts != 0 && ts%100 !=0) {
                             res = item;
@@ -146,14 +149,17 @@ public class Parse {
                         }
                     }
                 }
-                if (res.equals("")){
+                if (res.equals("") && !time.isEmpty()){
                     res = time.get(0);
                 }
 
         }
-        res = Pattern.compile("[\u4e00-\u9fa5]").matcher(res).replaceAll("-");
+        res = Pattern.compile("[年|月]").matcher(res).replaceAll("-");
+        res = Pattern.compile("日").matcher(res).replaceAll("");
         res = Pattern.compile("T\\s?").matcher(res).replaceAll(" ");
+//        System.out.println(res);
         long timeStamp = Static.strtotime(res);
+
         if (timeStamp > 0) {
             return Static.date("yyyy-MM-dd HH:mm:ss", timeStamp);
         }
