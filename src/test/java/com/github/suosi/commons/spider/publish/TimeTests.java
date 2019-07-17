@@ -32,7 +32,7 @@ public class TimeTests {
             list.add(map);
             System.out.println(map);
         }
-        mapper.writeValue(new File("fix.json"), list);
+        mapper.writeValue(new File("/Users/yangtao/Desktop/fix3.json"), list);
 //        System.out.println(list);
 
     }
@@ -40,7 +40,7 @@ public class TimeTests {
     @Test
     public void  test()
     {
-        String url = "http://www.mnw.cn/news/digi/2070601.html";
+        String url = "http://www.cfi.net.cn/p20180702001371.html";
         String time = this.getHtml(url);
         System.out.println(time);
     }

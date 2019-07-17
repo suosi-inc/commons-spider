@@ -101,8 +101,11 @@ public class Parse {
         String res = "";
         String match = "";
         String[] str = {
-                "(发布|创建|出版|来源|发表)(时间|于)?(.*\\s){0,2}",
-                "(publish|create)(.{0,10})(time|at|date)?",
+                "(publish|create)(.{0,10})(time|at|date)",
+                "(发布|创建|出版|来源|发表|编辑)(时间|于|日期)",
+                "(publish|create)(.{0,10})(time|at|date)(.*\\s){0,2}",
+                "(发布|创建|出版|来源|发表|编辑)(时间|于|日期)(.*\\s){0,2}",
+                "(发布|创建|出版|来源|发表|编辑)(.*\\s){0,2}",
                 "时间",
                 "time",
                 "日期",
@@ -111,7 +114,7 @@ public class Parse {
         };
         String timeReg = "(20\\d{2})\\D.?([0-1]\\d)\\D?([0-3]\\d)((\\D{0,2})?(\\d{1,2}\\D\\d{1,2})(\\D\\d{1,2})?)?";
         for (String pattern : str) {
-            pattern += ".{0,30}" + timeReg;
+            pattern = "("+pattern+".{0,30}" + timeReg+")|("+timeReg+".{0,30}"+pattern+")";
             Pattern r = Pattern.compile(pattern);
             Matcher matcher = r.matcher(html);
             if (matcher.find()) {
@@ -137,7 +140,7 @@ public class Parse {
                 }else {
                     for (String item : time) {
                         long ts = Static.strtotime(item);
-                        if (ts != 0 && ts%10 !=0) {
+                        if (ts != 0 && ts%100 !=0) {
                             res = item;
                             break;
                         }
@@ -148,8 +151,8 @@ public class Parse {
                 }
 
         }
-
         res = Pattern.compile("[\u4e00-\u9fa5]").matcher(res).replaceAll("-");
+        res = Pattern.compile("T\\s?").matcher(res).replaceAll(" ");
         long timeStamp = Static.strtotime(res);
         if (timeStamp > 0) {
             return Static.date("yyyy-MM-dd HH:mm:ss", timeStamp);
