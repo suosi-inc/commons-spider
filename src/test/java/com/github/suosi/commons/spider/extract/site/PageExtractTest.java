@@ -14,7 +14,7 @@ public class PageExtractTest {
      */
     @Test
     public void url() {
-        String url = "http://www.toutiao.com";
+        String url = "http://guba.sina.com.cn/?s=bar&name=sz002064";
 
         ArrayList<String> articles = new ArrayList<>();
         ArrayList<String> lists = new ArrayList<>();

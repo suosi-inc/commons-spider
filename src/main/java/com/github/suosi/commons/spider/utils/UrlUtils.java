@@ -101,7 +101,7 @@ public class UrlUtils {
      * URL关键词过滤
      */
     private static Pattern ARTICLE_KEYWORD_FILTER_PATTERN = Pattern.compile(
-            "^(video|movie|photo|pic|member|channel|sublist|list|category|user|tag|topic|upload|footer|header|login|register|logout)",
+            "^(video(s?)|movie(s?)|photo(s?)|pic(s?)|member(s?)|channel(s?)|sublist(s?)|list(s?)|category(s?)|user(s?)|tag(s?)|topic(s?)|upload(s?)|footer(s?)|header(s?)|login(s?)|register(s?)|logout(s?)|u)$",
             Pattern.CASE_INSENSITIVE
     );
 
@@ -222,8 +222,14 @@ public class UrlUtils {
                 if (path.length() >= 10 && !StringUtils.contains(path, ".")) {
                     return true;
                 }
+            // 英文网站URL
             } else if (CONTENT_NONSTATIC_ENGLISH_PATTERN.matcher(path).find()) {
                 return true;
+            // 空 path，如：/?s=thread&tid=546595&bid=1
+            } else if (StringUtils.isBlank(path) && StringUtils.isNotBlank(query)) {
+                if (CONTENT_QUERY_PATTERN.matcher(query).find()) {
+                    return true;
+                }
             }
         }
 
