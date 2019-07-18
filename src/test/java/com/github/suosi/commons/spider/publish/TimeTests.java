@@ -20,7 +20,7 @@ public class TimeTests {
     @Test
     public void time() {
         String timeReg = "(20\\d{2})\\D.?([0-1]?\\d)\\D?([0-3]?\\d)((\\D{0,2})?(\\d{1,2}\\D\\d{1,2})(\\D\\d{1,2})?)?";
-        String html = "title=\\\"2019-07-01 11:41\\\"";
+        String html = "2018年7月24日下午4:00-5:00";
 
         System.out.println(Parse.parsePublishTime(html));
         Pattern r = Pattern.compile(timeReg);
