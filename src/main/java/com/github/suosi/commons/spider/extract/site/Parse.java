@@ -138,6 +138,9 @@ public class Parse {
                 res = time.get(0);
             } else {
                 for (String item : time) {
+                    item = Pattern.compile("[年月]").matcher(item).replaceAll("-");
+                    item = Pattern.compile("[日秒]").matcher(item).replaceAll("");
+                    item = Pattern.compile("([点时分])").matcher(item).replaceAll(":");
                     item = Pattern.compile("T\\s?").matcher(item).replaceAll(" ");
                     if (!Pattern.compile(ymd).matcher(res).find() && Pattern.compile(md).matcher(res).find()){
                         res = new SimpleDateFormat("yyyy").format(new Date()) + "-" + res;
@@ -154,6 +157,9 @@ public class Parse {
             }
 
         }
+        res = Pattern.compile("[年月]").matcher(res).replaceAll("-");
+        res = Pattern.compile("[日秒]").matcher(res).replaceAll("");
+        res = Pattern.compile("([点时分])").matcher(res).replaceAll(":");
         res = Pattern.compile("T\\s?").matcher(res).replaceAll(" ");
         if (!Pattern.compile(ymd).matcher(res).find() && Pattern.compile(md).matcher(res).find()){
             res = new SimpleDateFormat("yyyy").format(new Date()) + "-" + res;
