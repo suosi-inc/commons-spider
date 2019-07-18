@@ -9,7 +9,7 @@ import org.junit.Test;
 public class TimeTests {
     @Test
     public void test() {
-        String url = "http://ggzyjyzx.daqing.gov.cn/jyxxGycqjyCqzrxxgg/77769.htm?pa=2936";
+        String url = "http://ggzyjyzx.daqing.gov.cn/jyxxGycqjyFwzlxxgg/73305.htm?pa=1023";
         String time = getHtml(url);
         System.out.println(time);
     }
