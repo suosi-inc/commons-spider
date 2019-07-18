@@ -2,6 +2,7 @@ package com.github.suosi.commons.spider.publish;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.suosi.commons.helper.Static;
 import com.github.suosi.commons.spider.extract.site.Parse;
 import com.github.suosi.commons.spider.utils.CharsetUtils;
 import com.github.suosi.commons.spider.utils.OkHttpUtils;
@@ -12,6 +13,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TimeTests {
 
@@ -28,7 +31,7 @@ public class TimeTests {
             map.put("id",objNode.get("id"));
             map.put("url",url);
             map.put("published",objNode.get("published"));
-            map.put("time", this.getHtml(url.replaceAll("\"","")));
+            map.put("time", getHtml(url.replaceAll("\"","")));
             list.add(map);
             System.out.println(map);
         }
@@ -40,12 +43,29 @@ public class TimeTests {
     @Test
     public void  test()
     {
-        String url = "http://www.cfi.net.cn/p20180702001371.html";
-        String time = this.getHtml(url);
-        System.out.println(time);
+        System.out.println(Static.strtotime("2015年04月6日 16:03:3"));
+//        String year = new SimpleDateFormat("yyyy").format(new Date());
+//        System.out.println(year);
+//        String url = "https://weibo.com/1751960002/HBz0ns9eM?type=comment";
+//        String time = getHtml(url);
+//        System.out.println(time);
     }
 
-    private String getHtml(String url) {
+    @Test
+    public void time()
+    {
+        String timeReg = "(20\\d{2})\\D.?([0-1]?\\d)\\D?([0-3]?\\d)((\\D{0,2})?(\\d{1,2}\\D\\d{1,2})(\\D\\d{1,2})?)?";
+        String html = "title=\\\"2019-07-01 11:41\\\"";
+
+        System.out.println( Parse.parsePublishTime(html));
+        Pattern r = Pattern.compile(timeReg);
+        Matcher matcher = r.matcher(html);
+        if (matcher.find()) {
+            System.out.println(matcher.group());
+        }
+    }
+
+    static String getHtml(String url) {
         try (Response response = OkHttpUtils.client().newCall(OkHttpUtils.request(url)).execute()) {
             if (response.isSuccessful() && response.body() != null) {
                 byte[] htmlBytes = response.body().bytes();

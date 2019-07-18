@@ -6,7 +6,7 @@
 
     <groupId>com.github.suosi.commons</groupId>
     <artifactId>commons-spider</artifactId>
-    <version>0.27.0-SNAPSHOT</version>
+    <version>0.28.0-SNAPSHOT</version>
 
     <name>commons-spider</name>
     <url>http://www.suosi.com.cn</url>
@@ -19,7 +19,7 @@
         <jsoup.version>1.11.3</jsoup.version>
         <junit.version>4.12</junit.version>
         <juniversalchardet.version>1.0.3</juniversalchardet.version>
-        <commons-helper.version>0.9</commons-helper.version>
+        <commons-helper.version>0.10</commons-helper.version>
     </properties>
 
     <dependencies>
@@ -53,6 +53,21 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.9.9</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.11</version>
+        </dependency>
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>elasticsearch-rest-high-level-client</artifactId>
+            <version>6.2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <version>5.6.6</version>
         </dependency>
     </dependencies>
 
