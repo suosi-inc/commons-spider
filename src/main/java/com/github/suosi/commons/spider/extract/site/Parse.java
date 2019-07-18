@@ -12,10 +12,8 @@ import org.jsoup.select.Elements;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -140,9 +138,10 @@ public class Parse {
                 res = time.get(0);
             } else {
                 for (String item : time) {
-                    item = Pattern.compile("[年|月]").matcher(item).replaceAll("-");
-                    item = Pattern.compile("日").matcher(item).replaceAll("");
                     item = Pattern.compile("T\\s?").matcher(item).replaceAll(" ");
+                    if (!Pattern.compile(ymd).matcher(res).find() && Pattern.compile(md).matcher(res).find()){
+                        res = new SimpleDateFormat("yyyy").format(new Date()) + "-" + res;
+                    }
                     long ts = Static.strtotime(item);
                     if (ts != 0 && ts % 100 != 0) {
                         res = item;
@@ -155,12 +154,9 @@ public class Parse {
             }
 
         }
-        res = Pattern.compile("[年|月]").matcher(res).replaceAll("-");
-        res = Pattern.compile("日").matcher(res).replaceAll("");
         res = Pattern.compile("T\\s?").matcher(res).replaceAll(" ");
-
         if (!Pattern.compile(ymd).matcher(res).find() && Pattern.compile(md).matcher(res).find()){
-            res = "2019-"+res;
+            res = new SimpleDateFormat("yyyy").format(new Date()) + "-" + res;
         }
         long timeStamp = Static.strtotime(res);
 
