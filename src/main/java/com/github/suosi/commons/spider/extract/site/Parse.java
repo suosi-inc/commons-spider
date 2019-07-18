@@ -100,21 +100,22 @@ public class Parse {
     public static String parsePublishTime(String html) {
         String res = "";
         String match = "";
+        String chinese = "(发布|创建|出版|来源|发表|编辑)";
+        String english = "(publish|create)";
+        String ymd = "((20\\d{2})(-|\\|/|年)([0-1]?\\d)(-|\\|/|月)?([0-3]?\\d)((日|\\s{1,2})?(\\d{2}([:点时])\\d{1,2})((:|分|\\s{1,2})?\\d{1,2})?)?)";
+        String md = "(([0-1]?\\d)(-|\\|/|月)([0-3]?\\d)(日|\\s{1,2})\\d{2}([:点时])(\\d{1,2})(:|分|\\s{1,2})?(\\d{1,2})?)";
+        String timeReg = ymd + "|" + md;
+
         String[] str = {
-                "(publish|create)(.{0,10})(time|at|date)",
-                "(发布|创建|出版|来源|发表|编辑)(时间|于|日期)",
-                "(publish|create)(.{0,10})(time|at|date)(.*\\s){0,2}",
-                "(发布|创建|出版|来源|发表|编辑)(时间|于|日期)(.*\\s){0,2}",
-                "(发布|创建|出版|来源|发表|编辑)(.*\\s){0,2}",
-                "时间",
-                "time",
-                "日期",
-                "date",
-                "at\\W",
+                english + "(.{0,10})(time|at|date)",
+                chinese + "(时间|于|日期)",
+                english + "(.{0,10})(time|at|date)(.*\\s){0,2}",
+                chinese + "(时间|于|日期)(.*\\s){0,2}",
+                chinese + "(.*\\s){0,2}",
+                "(时间|time|日期|date|at\\W)",
         };
-        String timeReg = "(20\\d{2})\\D.?([0-1]\\d)\\D?([0-3]\\d)((\\D{0,2})?(\\d{2}\\D\\d{1,2})(\\D\\d{1,2})?)?";
         for (String pattern : str) {
-            pattern = "("+pattern+".{0,30}" + timeReg+")|("+timeReg+".{0,30}"+pattern+")";
+            pattern = "(" + pattern + ".{0,10}" + timeReg + ")|(" + timeReg + ".{0,30}" + pattern + ")";
             Pattern r = Pattern.compile(pattern);
             Matcher matcher = r.matcher(html);
             if (matcher.find()) {
@@ -129,35 +130,38 @@ public class Parse {
                 res = matcherTime.group();
             }
         } else {
-                Matcher m = Pattern.compile(timeReg).matcher(html);
-                List<String> time = new ArrayList<>();
-                while (m.find()) {
-                    String item = m.group(0);
-                    time.add(item);
-                }
-                if (time.size() == 1){
-                    res=time.get(0);
-                }else {
-                    for (String item : time) {
-                        item = Pattern.compile("[年|月]").matcher(item).replaceAll("-");
-                        item = Pattern.compile("日").matcher(item).replaceAll("");
-                        item = Pattern.compile("T\\s?").matcher(item).replaceAll(" ");
-                        long ts = Static.strtotime(item);
-                        if (ts != 0 && ts%100 !=0) {
-                            res = item;
-                            break;
-                        }
+            Matcher m = Pattern.compile(timeReg).matcher(html);
+            List<String> time = new ArrayList<>();
+            while (m.find()) {
+                String item = m.group(0);
+                time.add(item);
+            }
+            if (time.size() == 1) {
+                res = time.get(0);
+            } else {
+                for (String item : time) {
+                    item = Pattern.compile("[年|月]").matcher(item).replaceAll("-");
+                    item = Pattern.compile("日").matcher(item).replaceAll("");
+                    item = Pattern.compile("T\\s?").matcher(item).replaceAll(" ");
+                    long ts = Static.strtotime(item);
+                    if (ts != 0 && ts % 100 != 0) {
+                        res = item;
+                        break;
                     }
                 }
-                if (res.equals("") && !time.isEmpty()){
-                    res = time.get(0);
-                }
+            }
+            if (res.equals("") && !time.isEmpty()) {
+                res = time.get(0);
+            }
 
         }
         res = Pattern.compile("[年|月]").matcher(res).replaceAll("-");
         res = Pattern.compile("日").matcher(res).replaceAll("");
         res = Pattern.compile("T\\s?").matcher(res).replaceAll(" ");
-//        System.out.println(res);
+
+        if (!Pattern.compile(ymd).matcher(res).find() && Pattern.compile(md).matcher(res).find()){
+            res = "2019-"+res;
+        }
         long timeStamp = Static.strtotime(res);
 
         if (timeStamp > 0) {
