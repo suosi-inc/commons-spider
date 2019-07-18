@@ -6,9 +6,6 @@ import com.github.suosi.commons.spider.utils.OkHttpUtils;
 import okhttp3.Response;
 import org.junit.Test;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class TimeTests {
     @Test
     public void test() {
@@ -19,15 +16,9 @@ public class TimeTests {
 
     @Test
     public void time() {
-        String timeReg = "(20\\d{2})\\D.?([0-1]?\\d)\\D?([0-3]?\\d)((\\D{0,2})?(\\d{1,2}\\D\\d{1,2})(\\D\\d{1,2})?)?";
-        String html = "2018年7月24日下午4:00-5:00";
+        String html = "2019年07月02";
 
         System.out.println(Parse.parsePublishTime(html));
-        Pattern r = Pattern.compile(timeReg);
-        Matcher matcher = r.matcher(html);
-        if (matcher.find()) {
-            System.out.println(matcher.group());
-        }
     }
 
     private static String getHtml(String url) {
