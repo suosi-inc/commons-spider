@@ -142,7 +142,7 @@ public class Parse {
                     if (!Pattern.compile(ymd).matcher(res).find() && Pattern.compile(md).matcher(res).find()){
                         res = new SimpleDateFormat("yyyy").format(new Date()) + "-" + res;
                     }
-                    long ts = Static.strtotime(item);
+                    long ts = Static.strtotime(item.trim());
                     if (ts != 0 && ts % 100 != 0) {
                         res = item;
                         break;
@@ -158,7 +158,7 @@ public class Parse {
         if (!Pattern.compile(ymd).matcher(res).find() && Pattern.compile(md).matcher(res).find()){
             res = new SimpleDateFormat("yyyy").format(new Date()) + "-" + res;
         }
-        long timeStamp = Static.strtotime(res);
+        long timeStamp = Static.strtotime(res.trim());
 
         if (timeStamp > 0) {
             return Static.date("yyyy-MM-dd HH:mm:ss", timeStamp);
