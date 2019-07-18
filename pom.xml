@@ -6,7 +6,7 @@
 
     <groupId>com.github.suosi.commons</groupId>
     <artifactId>commons-spider</artifactId>
-    <version>0.29.0-SNAPSHOT</version>
+    <version>0.30.0-SNAPSHOT</version>
 
     <name>commons-spider</name>
     <url>http://www.suosi.com.cn</url>
@@ -42,7 +42,7 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
-            <scope>test</scope>
+            <scope>test1</scope>
         </dependency>
         <dependency>
             <groupId>com.github.suosi-inc</groupId>

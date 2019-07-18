@@ -102,7 +102,7 @@ public class Parse {
         String english = "(publish|create)";
         String ymd = "((20\\d{2})(-|\\|/|年)([0-1]?\\d)(-|\\|/|月)?([0-3]?\\d)([日T])?\\s{0,2}((\\d{1,2}([:点时])\\d{1,2})((:|分|\\s{1,2})?\\d{1,2})?)?)";
         String md = "(([0-1]?\\d)(-|\\|/|月)([0-3]?\\d)([日T])?\\s{0,2}\\d{1,2}([:点时])(\\d{1,2})(:|分|\\s{1,2})?(\\d{1,2})?)";
-        String timeReg = ymd + "|" + md;
+        String timeReg = "(" + ymd + "|" + md +")";
 
         String[] str = {
                 english + "(.{0,10})(time|at|date)",

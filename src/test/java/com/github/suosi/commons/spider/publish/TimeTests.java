@@ -9,14 +9,15 @@ import org.junit.Test;
 public class TimeTests {
     @Test
     public void test() {
-        String url = "https://weibo.com/1751960002/HBz0ns9eM?type=comment";
+        String url = "http://ggzyjyzx.daqing.gov.cn/jyxxGycqjyCqzrxxgg/77769.htm?pa=2936";
         String time = getHtml(url);
         System.out.println(time);
     }
 
     @Test
     public void time() {
-        String html = "2019年07月02";
+        String html = "发布时间：\n" +
+                "\t\t\t\t\t2019年07月02 \n";
 
         System.out.println(Parse.parsePublishTime(html));
     }
