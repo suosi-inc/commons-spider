@@ -49,7 +49,7 @@ public class UrlUtilsTest {
      */
     @Test
     public void guessArticleUrl() {
-        String url = "http://www.jktzb.gov.cn/gangaotaihaiwai/2016/1226/73.html";
+        String url = "http://guba.sina.com.cn/?s=thread&tid=546595&bid=1";
 
         if (UrlUtils.guessArticleUrl(url, null)) {
             System.out.println("A -> " + url);
