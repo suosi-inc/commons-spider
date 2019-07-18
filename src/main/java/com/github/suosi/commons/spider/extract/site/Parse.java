@@ -163,7 +163,7 @@ public class Parse {
         if (timeStamp > 0) {
             return Static.date("yyyy-MM-dd HH:mm:ss", timeStamp);
         }
-        return "";
+        return null;
     }
 
     /**
