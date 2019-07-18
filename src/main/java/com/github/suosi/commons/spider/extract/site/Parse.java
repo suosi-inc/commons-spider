@@ -100,7 +100,7 @@ public class Parse {
         String match = "";
         String chinese = "(发布|创建|出版|来源|发表|编辑)";
         String english = "(publish|create)";
-        String ymd = "((20\\d{2})(-|\\|/|年)([0-1]?\\d)(-|\\|/|月)?([0-3]?\\d)([日T])?\\s{0,2}((\\d{1,2}([:点时])\\d{1,2})((:|分|\\s{1,2})?\\d{1,2})?)?)";
+        String ymd = "((20\\d{2})(-|\\|/|年|\\.)([0-1]?\\d)(-|\\|/|月|\\.)?([0-3]?\\d)([日T])?\\s{0,2}((\\d{1,2}([:点时])\\d{1,2})((:|分|\\s{1,2})?\\d{1,2})?)?)";
         String md = "(([0-1]?\\d)(-|\\|/|月)([0-3]?\\d)([日T])?(\\s{0,2}\\d{1,2}([:点时])(\\d{1,2})(:|分|\\s{1,2})?(\\d{1,2})?)?)";
         String timeReg = "(" + ymd + "|" + md +")";
 
@@ -138,7 +138,7 @@ public class Parse {
                 res = time.get(0);
             } else {
                 for (String item : time) {
-                    item = Pattern.compile("[年月]").matcher(item).replaceAll("-");
+                    item = Pattern.compile("[年月.]").matcher(item).replaceAll("-");
                     item = Pattern.compile("[日秒]").matcher(item).replaceAll("");
                     item = Pattern.compile("([点时分])").matcher(item).replaceAll(":");
                     item = Pattern.compile("T\\s?").matcher(item).replaceAll(" ");
@@ -157,13 +157,14 @@ public class Parse {
             }
 
         }
-        res = Pattern.compile("[年月]").matcher(res).replaceAll("-");
+        res = Pattern.compile("[年月.]").matcher(res).replaceAll("-");
         res = Pattern.compile("[日秒]").matcher(res).replaceAll("");
         res = Pattern.compile("([点时分])").matcher(res).replaceAll(":");
         res = Pattern.compile("T\\s?").matcher(res).replaceAll(" ");
         if (!Pattern.compile(ymd).matcher(res).find() && Pattern.compile(md).matcher(res).find()){
             res = new SimpleDateFormat("yyyy").format(new Date()) + "-" + res;
         }
+        System.out.println(res);
         long timeStamp = Static.strtotime(res.trim());
 
         if (timeStamp > 0) {
