@@ -106,8 +106,8 @@ public class Parse {
         String md = "(0[1-9]|1[0-2]|[1-9])[-/月.](0[1-9]|[1-2][0-9]|3[0-1]|[1-9])[日T]?\\s{0,2}(([0-1][0-9]|2[0-3]|[1-9])[:点时]([0-5][0-9]|[0-9])([:分]([0-5][0-9]|[0-9]))?)?";
         //第一优先级
         String[] first = {
+                "(pubdate|pubtime|dateupdate)",
                 english + "(.{0,10})(time|at|date)",
-                "(pubdate|pubtime)",
                 chinese + "(时间|于|日期)",
                 english + "(.{0,10})(time|at|date)",
                 chinese + "(时间|于|日期)",
