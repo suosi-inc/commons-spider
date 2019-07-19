@@ -113,7 +113,7 @@ public class Parse {
                 "(时间|time|日期|date|at\\W)",
         };
         for (String pattern : str) {
-            pattern = "(?i)((" + pattern + ".{0,50}" + timeReg + ")|(" + timeReg + ".{0,50}" + pattern + "))";
+            pattern = "(?i)((" + pattern + ".{0,50}" + timeReg + ")|(" + ymd + ".{0,50}" + pattern + "))";
             Pattern r = Pattern.compile(pattern);
             Matcher matcher = r.matcher(html);
             if (matcher.find()) {
