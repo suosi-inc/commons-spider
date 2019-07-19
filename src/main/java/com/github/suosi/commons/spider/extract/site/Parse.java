@@ -206,7 +206,7 @@ public class Parse {
 
                 // 过滤垃圾链接
                 if (!UrlUtils.filterUrl(link)) {
-                    continue;
+                   continue;
                 }
 
                 // 转换补全相对、绝对路径
@@ -214,6 +214,13 @@ public class Parse {
                         && !StringUtils.startsWithIgnoreCase(link, HTTPS_PROTOCOL)) {
                     try {
                         URL absoluteUrl = new URL(url);
+
+                        // path 为空的情况，这种一般是错误，直接移除
+                        if (StringUtils.isBlank(absoluteUrl.getPath())) {
+                            link = StringUtils.removeStart(link, "./");
+                            link = StringUtils.removeStart(link, "../");
+                        }
+
                         URL parseUrl = new URL(absoluteUrl, link);
                         link = parseUrl.toString();
                     } catch (MalformedURLException e) {

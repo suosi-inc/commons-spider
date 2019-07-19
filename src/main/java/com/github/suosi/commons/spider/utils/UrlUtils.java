@@ -101,7 +101,7 @@ public class UrlUtils {
      * URL关键词过滤
      */
     private static Pattern ARTICLE_KEYWORD_FILTER_PATTERN = Pattern.compile(
-            "^(video(s?)|movie(s?)|photo(s?)|pic(s?)|member(s?)|channel(s?)|sublist(s?)|list(s?)|category(s?)|user(s?)|tag(s?)|topic(s?)|upload(s?)|footer(s?)|header(s?)|login(s?)|register(s?)|logout(s?)|u)$",
+            "^(video(s?)|movie(s?)|photo(s?)|photoview(s?)|pic(s?)|member(s?)|channel(s?)|sublist(s?)|list(s?)|category(s?)|user(s?)|tag(s?)|topic(s?)|upload(s?)|footer(s?)|header(s?)|login(s?)|register(s?)|logout(s?)|u)$",
             Pattern.CASE_INSENSITIVE
     );
 
@@ -132,7 +132,8 @@ public class UrlUtils {
                 && !StringUtils.startsWithIgnoreCase(url, "tel:")
                 && !StringUtils.startsWithIgnoreCase(url, "mailto:")
                 && !StringUtils.startsWithIgnoreCase(url, "sms:")
-                && !StringUtils.startsWithIgnoreCase(url, "#");
+                && !StringUtils.startsWithIgnoreCase(url, "#")
+                && !StringUtils.containsAny(url, "{", "}", "[", "]", "@", "$", "<", ">");
     }
 
     /**

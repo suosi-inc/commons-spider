@@ -2,6 +2,8 @@ package com.github.suosi.commons.spider.utils;
 
 import org.junit.Test;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class UrlUtilsTest {
@@ -57,6 +59,22 @@ public class UrlUtilsTest {
             System.out.println("L -> " + url);
         } else {
             System.out.println("N -> " + url);
+        }
+    }
+
+    @Test
+    public void absoluteUrl() {
+        //绝对路径
+        String absolutePath = "http://www.aaa.com/a";
+        String relativePath = "../abc/";
+
+        URL absoluteUrl = null;
+        try {
+            absoluteUrl = new URL(absolutePath);
+            URL parseUrl = new URL(absoluteUrl, relativePath);
+            System.out.println(parseUrl.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
         }
     }
 
