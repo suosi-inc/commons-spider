@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 public class TimeTests {
     @Test
     public void test() {
-        String url = "http://www.cqszx.gov.cn/zfxx/show/?id=7945";
+        String url = "http://www.wanan.gov.cn/4697346/4719443.html";
         String time = getHtml(url);
         System.out.println(time);
     }

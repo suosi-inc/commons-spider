@@ -121,7 +121,6 @@ public class Parse {
                 break;
             }
         }
-        System.out.println(match);
         if (!match.equals("")) {
             Pattern patternTime = Pattern.compile(timeReg);
             Matcher matcherTime = patternTime.matcher(match);
