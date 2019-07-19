@@ -9,15 +9,18 @@ import org.junit.Test;
 public class TimeTests {
     @Test
     public void test() {
-        String url = "http://ggzyjyzx.daqing.gov.cn/jyxxGycqjyCqzrxxgg/77769.htm?pa=2936";
+        String url = "http://www.cnjiyin.com/qiye/20181114_124.html";
         String time = getHtml(url);
         System.out.println(time);
     }
 
     @Test
     public void time() {
-        String html = "发布时间：\n" +
-                "\t\t\t\t\t2019年07月02 \n";
+        String html = "<div class=\"entry-info\">\n" +
+                "\t\t\t\t<span>2018-11-14 12:23:38</span>\n" +
+                "\t\t\t\t<span class=\"dot\">•</span>\n" +
+                "\t\t\t  <span>来源：</span>\n" +
+                "\t\t\t</div>\n";
 
         System.out.println(Parse.parsePublishTime(html));
     }
