@@ -121,6 +121,7 @@ public class Parse {
                 break;
             }
         }
+        System.out.println(match);
         if (!match.equals("")) {
             Pattern patternTime = Pattern.compile(timeReg);
             Matcher matcherTime = patternTime.matcher(match);
@@ -150,7 +151,7 @@ public class Parse {
                     item = Pattern.compile("[年月.]").matcher(item).replaceAll("-");
                     item = Pattern.compile("[日秒]").matcher(item).replaceAll("");
                     item = Pattern.compile("([点时分])").matcher(item).replaceAll(":");
-                    item = Pattern.compile("T\\s?").matcher(item).replaceAll(" ");
+                    item = Pattern.compile("(T\\s?|\\s+)").matcher(item).replaceAll(" ");
                     //年份不齐的，补齐年份
                     if (!Pattern.compile(ymd).matcher(item).find() && Pattern.compile(md).matcher(item).find()){
                         item = new SimpleDateFormat("yyyy").format(new Date()) + "-" + item;
@@ -170,7 +171,7 @@ public class Parse {
         res = Pattern.compile("[年月.]").matcher(res).replaceAll("-");
         res = Pattern.compile("[日秒]").matcher(res).replaceAll("");
         res = Pattern.compile("([点时分])").matcher(res).replaceAll(":");
-        res = Pattern.compile("T\\s?").matcher(res).replaceAll(" ");
+        res = Pattern.compile("(T\\s?|\\s+)").matcher(res).replaceAll(" ");
         //年份不齐的，补齐年份
         if (!Pattern.compile(ymd).matcher(res).find() && Pattern.compile(md).matcher(res).find()){
             res = new SimpleDateFormat("yyyy").format(new Date()) + "-" + res;
