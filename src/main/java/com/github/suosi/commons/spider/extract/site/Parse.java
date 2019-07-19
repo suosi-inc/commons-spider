@@ -96,6 +96,7 @@ public class Parse {
      * @return
      */
     public static String parsePublishTime(String html) {
+        html =  Pattern.compile("\\s+").matcher(html).replaceAll(" ");
         String res = "";
         String match = "";
         String chinese = "(发布|创建|出版|来源|发表|编辑)";
@@ -105,15 +106,15 @@ public class Parse {
         String md = "(0[1-9]|1[0-2]|[1-9])[-/月.](0[1-9]|[1-2][0-9]|3[0-1]|[1-9])[日T]?\\s{0,2}(([0-1][0-9]|2[0-3]|[1-9])[:点时]([0-5][0-9]|[0-9])([:分]([0-5][0-9]|[0-9]))?)?";
         String[] str = {
                 english + "(.{0,10})(time|at|date)",
-                "(pubdate|pubtime).{0,10}",
+                "(pubdate|pubtime)",
                 chinese + "(时间|于|日期)",
-                english + "(.{0,10})(time|at|date)(.*\\s){0,2}",
-                chinese + "(时间|于|日期)(.*\\s){0,2}",
-                chinese + "(.*\\s){0,2}",
+                english + "(.{0,10})(time|at|date)",
+                chinese + "(时间|于|日期)",
+                chinese,
                 "(时间|time|日期|date|at\\W)",
         };
         for (String pattern : str) {
-            pattern = "(?i)((" + pattern + ".{0,50}" + timeReg + ")|(" + ymd + ".{0,50}" + pattern + "))";
+            pattern = "(?i)((" + pattern + ".{0,50}" + ymd + ")|(" + ymd + ".{0,50}" + pattern + "))";
             Pattern r = Pattern.compile(pattern);
             Matcher matcher = r.matcher(html);
             if (matcher.find()) {
