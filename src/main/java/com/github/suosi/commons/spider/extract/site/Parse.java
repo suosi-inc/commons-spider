@@ -147,7 +147,7 @@ public class Parse {
                     time = newTime;
                 }
                 for (String item : time){
-                    item = Pattern.compile("[年月.]").matcher(item).replaceAll("-");
+                    item = Pattern.compile("[年月./]").matcher(item).replaceAll("-");
                     item = Pattern.compile("[日秒]").matcher(item).replaceAll("");
                     item = Pattern.compile("([点时分])").matcher(item).replaceAll(":");
                     item = Pattern.compile("(T\\s?|\\s+)").matcher(item).replaceAll(" ");
@@ -167,7 +167,7 @@ public class Parse {
             }
 
         }
-        res = Pattern.compile("[年月.]").matcher(res).replaceAll("-");
+        res = Pattern.compile("[年月./]").matcher(res).replaceAll("-");
         res = Pattern.compile("[日秒]").matcher(res).replaceAll("");
         res = Pattern.compile("([点时分])").matcher(res).replaceAll(":");
         res = Pattern.compile("(T\\s?|\\s+)").matcher(res).replaceAll(" ");
