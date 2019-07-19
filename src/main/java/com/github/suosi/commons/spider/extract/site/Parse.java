@@ -137,13 +137,23 @@ public class Parse {
             if (time.size() == 1) {
                 res = time.get(0);
             } else {
+                List<String> newTime = new ArrayList<>();
                 for (String item : time) {
+                    if (Pattern.compile(ymd).matcher(item).matches() ){
+                        newTime.add(item); //优先找年月日齐全的
+                    }
+                }
+                if (!newTime.isEmpty()){
+                    time = newTime;
+                }
+                for (String item : time){
                     item = Pattern.compile("[年月.]").matcher(item).replaceAll("-");
                     item = Pattern.compile("[日秒]").matcher(item).replaceAll("");
                     item = Pattern.compile("([点时分])").matcher(item).replaceAll(":");
                     item = Pattern.compile("T\\s?").matcher(item).replaceAll(" ");
-                    if (!Pattern.compile(ymd).matcher(res).find() && Pattern.compile(md).matcher(res).find()){
-                        res = new SimpleDateFormat("yyyy").format(new Date()) + "-" + res;
+                    //年份不齐的，补齐年份
+                    if (!Pattern.compile(ymd).matcher(item).find() && Pattern.compile(md).matcher(item).find()){
+                        item = new SimpleDateFormat("yyyy").format(new Date()) + "-" + item;
                     }
                     long ts = Static.strtotime(item.trim());
                     if (ts != 0 && ts % 100 != 0) {
@@ -161,6 +171,7 @@ public class Parse {
         res = Pattern.compile("[日秒]").matcher(res).replaceAll("");
         res = Pattern.compile("([点时分])").matcher(res).replaceAll(":");
         res = Pattern.compile("T\\s?").matcher(res).replaceAll(" ");
+        //年份不齐的，补齐年份
         if (!Pattern.compile(ymd).matcher(res).find() && Pattern.compile(md).matcher(res).find()){
             res = new SimpleDateFormat("yyyy").format(new Date()) + "-" + res;
         }

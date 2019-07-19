@@ -6,18 +6,24 @@ import com.github.suosi.commons.spider.utils.OkHttpUtils;
 import okhttp3.Response;
 import org.junit.Test;
 
+import java.util.regex.Pattern;
+
 public class TimeTests {
     @Test
     public void test() {
-        String url = "http://ggzyjyzx.daqing.gov.cn/jyxxGycqjyFwzlxxgg/73305.htm?pa=1023";
+        String url = "http://www.cqszx.gov.cn/zfxx/show/?id=7945";
         String time = getHtml(url);
         System.out.println(time);
     }
 
     @Test
     public void time() {
-        String html = "发布时间：\n" +
-                "\t\t\t\t\t2019年07月02 \n";
+        String html = "2019年6月24日";
+
+        String ymd ="20\\d{2}[-/年.](0[1-9]|1[0-2]|[1-9])[-/月.](0[1-9]|[1-2][0-9]|3[0-1]|[1-9])[日T]?\\s{0,2}(([0-1][0-9]|2[0-3]|[1-9])[:点时]([0-5][0-9]|[0-9])([:分]([0-5][0-9]|[0-9]))?)?";
+
+        Pattern pattern = Pattern.compile(ymd);
+        System.out.println(pattern.matcher(html).find());
 
         System.out.println(Parse.parsePublishTime(html));
     }
