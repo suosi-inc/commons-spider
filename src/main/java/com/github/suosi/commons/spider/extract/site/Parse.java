@@ -117,8 +117,14 @@ public class Parse {
                 chinese,
                 "(时间|time|日期|date|at\\W)",
         };
-        //第一优先级宽松到可以没有年份
-        match = matches(first, html, timeReg);
+        //第一优先级先必须有年份匹配
+        match = matches(first, html, ymd);
+
+        //第一优先级宽到可以没有年份
+        if (match.equals("")) {
+            match = matches(first, html, timeReg);
+        }
+
         //第二优先级必须要有年份
         if (match.equals("")) {
             match = matches(second, html, ymd);
