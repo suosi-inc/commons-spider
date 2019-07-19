@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  * @author niuchaoqun
  */
 public class CharsetUtils {
-    private static final int CHUNK_SIZE = 2000;
+    private static final int CHUNK_SIZE = 16000;
 
     private static final Pattern META_PATTERN = Pattern.compile(
             "<meta\\s+([^>]*http-equiv=(\"|')?content-type(\"|')?[^>]*)>",
