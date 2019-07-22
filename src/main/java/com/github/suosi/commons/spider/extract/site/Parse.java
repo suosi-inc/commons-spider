@@ -171,7 +171,7 @@ public class Parse {
         }
         res = filter(res, ymd, md);
         long timeStamp = Static.strtotime(res);
-        if (timeStamp > 0) {
+        if (timeStamp > 0 && timeStamp*1000<=System.currentTimeMillis()) {
             return Static.date("yyyy-MM-dd HH:mm:ss", timeStamp);
         }
         return null;
