@@ -1,6 +1,7 @@
 package com.github.suosi.commons.spider.extract.site;
 
 import com.github.suosi.commons.helper.Static;
+import com.github.suosi.commons.spider.extract.content.webcollector.contentextractor.ContentExtractor;
 import com.github.suosi.commons.spider.utils.DomainUtils;
 import com.github.suosi.commons.spider.utils.UrlUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -87,6 +88,21 @@ public class Parse {
         cleanTitle = StringUtils.removeEnd(cleanTitle, "】");
 
         return cleanTitle;
+    }
+
+    /**
+     * 获取文章标题
+     *
+     * @param html
+     * @return
+     */
+    public static String parseTitle(String html)
+    {
+        try {
+            return ContentExtractor.getNewsByHtml(html).getTitle();
+        } catch (Exception e) {
+            return  null;
+        }
     }
 
     /**

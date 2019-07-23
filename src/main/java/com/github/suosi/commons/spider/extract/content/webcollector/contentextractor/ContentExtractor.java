@@ -1,4 +1,21 @@
-package com.github.suosi.commons.spider.extract.content.webcollector;
+/*
+ * Copyright (C) 2015 hu
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+package com.github.suosi.commons.spider.extract.content.webcollector.contentextractor;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -20,10 +37,11 @@ import java.util.regex.Pattern;
  *
  * @author hu
  */
-public class ContentExtract {
+public class ContentExtractor {
+
     protected Document doc;
 
-    ContentExtract(Document doc) {
+    ContentExtractor(Document doc) {
         this.doc = doc;
     }
 
@@ -140,37 +158,37 @@ public class ContentExtract {
             }
         }
         if (content == null) {
-            throw new Exception("extraction failed");
+            content = doc;
         }
         return content;
     }
 
-    public Article getNews() throws Exception {
-        Article article = new Article();
+    public News getNews() throws Exception {
+        News news = new News();
         Element contentElement;
         try {
             contentElement = getContentElement();
-            article.setContentElement(contentElement);
+            news.setContentElement(contentElement);
         } catch (Exception ex) {
             throw new Exception(ex);
         }
 
         if (doc.baseUri() != null) {
-            article.setUrl(doc.baseUri());
+            news.setUrl(doc.baseUri());
         }
 
         try {
-            article.setTime(getTime(contentElement));
-        } catch (Exception e) {
-            e.printStackTrace();
+            news.setTime(getTime(contentElement));
+        } catch (Exception ex) {
+            news.setTime(null);
         }
 
         try {
-            article.setTitle(getTitle(contentElement));
-        } catch (Exception e) {
-            e.printStackTrace();
+            news.setTitle(getTitle(contentElement));
+        } catch (Exception ex) {
+            news.setTitle(doc.title().trim());
         }
-        return article;
+        return news;
     }
 
     protected String getTime(Element contentElement) throws Exception {
@@ -283,22 +301,19 @@ public class ContentExtract {
                 }
             });
             int index = contentIndex.get();
-            if (index > 0) {
-                double maxScore = 0;
-                int maxIndex = -1;
-                for (int i = 0; i < index; i++) {
-                    double score = (i + 1) * titleSim.get(i);
-                    if (score > maxScore) {
-                        maxScore = score;
-                        maxIndex = i;
-                    }
-                }
-                if (maxIndex != -1) {
-                    return titleList.get(maxIndex).text();
+            double maxScore = 0;
+            int maxIndex = -1;
+            for (int i = 0, size = titleList.size(); i <= index && i < size; i++) {
+                double score = (i + 1) * titleSim.get(i);
+                if (score > maxScore) {
+                    maxScore = score;
+                    maxIndex = i;
                 }
             }
+            if (maxIndex != -1) {
+                return titleList.get(maxIndex).text();
+            }
         }
-
         Elements titles = doc.body().select("*[id^=title],*[id$=title],*[class^=title],*[class$=title]");
         if (titles.size() > 0) {
             String title = titles.first().text();
@@ -309,7 +324,7 @@ public class ContentExtract {
         try {
             return getTitleByEditDistance(contentElement);
         } catch (Exception ex) {
-            throw new Exception("title not found");
+            return metaTitle;
         }
 
     }
@@ -322,7 +337,6 @@ public class ContentExtract {
         final StringBuilder sb = new StringBuilder();
         doc.body().traverse(new NodeVisitor() {
 
-            @Override
             public void head(Node node, int i) {
 
                 if (node instanceof TextNode) {
@@ -340,7 +354,6 @@ public class ContentExtract {
                 }
             }
 
-            @Override
             public void tail(Node node, int i) {
             }
         });
@@ -412,7 +425,7 @@ public class ContentExtract {
 
     /*输入Jsoup的Document，获取正文所在Element*/
     public static Element getContentElementByDoc(Document doc) throws Exception {
-        ContentExtract ce = new ContentExtract(doc);
+        ContentExtractor ce = new ContentExtractor(doc);
         return ce.getContentElement();
     }
 
@@ -430,7 +443,7 @@ public class ContentExtract {
 
     /*输入Jsoup的Document，获取正文文本*/
     public static String getContentByDoc(Document doc) throws Exception {
-        ContentExtract ce = new ContentExtract(doc);
+        ContentExtractor ce = new ContentExtractor(doc);
         return ce.getContentElement().text();
     }
 
@@ -447,20 +460,21 @@ public class ContentExtract {
     }
 
     /*输入Jsoup的Document，获取结构化新闻信息*/
-    public static Article getNewsByDoc(Document doc) throws Exception {
-        ContentExtract ce = new ContentExtract(doc);
+    public static News getNewsByDoc(Document doc) throws Exception {
+        ContentExtractor ce = new ContentExtractor(doc);
         return ce.getNews();
     }
 
     /*输入HTML，获取结构化新闻信息*/
-    public static Article getNewsByHtml(String html) throws Exception {
+    public static News getNewsByHtml(String html) throws Exception {
         Document doc = Jsoup.parse(html);
         return getNewsByDoc(doc);
     }
 
     /*输入HTML和URL，获取结构化新闻信息*/
-    public static Article getNewsByHtml(String html, String url) throws Exception {
+    public static News getNewsByHtml(String html, String url) throws Exception {
         Document doc = Jsoup.parse(html, url);
         return getNewsByDoc(doc);
     }
+
 }
