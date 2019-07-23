@@ -141,10 +141,11 @@ public class Parse {
             match = matches(first, html, timeReg);
         }
 
-        //第二优先级必须要有年份
-        if (match.equals("")) {
-            match = matches(second, html, ymd);
-        }
+//        //第二优先级必须要有年份
+//        if (match.equals("")) {
+//            match = matches(second, html, ymd);
+//        }
+//        System.out.println(match);
         if (!match.equals("")) {
             Pattern patternTime = Pattern.compile(timeReg);
             Matcher matcherTime = patternTime.matcher(match);
@@ -341,7 +342,7 @@ public class Parse {
      */
     private static String filter(String str, String ymd, String md) {
         str = Pattern.compile("[年月./]").matcher(str).replaceAll("-");
-        str = Pattern.compile("[日秒]").matcher(str).replaceAll("");
+        str = Pattern.compile("[日秒]").matcher(str).replaceAll(" ");
         str = Pattern.compile("([点时分])").matcher(str).replaceAll(":");
         str = Pattern.compile("(T\\s?|\\s+)").matcher(str).replaceAll(" ");
         //年份不齐的，补齐年份
