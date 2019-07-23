@@ -96,7 +96,7 @@ public class Parse {
      * @param html
      * @return
      */
-    public static String parseTitle(String html)
+    public static String parseArticleTitle(String html)
     {
         try {
             return ContentExtractor.getNewsByHtml(html).getTitle();

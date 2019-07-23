@@ -22,7 +22,7 @@ public class ContentExtractTest {
                 String html = new String(bytes, charset);
                 News newsByHtml = ContentExtractor.getNewsByHtml(html);
                 System.out.println(newsByHtml.getTitle());
-                System.out.println( Parse.parseTitle(html));
+                System.out.println( Parse.parseArticleTitle(html));
             }
         } catch (IOException e) {
             e.printStackTrace();
