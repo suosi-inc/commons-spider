@@ -287,19 +287,7 @@ public class ContentExtractor {
                             return;
                         }
                         String tagName = tag.tagName();
-                        if (Pattern.matches("h1", tagName)) {
-                            String title = tag.text().trim();
-                            double sim = strSim(title, metaTitle);
-                            titleSim.add(sim);
-                            titleList.add(tag);
-                        }
-                        if (Pattern.matches("h2", tagName) && titleList.size()==0) {
-                            String title = tag.text().trim();
-                            double sim = strSim(title, metaTitle);
-                            titleSim.add(sim);
-                            titleList.add(tag);
-                        }
-                        if (Pattern.matches("h[3-6]", tagName) && titleList.size()==0) {
+                        if (Pattern.matches("h[1-6]", tagName)) {
                             String title = tag.text().trim();
                             double sim = strSim(title, metaTitle);
                             titleSim.add(sim);
@@ -315,8 +303,9 @@ public class ContentExtractor {
             int index = contentIndex.get();
             double maxScore = 0;
             int maxIndex = -1;
-            if (titleList.size() > 0) {
-                for (int i = 0, size = titleList.size(); i <= index && i < size; i++) {
+            int size = titleList.size();
+            if (size > 0) {
+                for (int i = 0; i <= index && i < size; i++) {
                     double score = (i + 1) * titleSim.get(i);
                     if (score > maxScore) {
                         maxScore = score;
@@ -325,9 +314,6 @@ public class ContentExtractor {
                 }
                 if (maxIndex != -1) {
                     return titleList.get(maxIndex).text();
-                }
-                if (Pattern.matches("h1",  titleList.get(0).tagName())){
-                    return titleList.get(0).text().trim();
                 }
             }
         }
