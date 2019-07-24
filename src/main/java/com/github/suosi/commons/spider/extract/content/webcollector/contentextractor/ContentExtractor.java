@@ -287,7 +287,19 @@ public class ContentExtractor {
                             return;
                         }
                         String tagName = tag.tagName();
-                        if (Pattern.matches("h[1-6]", tagName)) {
+                        if (Pattern.matches("h1", tagName)) {
+                            String title = tag.text().trim();
+                            double sim = strSim(title, metaTitle);
+                            titleSim.add(sim);
+                            titleList.add(tag);
+                        }
+                        if (Pattern.matches("h2", tagName) && titleList.size()==0) {
+                            String title = tag.text().trim();
+                            double sim = strSim(title, metaTitle);
+                            titleSim.add(sim);
+                            titleList.add(tag);
+                        }
+                        if (Pattern.matches("h[3-6]", tagName) && titleList.size()==0) {
                             String title = tag.text().trim();
                             double sim = strSim(title, metaTitle);
                             titleSim.add(sim);
@@ -303,15 +315,20 @@ public class ContentExtractor {
             int index = contentIndex.get();
             double maxScore = 0;
             int maxIndex = -1;
-            for (int i = 0, size = titleList.size(); i <= index && i < size; i++) {
-                double score = (i + 1) * titleSim.get(i);
-                if (score > maxScore) {
-                    maxScore = score;
-                    maxIndex = i;
+            if (titleList.size() > 0) {
+                for (int i = 0, size = titleList.size(); i <= index && i < size; i++) {
+                    double score = (i + 1) * titleSim.get(i);
+                    if (score > maxScore) {
+                        maxScore = score;
+                        maxIndex = i;
+                    }
                 }
-            }
-            if (maxIndex != -1) {
-                return titleList.get(maxIndex).text();
+                if (maxIndex != -1) {
+                    return titleList.get(maxIndex).text();
+                }
+                if (Pattern.matches("h1",  titleList.get(0).tagName())){
+                    return titleList.get(0).text().trim();
+                }
             }
         }
         Elements titles = doc.body().select("*[id^=title],*[id$=title],*[class^=title],*[class$=title]");
