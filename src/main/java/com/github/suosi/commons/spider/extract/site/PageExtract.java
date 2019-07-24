@@ -24,7 +24,7 @@ public class PageExtract {
      * @return
      */
     public static Page url(String url) {
-        if (UrlUtils.verifyUrl(url))  {
+        if (UrlUtils.verifyUrl(url)) {
             URL parseUrl = UrlUtils.parse(url);
             if (parseUrl != null) {
                 String host = parseUrl.getHost();
@@ -58,5 +58,28 @@ public class PageExtract {
         }
 
         return null;
+    }
+
+
+    public static Page html(String html, String url) {
+        Document document = Jsoup.parse(html);
+        String title = Parse.parseTitle(document);
+        String keywords = Parse.parseKeywords(document);
+        String description = Parse.parseDescription(document);
+        URL parseUrl = UrlUtils.parse(url);
+        Set<String> links = null;
+        if (parseUrl != null) {
+            String host = parseUrl.getHost();
+            links = Parse.parseLinks(document, host, url);
+        }
+
+        return Page.builder()
+                .charset("UTF-8")
+                .html(html)
+                .title(title)
+                .keywords(keywords)
+                .description(description)
+                .links(links)
+                .build();
     }
 }
