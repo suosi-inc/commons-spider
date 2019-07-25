@@ -334,19 +334,20 @@ public class ContentExtractor {
 
     protected String getTitleByEditDistance(Element contentElement) throws Exception {
         final String metaTitle = doc.title();
-
+        final double minSim = 0.1;
         final ArrayList<Double> max = new ArrayList<Double>();
         max.add(0.0);
         final StringBuilder sb = new StringBuilder();
         doc.body().traverse(new NodeVisitor() {
 
+            @Override
             public void head(Node node, int i) {
 
                 if (node instanceof TextNode) {
                     TextNode tn = (TextNode) node;
                     String text = tn.text().trim();
                     double sim = strSim(text, metaTitle);
-                    if (sim > 0) {
+                    if (sim > minSim) {
                         if (sim > max.get(0)) {
                             max.set(0, sim);
                             sb.setLength(0);
@@ -357,6 +358,7 @@ public class ContentExtractor {
                 }
             }
 
+            @Override
             public void tail(Node node, int i) {
             }
         });
