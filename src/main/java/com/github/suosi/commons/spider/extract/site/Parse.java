@@ -114,7 +114,7 @@ public class Parse {
     public static String parsePublishTime(String html) {
         html = Pattern.compile("\\s+").matcher(html).replaceAll(" ");
         String res = "";
-        String match = "";
+        String match;
         String chinese = "(发布|创建|出版|来源|发表|编辑)";
         String english = "(publish|create)";
         String timeReg = "(20\\d{2}[-/年.])?(0[1-9]|1[0-2]|[1-9])[-/月.](0[1-9]|[1-2][0-9]|3[0-1]|[1-9])[日T]?\\s{0,2}(([0-1][0-9]|2[0-3]|[1-9])[:点时]([0-5][0-9]|[0-9])([:分]([0-5][0-9]|[0-9]))?)?";
@@ -131,7 +131,7 @@ public class Parse {
         //第二优先级
         String[] second = {
                 chinese,
-                "(时间|time|日期|date|at\\W)",
+//                "(时间|time|日期|date|at\\W)",
         };
         //第一优先级先必须有年份匹配
         match = matches(first, html, ymd);
@@ -141,11 +141,10 @@ public class Parse {
             match = matches(first, html, timeReg);
         }
 
-//        //第二优先级必须要有年份
-//        if (match.equals("")) {
-//            match = matches(second, html, ymd);
-//        }
-//        System.out.println(match);
+        //第二优先级必须要有年份
+        if (match.equals("")) {
+            match = matches(second, html, ymd);
+        }
         if (!match.equals("")) {
             Pattern patternTime = Pattern.compile(timeReg);
             Matcher matcherTime = patternTime.matcher(match);
@@ -165,25 +164,33 @@ public class Parse {
                 List<String> newTime = new ArrayList<>();
                 for (String item : time) {
                     if (Pattern.compile(ymd).matcher(item).matches()) {
-                        newTime.add(item); //优先找年月日齐全的
+                        //优先找年月日齐全的
+                        newTime.add(item);
                     }
                 }
                 if (!newTime.isEmpty()) {
                     time = newTime;
                 }
-                for (String item : time) {
-                    item = filter(item, ymd, md);
+                Iterator<String> timeIterator = time.iterator();
+                while (timeIterator.hasNext()){
+                    String item = timeIterator.next();
                     long ts = Static.strtotime(item);
                     //取时间精度高的
+                    if (ts*1000>System.currentTimeMillis()){
+                        timeIterator.remove();
+                        continue;
+                    }
                     if (ts != 0 && ts % 100 != 0) {
                         res = item;
                         break;
                     }
                 }
+                if (res.equals("") && !time.isEmpty()) {
+                    res = time.get(0);
+                }
+
             }
-            if (res.equals("") && !time.isEmpty()) {
-                res = time.get(0);
-            }
+
 
         }
         res = filter(res, ymd, md);

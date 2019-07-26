@@ -300,25 +300,28 @@ public class ContentExtractor {
                 public void tail(Node node, int i) {
                 }
             });
-            int index = contentIndex.get();
-            double maxScore = 0;
-            int maxIndex = -1;
-            int size = titleList.size();
-            if (size > 0) {
-                for (int i = 0; i <= index && i < size; i++) {
-                    double score = (i + 1) * titleSim.get(i);
-                    if (score > maxScore) {
-                        maxScore = score;
-                        maxIndex = i;
-                    }
-                }
-                if (maxIndex != -1) {
-                    return titleList.get(maxIndex).text();
-                }
+            String rs = calTitle(contentIndex, titleList, titleSim);
+            if (rs != null) {
+                return rs;
             }
         }
         Elements titles = doc.body().select("*[id^=title],*[id$=title],*[class^=title],*[class$=title]");
         if (titles.size() > 0) {
+            for (Element title : titles) {
+                String titleText = title.text().trim();
+                String titleTag = title.tagName();
+                if (Pattern.matches("h[1-6]", titleTag)) {
+                    return titleText;
+                }
+                double sim = strSim(titleText, metaTitle);
+                titleSim.add(sim);
+                titleList.add(title);
+            }
+            String rs = calTitle(contentIndex, titleList, titleSim);
+            if (rs != null) {
+                return rs;
+            }
+            contentIndex.set(titleList.size());
             String title = titles.first().text();
             if (title.length() > 5 && title.length() < 40) {
                 return titles.first().text();
@@ -326,10 +329,29 @@ public class ContentExtractor {
         }
         try {
             return getTitleByEditDistance(contentElement);
-        } catch (Exception ex) {
+        } catch (Exception e) {
             return metaTitle;
         }
+    }
 
+    protected String calTitle(AtomicInteger contentIndex, ArrayList<Element> titleList, ArrayList<Double> titleSim) {
+        int index = contentIndex.get();
+        double maxScore = 0;
+        int maxIndex = -1;
+        int size = titleList.size();
+        if (size > 0) {
+            for (int i = 0; i <= index && i < size; i++) {
+                double score = (i + 1) * titleSim.get(i);
+                if (score > maxScore) {
+                    maxScore = score;
+                    maxIndex = i;
+                }
+            }
+            if (maxIndex != -1) {
+                return titleList.get(maxIndex).text();
+            }
+        }
+        return null;
     }
 
     protected String getTitleByEditDistance(Element contentElement) throws Exception {
