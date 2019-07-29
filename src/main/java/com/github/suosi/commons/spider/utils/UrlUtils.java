@@ -168,7 +168,7 @@ public class UrlUtils {
             String query = parseUrl.getQuery();
 
             // 限定域名
-            if (StringUtils.isNotBlank(strictDomain) && !StringUtils.endsWithIgnoreCase(host, strictDomain)) {
+            if (StringUtils.isNotBlank(strictDomain) && !StringUtils.endsWithIgnoreCase(host, "." + strictDomain)) {
                 return false;
             }
 
@@ -284,7 +284,7 @@ public class UrlUtils {
                     return false;
                 }
 
-                if (strictDomain != null && !StringUtils.endsWithIgnoreCase(host, strictDomain)) {
+                if (strictDomain != null && !StringUtils.endsWithIgnoreCase(host, "." + strictDomain)) {
                     return false;
                 }
                 return true;
