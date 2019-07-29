@@ -1,5 +1,7 @@
 package com.github.suosi.commons.spider.utils;
 
+import com.github.suosi.commons.spider.extract.site.Parse;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.net.MalformedURLException;
@@ -71,11 +73,36 @@ public class UrlUtilsTest {
         URL absoluteUrl = null;
         try {
             absoluteUrl = new URL(absolutePath);
+
             URL parseUrl = new URL(absoluteUrl, relativePath);
             System.out.println(parseUrl.toString());
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void parseUrl() {
+        // String url = "http://jyj.suqian.gov.cn/../sjyj/mbjyjygl/list_wz.shtml";
+        // String url = "http://www.jptour.cn/../../../../s_毛里求斯.html";
+        String url = "http://zggdjy.jyb.cn/./qkgk/";
+
+        try {
+            URL absoluteUrl = new URL(url);
+            String file = absoluteUrl.getFile();
+            file = StringUtils.removeStart(file, "/");
+            file = Parse.removeStartComplete(file, "./");
+            file = Parse.removeStartComplete(file, "../");
+            URL parseUrl =  new URL(absoluteUrl.getProtocol() + "://" + absoluteUrl.getHost() + "/");
+
+            URL cleanUrl = new URL(parseUrl, file);
+            String link = cleanUrl.toString();
+
+            System.out.println(link);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
     }
 
     /**

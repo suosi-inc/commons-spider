@@ -252,8 +252,8 @@ public class Parse {
 
                         // path 为空的情况，这种一般是错误，直接移除
                         if (StringUtils.isBlank(absoluteUrl.getPath())) {
-                            link = StringUtils.removeStart(link, "./");
-                            link = StringUtils.removeStart(link, "../");
+                            link = removeStartComplete(link, "./");
+                            link = removeStartComplete(link, "../");
                         }
 
                         URL parseUrl = new URL(absoluteUrl, link);
@@ -320,6 +320,28 @@ public class Parse {
         }
 
         return subDomains;
+    }
+
+    /**
+     * 循环删除起始字符串
+     *
+     * @param str
+     * @param remove
+     * @return
+     */
+    public static String removeStartComplete(final String str, final String remove) {
+        String originString = str;
+
+        do {
+            if (originString.startsWith(remove)) {
+                originString = StringUtils.removeStart(originString, remove);
+            } else {
+                break;
+            }
+
+        } while (true);
+
+        return originString;
     }
 
     /**

@@ -13,9 +13,9 @@ public class SiteExtractTest {
 
     @Test
     public void domain() {
-        Site domain = SiteExtract.domain("163.com");
+        Site domain = SiteExtract.domain("dlt.gov.cn");
         domain.setHtml("");
-        System.out.println(domain);
+        System.out.println(domain.getSubDomain());
     }
 
     /**
