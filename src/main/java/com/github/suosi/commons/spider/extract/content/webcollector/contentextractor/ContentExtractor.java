@@ -327,11 +327,7 @@ public class ContentExtractor {
                 return titles.first().text();
             }
         }
-        try {
-            return getTitleByEditDistance(contentElement);
-        } catch (Exception e) {
-            return metaTitle;
-        }
+        return metaTitle;
     }
 
     protected String calTitle(AtomicInteger contentIndex, ArrayList<Element> titleList, ArrayList<Double> titleSim) {
