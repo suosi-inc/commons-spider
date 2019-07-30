@@ -14,7 +14,7 @@ public class PageExtractTest {
      */
     @Test
     public void url() {
-        String url = "http://jtj.suqian.gov.cn/sjtj/sqtl/list1.shtml";
+        String url = "http://jyj.suqian.gov.cn";
 
         ArrayList<String> articles = new ArrayList<>();
         ArrayList<String> lists = new ArrayList<>();
