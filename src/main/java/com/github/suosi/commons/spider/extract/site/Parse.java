@@ -272,7 +272,7 @@ public class Parse {
                 String host = parse.getHost();
                 String topDomain = DomainUtils.topDomain(domain);
                 if (topDomain != null) {
-                    if (!StringUtils.endsWithIgnoreCase(host, "." + topDomain)) {
+                    if (!topDomain.equals(host) && !StringUtils.endsWithIgnoreCase(host, "." + topDomain)) {
                         continue;
                     }
                 }
@@ -308,7 +308,7 @@ public class Parse {
 
 
                     if (topDomain != null) {
-                        if (!host.equals(topDomain) && StringUtils.endsWithIgnoreCase(host, "." + topDomain)) {
+                        if (!topDomain.equals(host) && StringUtils.endsWithIgnoreCase(host, "." + topDomain)) {
                             host = StringUtils.lowerCase(host);
                             if (DOMAIN_PATTERN.matcher(host).find()) {
                                 subDomains.add(host);

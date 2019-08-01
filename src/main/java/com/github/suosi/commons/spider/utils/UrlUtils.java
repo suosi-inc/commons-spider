@@ -168,8 +168,11 @@ public class UrlUtils {
             String query = parseUrl.getQuery();
 
             // 限定域名
-            if (StringUtils.isNotBlank(strictDomain) && !StringUtils.endsWithIgnoreCase(host, "." + strictDomain)) {
-                return false;
+            if (StringUtils.isNotBlank(strictDomain)) {
+                // 兼容 www.gov.cn 这种情况
+                if (!strictDomain.equals(host) && !StringUtils.endsWithIgnoreCase(host, "." + strictDomain)) {
+                    return false;
+                }
             }
 
             // 获取 last path
@@ -284,8 +287,10 @@ public class UrlUtils {
                     return false;
                 }
 
-                if (strictDomain != null && !StringUtils.endsWithIgnoreCase(host, "." + strictDomain)) {
-                    return false;
+                if (strictDomain != null) {
+                    if (!strictDomain.equals(host) && !StringUtils.endsWithIgnoreCase(host, "." + strictDomain)) {
+                        return false;
+                    }
                 }
                 return true;
             }
