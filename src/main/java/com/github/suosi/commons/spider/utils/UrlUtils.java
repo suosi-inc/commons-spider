@@ -45,7 +45,7 @@ public class UrlUtils {
      * 动态格式后缀，配合有限字典使用
      */
     private static Pattern CONTENT_DYNAMIC_PATTERN = Pattern.compile(
-            "[\\w\\d\\-]*\\.(php|jsp|asp|aspx|do|html|shtml|htm)$",
+            "[\\w\\d\\-]*\\.(php|jsp|asp|aspx|do)$",
             Pattern.CASE_INSENSITIVE
     );
 
