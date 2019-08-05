@@ -82,7 +82,7 @@ public class UrlUtils {
     );
 
     /**
-     * 英文网站，可能是多个单词连接 hi-china-hello-world
+     * 英文网站，可能是多个单词连接，限定 4 个单词以上， hi-china-hello-world
      */
     private static Pattern CONTENT_NONSTATIC_ENGLISH_PATTERN = Pattern.compile(
             "[\\w\\d]*\\-[\\w\\d]*\\-[\\w\\d]*\\-[\\w\\d]*",
@@ -90,7 +90,7 @@ public class UrlUtils {
     );
 
     /**
-     * 伪静态纯 Hash 格式，限定长度如 /md5
+     * 伪静态纯 Hash 格式，限定长度以上，如 /md5
      */
     private static Pattern CONTENT_HASH_PATTERN = Pattern.compile(
             "[\\w\\d\\-]*\\d+[\\w\\d]",
