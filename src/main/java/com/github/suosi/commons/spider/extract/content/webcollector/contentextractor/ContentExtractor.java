@@ -317,11 +317,11 @@ public class ContentExtractor {
                 titleSim.add(sim);
                 titleList.add(title);
             }
+            contentIndex.set(titleList.size());
             String rs = calTitle(contentIndex, titleList, titleSim);
             if (rs != null) {
                 return rs;
             }
-            contentIndex.set(titleList.size());
             String title = titles.first().text();
             if (title.length() > 5 && title.length() < 40) {
                 return titles.first().text();
@@ -332,7 +332,7 @@ public class ContentExtractor {
 
     protected String calTitle(AtomicInteger contentIndex, ArrayList<Element> titleList, ArrayList<Double> titleSim) {
         int index = contentIndex.get();
-        double maxScore = 0;
+        double maxScore = 0.3;
         int maxIndex = -1;
         int size = titleList.size();
         if (size > 0) {
