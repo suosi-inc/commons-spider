@@ -45,7 +45,7 @@ public class UrlUtils {
      * 动态格式后缀，配合有限字典使用
      */
     private static Pattern CONTENT_DYNAMIC_PATTERN = Pattern.compile(
-            "[\\w\\d\\-]*\\.(php|jsp|asp|aspx|do|html|shtml|htm)$",
+            "[\\w\\d\\-]*\\.(php|jsp|asp|aspx|do)$",
             Pattern.CASE_INSENSITIVE
     );
 
@@ -82,7 +82,7 @@ public class UrlUtils {
     );
 
     /**
-     * 英文网站，可能是多个单词连接 hi-china-hello-world
+     * 英文网站，可能是多个单词连接，限定 4 个单词以上， hi-china-hello-world
      */
     private static Pattern CONTENT_NONSTATIC_ENGLISH_PATTERN = Pattern.compile(
             "[\\w\\d]*\\-[\\w\\d]*\\-[\\w\\d]*\\-[\\w\\d]*",
@@ -90,7 +90,7 @@ public class UrlUtils {
     );
 
     /**
-     * 伪静态纯 Hash 格式，限定长度如 /md5
+     * 伪静态纯 Hash 格式，限定长度以上，如 /md5
      */
     private static Pattern CONTENT_HASH_PATTERN = Pattern.compile(
             "[\\w\\d\\-]*\\d+[\\w\\d]",
@@ -168,8 +168,11 @@ public class UrlUtils {
             String query = parseUrl.getQuery();
 
             // 限定域名
-            if (StringUtils.isNotBlank(strictDomain) && !StringUtils.endsWithIgnoreCase(host, "." + strictDomain)) {
-                return false;
+            if (StringUtils.isNotBlank(strictDomain)) {
+                // 兼容 www.gov.cn 这种情况
+                if (!strictDomain.equals(host) && !StringUtils.endsWithIgnoreCase(host, "." + strictDomain)) {
+                    return false;
+                }
             }
 
             // 获取 last path
@@ -284,8 +287,10 @@ public class UrlUtils {
                     return false;
                 }
 
-                if (strictDomain != null && !StringUtils.endsWithIgnoreCase(host, "." + strictDomain)) {
-                    return false;
+                if (strictDomain != null) {
+                    if (!strictDomain.equals(host) && !StringUtils.endsWithIgnoreCase(host, "." + strictDomain)) {
+                        return false;
+                    }
                 }
                 return true;
             }
