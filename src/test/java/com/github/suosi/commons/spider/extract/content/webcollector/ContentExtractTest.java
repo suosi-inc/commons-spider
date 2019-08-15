@@ -16,7 +16,7 @@ import java.io.IOException;
 public class ContentExtractTest {
     @Test
     public void test() {
-        String url = "http://www.xgxcw.cn/xcyw/315306.jhtml";
+        String url = "http://www.sxsznews.com/html/423/content-404979.shtml";
         try (Response response = OkHttpUtils.client().newCall(OkHttpUtils.request(url)).execute()) {
             if (response.isSuccessful() && response.body() != null) {
                 byte[] bytes = response.body().bytes();

@@ -309,10 +309,6 @@ public class ContentExtractor {
         if (titles.size() > 0) {
             for (Element title : titles) {
                 String titleText = title.text().trim();
-                String titleTag = title.tagName();
-                if (Pattern.matches("h[1-6]", titleTag)) {
-                    return titleText;
-                }
                 double sim = strSim(titleText, metaTitle);
                 titleSim.add(sim);
                 titleList.add(title);
