@@ -16,6 +16,10 @@ public class OkHttpUtils {
 
     private static final long DEFAULT_TIMEOUT = 3;
 
+    public static ConnectionPool connectionPool() {
+        return DEFAULT_CONNECTION_POOL;
+    }
+
     public static OkHttpClient client() {
         return builder(DEFAULT_CONNECTION_POOL, 0).build();
     }
