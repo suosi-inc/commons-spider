@@ -19,7 +19,7 @@
         <jsoup.version>1.11.3</jsoup.version>
         <junit.version>4.12</junit.version>
         <juniversalchardet.version>1.0.3</juniversalchardet.version>
-        <commons-helper.version>0.11.1</commons-helper.version>
+        <commons-helper.version>0.12</commons-helper.version>
     </properties>
 
     <dependencies>
