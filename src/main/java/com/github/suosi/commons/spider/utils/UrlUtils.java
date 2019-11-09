@@ -50,6 +50,14 @@ public class UrlUtils {
     );
 
     /**
+     * 动态格式文件名过滤主要是论坛，如 home.php, user.php, search.php
+     */
+    private static Pattern CONTENT_DYNAMIC_PATH_KEYWORD_FILTER = Pattern.compile(
+            "^(home(s?)|user(s?)|search(s?))",
+            Pattern.CASE_INSENSITIVE
+    );
+
+    /**
      * 动态格式字典，包含有限字典的结尾，同时配合query参数。如 show.php?id=xxx
      */
     private static Pattern CONTENT_DICT_PATTERN = Pattern.compile(
@@ -209,9 +217,19 @@ public class UrlUtils {
 
             // 动态
             } else if (CONTENT_DYNAMIC_PATTERN.matcher(path).find() || CONTENT_DICT_PATTERN.matcher(path).find()) {
-                if (StringUtils.isNotBlank(query) && CONTENT_QUERY_PATTERN.matcher(query).find()) {
-                    return true;
+                if (CONTENT_DYNAMIC_PATH_KEYWORD_FILTER.matcher(path).find() && StringUtils.containsIgnoreCase(query, "mod=")) {
+                    return false;
                 }
+                if (StringUtils.isNotBlank(query)) {
+                    if (CONTENT_QUERY_PATTERN.matcher(query).find()) {
+                        return true;
+                    }
+                    if (CONTENT_NONSTATIC_ENGLISH_PATTERN.matcher(query).find()) {
+                        return true;
+                    }
+                }
+
+
 
             // 伪静态数字
             } else if (CONTENT_NONSTATIC_PATTERN.matcher(path).find()) {
@@ -281,7 +299,13 @@ public class UrlUtils {
             if (parseUrl != null) {
                 String host = parseUrl.getHost();
                 String fullPath = parseUrl.getPath();
+                String query = parseUrl.getQuery();
+                fullPath = StringUtils.removeStart(fullPath, "/");
                 String path = StringUtils.removeEnd(fullPath, "/");
+
+                if (CONTENT_DYNAMIC_PATH_KEYWORD_FILTER.matcher(path).find() && StringUtils.containsIgnoreCase(query, "mod=")) {
+                    return false;
+                }
 
                 if (StringUtils.isBlank(path)) {
                     return false;
