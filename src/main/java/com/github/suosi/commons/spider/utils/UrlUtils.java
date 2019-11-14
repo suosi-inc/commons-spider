@@ -140,6 +140,9 @@ public class UrlUtils {
                 && !StringUtils.startsWithIgnoreCase(url, "tel:")
                 && !StringUtils.startsWithIgnoreCase(url, "mailto:")
                 && !StringUtils.startsWithIgnoreCase(url, "sms:")
+                && !StringUtils.startsWithIgnoreCase(url, "msnim:")
+                && !StringUtils.startsWithIgnoreCase(url, "skype:")
+                && !StringUtils.startsWithIgnoreCase(url, "whatsapp:")
                 && !StringUtils.startsWithIgnoreCase(url, "#")
                 && !StringUtils.containsAny(url, "{", "}", "[", "]", "@", "$", "<", ">");
     }

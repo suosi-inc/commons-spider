@@ -21,7 +21,7 @@ public class PageExtractTest {
         ArrayList<String> nones = new ArrayList<>();
 
 
-        Page page = PageExtract.url(url);
+        Page page = PageExtract.url(url, 1);
         if (page != null) {
             Set<String> links = page.getLinks();
             if (links != null) {
