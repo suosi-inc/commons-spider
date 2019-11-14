@@ -133,18 +133,16 @@ public class UrlUtils {
      * @return
      */
     public static boolean filterUrl(String url) {
-        return StringUtils.isNotBlank(url)
-                && !StringUtils.startsWithIgnoreCase(url, "java")
-                && !StringUtils.startsWithIgnoreCase(url, "tencent")
-                && !StringUtils.startsWithIgnoreCase(url, "ftp:")
-                && !StringUtils.startsWithIgnoreCase(url, "tel:")
-                && !StringUtils.startsWithIgnoreCase(url, "mailto:")
-                && !StringUtils.startsWithIgnoreCase(url, "sms:")
-                && !StringUtils.startsWithIgnoreCase(url, "msnim:")
-                && !StringUtils.startsWithIgnoreCase(url, "skype:")
-                && !StringUtils.startsWithIgnoreCase(url, "whatsapp:")
-                && !StringUtils.startsWithIgnoreCase(url, "#")
-                && !StringUtils.containsAny(url, "{", "}", "[", "]", "@", "$", "<", ">");
+        if (StringUtils.isNotBlank(url) && !StringUtils.containsAny(url, "{", "}", "[", "]", "@", "$", "<", ">")) {
+            if (StringUtils.startsWithIgnoreCase(url, "/")
+                    || StringUtils.startsWithIgnoreCase(url, "./")
+                    || StringUtils.startsWithIgnoreCase(url, "../")
+                    || StringUtils.startsWithIgnoreCase(url, "http")) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

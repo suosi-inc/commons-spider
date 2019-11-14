@@ -14,7 +14,7 @@ public class PageExtractTest {
      */
     @Test
     public void url() {
-        String url = "https://www.discuz.net/forum-plugin-1.html";
+        String url = "https://www.taobao.com/";
 
         ArrayList<String> articles = new ArrayList<>();
         ArrayList<String> lists = new ArrayList<>();
