@@ -77,13 +77,13 @@ public class ContentExtractTest {
                 String charset = CharsetUtils.guessCharset(bytes, response);
                 String html = new String(bytes, charset);
 
-                for (int i = 0; i < 3000; i++) {
-                    html += "<div class=ssss_'"+ i + "'>";
-                }
-                html += "123123";
-                for (int i = 0; i < 3000; i++) {
-                    html += "</div>";
-                }
+                // for (int i = 0; i < 3000; i++) {
+                //     html += "<div class=ssss_'"+ i + "'>";
+                // }
+                // html += "123123";
+                // for (int i = 0; i < 3000; i++) {
+                //     html += "</div>";
+                // }
 
                 News newsByHtml = ContentExtractor.getNewsByHtml(html);
 //                System.out.println(newsByHtml);
