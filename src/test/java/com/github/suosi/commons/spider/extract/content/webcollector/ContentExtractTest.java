@@ -8,6 +8,9 @@ import com.github.suosi.commons.spider.extract.site.meta.Page;
 import com.github.suosi.commons.spider.utils.CharsetUtils;
 import com.github.suosi.commons.spider.utils.OkHttpUtils;
 import okhttp3.Response;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -16,7 +19,7 @@ import java.io.IOException;
 public class ContentExtractTest {
     @Test
     public void test() {
-        String url = "http://www.sxsznews.com/html/423/content-404979.shtml";
+        String url = "https://news.163.com/19/1118/15/EU9BJA52000189FH.html";
         try (Response response = OkHttpUtils.client().newCall(OkHttpUtils.request(url)).execute()) {
             if (response.isSuccessful() && response.body() != null) {
                 byte[] bytes = response.body().bytes();
@@ -58,10 +61,53 @@ public class ContentExtractTest {
 
     @Test
     public void test3() {
-        String url = "http://www.jinchangnews.cn/content/2019-07/24/46_30893.html";
+        String url = "http://www.tflove.com/hua4/flowers4230557.html";
         Page html1 = PageExtract.url(url);
         assert html1 != null;
         System.out.println(html1.getLinks());
         System.out.println(html1.getTitle());
+    }
+
+    @Test
+    public void test4() {
+        String url = "https://news.163.com/19/1118/15/EU9B51NV0001899N.html";
+        try (Response response = OkHttpUtils.client().newCall(OkHttpUtils.request(url)).execute()) {
+            if (response.isSuccessful() && response.body() != null) {
+                byte[] bytes = response.body().bytes();
+                String charset = CharsetUtils.guessCharset(bytes, response);
+                String html = new String(bytes, charset);
+
+                for (int i = 0; i < 3000; i++) {
+                    html += "<div class=ssss_'"+ i + "'>";
+                }
+                html += "123123";
+                for (int i = 0; i < 3000; i++) {
+                    html += "</div>";
+                }
+
+                News newsByHtml = ContentExtractor.getNewsByHtml(html);
+//                System.out.println(newsByHtml);
+                System.out.println(Parse.parsePublishTime(html));
+                System.out.println(newsByHtml.getTitle());
+                System.out.println(newsByHtml.getContent());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void test5() {
+        String html = "<body><div><div><div>123</div></div></div><div>456</div></body>";
+        News newsByHtml = null;
+        try {
+            newsByHtml = ContentExtractor.getNewsByHtml(html);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(Parse.parsePublishTime(html));
+        System.out.println(newsByHtml.getTitle());
     }
 }

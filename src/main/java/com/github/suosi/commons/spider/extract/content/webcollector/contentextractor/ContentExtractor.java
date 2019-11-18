@@ -39,6 +39,8 @@ import java.util.regex.Pattern;
  */
 public class ContentExtractor {
 
+    private static final int MAX_DEPTH = 1024;
+
     protected Document doc;
 
     ContentExtractor(Document doc) {
@@ -65,14 +67,18 @@ public class ContentExtractor {
         doc.select("script,noscript,style,iframe,br").remove();
     }
 
-    protected CountInfo computeInfo(Node node) {
+    protected CountInfo computeInfo(Node node, int depth) {
+
+        if (depth > MAX_DEPTH) {
+            return new CountInfo();
+        }
 
         if (node instanceof Element) {
             Element tag = (Element) node;
 
             CountInfo countInfo = new CountInfo();
             for (Node childNode : tag.childNodes()) {
-                CountInfo childCountInfo = computeInfo(childNode);
+                CountInfo childCountInfo = computeInfo(childNode, depth + 1);
                 countInfo.textCount += childCountInfo.textCount;
                 countInfo.linkTextCount += childCountInfo.linkTextCount;
                 countInfo.tagCount += childCountInfo.tagCount;
@@ -143,7 +149,7 @@ public class ContentExtractor {
 
     public Element getContentElement() throws Exception {
         clean();
-        computeInfo(doc.body());
+        computeInfo(doc.body(), 0);
         double maxScore = 0;
         Element content = null;
         for (Map.Entry<Element, CountInfo> entry : infoMap.entrySet()) {
