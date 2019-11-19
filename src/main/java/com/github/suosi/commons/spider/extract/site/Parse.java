@@ -96,12 +96,11 @@ public class Parse {
      * @param html
      * @return
      */
-    public static String parseArticleTitle(String html)
-    {
+    public static String parseArticleTitle(String html) {
         try {
             return ContentExtractor.getNewsByHtml(html).getTitle();
         } catch (Exception e) {
-            return  null;
+            return null;
         }
     }
 
@@ -172,11 +171,11 @@ public class Parse {
                     time = newTime;
                 }
                 Iterator<String> timeIterator = time.iterator();
-                while (timeIterator.hasNext()){
+                while (timeIterator.hasNext()) {
                     String item = timeIterator.next();
                     long ts = Static.strtotime(item);
                     //取时间精度高的
-                    if (ts*1000>System.currentTimeMillis()){
+                    if (ts * 1000 > System.currentTimeMillis()) {
                         timeIterator.remove();
                         continue;
                     }
@@ -195,7 +194,7 @@ public class Parse {
         }
         res = filter(res, ymd, md);
         long timeStamp = Static.strtotime(res);
-        if (timeStamp > 0 && timeStamp*1000<=System.currentTimeMillis()) {
+        if (timeStamp > 0 && timeStamp * 1000 <= System.currentTimeMillis()) {
             return Static.date("yyyy-MM-dd HH:mm:ss", timeStamp);
         }
         return null;
@@ -241,7 +240,7 @@ public class Parse {
 
                 // 过滤垃圾链接
                 if (!UrlUtils.filterUrl(link)) {
-                   continue;
+                    continue;
                 }
 
                 // 转换补全相对、绝对路径
@@ -346,6 +345,7 @@ public class Parse {
 
     /**
      * 匹配合适的时间
+     *
      * @param rules
      * @param str
      * @param timeReg
@@ -365,6 +365,7 @@ public class Parse {
 
     /**
      * 过滤时间字符串
+     *
      * @param str
      * @param ymd
      * @param md

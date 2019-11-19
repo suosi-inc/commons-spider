@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
  */
 public class ContentExtractor {
 
-    private static final int MAX_DEPTH = 256;
+    private static final int MAX_DEPTH = 128;
 
     protected Document doc;
 

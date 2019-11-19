@@ -8,6 +8,8 @@ import com.github.suosi.commons.spider.extract.site.meta.Page;
 import com.github.suosi.commons.spider.utils.CharsetUtils;
 import com.github.suosi.commons.spider.utils.OkHttpUtils;
 import okhttp3.Response;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -74,20 +76,24 @@ public class ContentExtractTest {
                 String charset = CharsetUtils.guessCharset(bytes, response);
                 String html = new String(bytes, charset);
 
-                for (int i = 0; i < 2000; i++) {
+                for (int i = 0; i < 3000; i++) {
                     html += "<div class=ssss_'"+ i + "'>";
                 }
                 html += "123123";
-                for (int i = 0; i < 2000; i++) {
+                for (int i = 0; i < 3000; i++) {
                     html += "</div>";
                 }
 
-                News newsByHtml = ContentExtractor.getNewsByHtml(html);
+                Document parse = Jsoup.parse(html);
+
+                System.out.println(parse.toString());
+
+                // News newsByHtml = ContentExtractor.getNewsByHtml(html);
 //                System.out.println(newsByHtml);
-                System.out.println(Parse.parsePublishTime(html));
-                System.out.println(newsByHtml.getTitle());
-                System.out.println(newsByHtml.getTime());
-                System.out.println(newsByHtml.getContent());
+//                 System.out.println(Parse.parsePublishTime(html));
+//                 System.out.println(newsByHtml.getTitle());
+                //System.out.println(newsByHtml.getTime());
+                // System.out.println(newsByHtml.getContent());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -98,7 +104,16 @@ public class ContentExtractTest {
 
     @Test
     public void test5() {
-        String html = "<body><div><div><div>123</div></div></div><div>456</div></body>";
+        String html = "";
+        for (int i = 0; i < 3000; i++) {
+            html += "<div class=ssss_'"+ i + "'>";
+        }
+        html += "123123";
+        for (int i = 0; i < 3000; i++) {
+            html += "</div>";
+        }
+
+
         News newsByHtml = null;
         try {
             newsByHtml = ContentExtractor.getNewsByHtml(html);
