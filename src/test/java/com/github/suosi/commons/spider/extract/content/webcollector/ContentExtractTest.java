@@ -8,9 +8,6 @@ import com.github.suosi.commons.spider.extract.site.meta.Page;
 import com.github.suosi.commons.spider.utils.CharsetUtils;
 import com.github.suosi.commons.spider.utils.OkHttpUtils;
 import okhttp3.Response;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -70,7 +67,7 @@ public class ContentExtractTest {
 
     @Test
     public void test4() {
-        String url = "https://news.163.com/19/1118/15/EU9B51NV0001899N.html";
+        String url = "http://www.xinhuanet.com/gangao/2019-11/19/c_1125246676.htm";
         try (Response response = OkHttpUtils.client().newCall(OkHttpUtils.request(url)).execute()) {
             if (response.isSuccessful() && response.body() != null) {
                 byte[] bytes = response.body().bytes();

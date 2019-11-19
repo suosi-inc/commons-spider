@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
  */
 public class ContentExtractor {
 
-    private static final int MAX_DEPTH = 1024;
+    private static final int MAX_DEPTH = 256;
 
     protected Document doc;
 
@@ -68,7 +68,6 @@ public class ContentExtractor {
     }
 
     protected CountInfo computeInfo(Node node, int depth) {
-
         if (depth > MAX_DEPTH) {
             return new CountInfo();
         }
