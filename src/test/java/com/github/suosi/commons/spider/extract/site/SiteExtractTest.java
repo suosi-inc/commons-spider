@@ -8,13 +8,15 @@ import java.util.Set;
 
 public class SiteExtractTest {
     private static String[] domains = {
-            "loupan.com",
+            "zungu.net",
     };
 
     @Test
     public void domain() {
         Site domain = SiteExtract.domain("dlt.gov.cn");
         domain.setHtml("");
+
+        System.out.println(domain.getLinks());
         System.out.println(domain.getSubDomain());
     }
 
@@ -61,7 +63,9 @@ public class SiteExtractTest {
                 if (subSiteLinks != null) {
                     for (String subSiteLink : subSiteLinks) {
                         if (UrlUtils.guessArticleUrl(subSiteLink, null)) {
-                            System.out.println(subDomain + " -> " + subSiteLink);
+                            System.out.println(subDomain + " -> A -> " + subSiteLink);
+                        } else {
+                            System.out.println(subDomain + " -> L -> " + subSiteLink);
                         }
                     }
                 }
@@ -74,7 +78,7 @@ public class SiteExtractTest {
      */
     @Test
     public void filterDomain() {
-        boolean b = SiteExtract.filterDomain("baidu.com");
+        boolean b = SiteExtract.filterDomain("api.abaidu.com");
         System.out.println(b);
     }
 

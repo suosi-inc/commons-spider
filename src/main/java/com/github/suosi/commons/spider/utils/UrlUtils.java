@@ -21,7 +21,7 @@ public class UrlUtils {
      * 静态纯数字格式，匹配URL带有日期的 /0521/123.html
      */
     private static Pattern CONTENT_STATIC_DATE_PATTERN = Pattern.compile(
-            "/([\\d]*)/([\\d]*)\\.(html|shtml|htm|shtm|jhtml)$",
+            "/([\\d]*)/([\\d]*)\\.(html|shtml|htm|shtm|jhtml|wml|cfm)$",
             Pattern.CASE_INSENSITIVE
     );
 
@@ -29,7 +29,7 @@ public class UrlUtils {
      * 静态纯数字格式，过滤长度小于4的（小于4可能是列表页的分页，并且一个网站应该有>1000篇内容才正常）
      */
     private static Pattern CONTENT_STATIC_PATTERN = Pattern.compile(
-            "^([\\d]*)\\.(html|shtml|htm|shtm|jhtml)$",
+            "^([\\d]*)\\.(html|shtml|htm|shtm|jhtml|wml|cfm)$",
             Pattern.CASE_INSENSITIVE
     );
 
@@ -45,7 +45,7 @@ public class UrlUtils {
      * 动态格式后缀，配合有限字典使用
      */
     private static Pattern CONTENT_DYNAMIC_PATTERN = Pattern.compile(
-            "[\\w\\d\\-]*\\.(php|jsp|asp|aspx|do)$",
+            "[\\w\\d\\-]*\\.(php|jsp|asp|aspx|do|zso)$",
             Pattern.CASE_INSENSITIVE
     );
 
@@ -134,6 +134,13 @@ public class UrlUtils {
      */
     public static boolean filterUrl(String url) {
         if (StringUtils.isNotBlank(url) && !StringUtils.containsAny(url, "{", "}", "[", "]", "@", "$", "<", ">")) {
+            if (StringUtils.endsWithAny(StringUtils.lowerCase(url),
+                    ".pdf", ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".txt", ".xml", ".xls", ".xlsx",
+                    ".apk", ".cgi", ".exe", ".rss", ".sig", ".sgf", ".bz2", ".play",".doc", ".docx", ".ppt", ".pptx",
+                    ".rar", ".zip", ".gz", ".mp3", ".mp4", ".rm", ".rmvb", ".mov", ".ogv" )) {
+                // 此处不能用反向排除法，如http://baseline.shps.org/www.shps.org
+                return false;
+            }
             if (StringUtils.startsWithIgnoreCase(url, "/")
                     || StringUtils.startsWithIgnoreCase(url, "./")
                     || StringUtils.startsWithIgnoreCase(url, "../")
@@ -194,7 +201,6 @@ public class UrlUtils {
                     path = splitPaths[splitPaths.length - 1];
                 }
             }
-
             // 静态纯数字
             Matcher matcher = CONTENT_STATIC_PATTERN.matcher(path);
             if (matcher.find()) {
