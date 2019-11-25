@@ -4,6 +4,7 @@ import com.github.suosi.commons.spider.extract.site.Parse;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -47,6 +48,48 @@ public class UrlUtilsTest {
         System.out.println(count);
 
     }
+
+    /**
+     * 文章 URL 列表测试
+     */
+    @Test
+    public void guessTxtArticleList() {
+        int count = 0;
+        int total_count = 0;
+
+        String filename = "es_wangmei_urls_201909.txt";
+        try {
+            /* 读入TXT文件 */
+            InputStreamReader reader = new InputStreamReader(new FileInputStream(filename)); // 建立一个输入流对象reader
+            BufferedReader br = new BufferedReader(reader); // 建立一个对象，它把文件内容转成计算机能读懂的语言
+            String line = "";
+            line = br.readLine();
+            while (line != null) {
+                line = br.readLine(); // 一次读入一行数据
+                String url = line.replace("\"", "");
+                if (UrlUtils.guessArticleUrl(url, null)) {
+                    // System.out.println("A -> " + url);
+                    count++;
+                } else if (UrlUtils.guessListUrl(url, null)) {
+                    System.out.println("L -> " + url);
+                } else {
+                    System.out.println("N -> " + url);
+                }
+                total_count += 1;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(total_count);
+        System.out.println(count);
+        System.out.println(String.format("%.4f%s" ,
+                Double.parseDouble(String.valueOf((float)count*100 / (float)total_count)), "%"));
+
+
+    }
+
 
     /**
      * 文章 URL 测试
@@ -124,6 +167,7 @@ public class UrlUtilsTest {
             }
         }
     }
+
 
     private String[] urls() {
         String[] urls = {
