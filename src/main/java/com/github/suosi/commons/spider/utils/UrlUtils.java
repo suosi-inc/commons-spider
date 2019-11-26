@@ -4,6 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -69,7 +71,7 @@ public class UrlUtils {
      * 参数列表，限定>3个，为了过滤可能的列表页
      */
     private static Pattern CONTENT_QUERY_PATTERN = Pattern.compile(
-            "id=\\d{3,}",
+            "(itemid|id)+=\\d{3,}",
             Pattern.CASE_INSENSITIVE
     );
 
@@ -85,15 +87,24 @@ public class UrlUtils {
      * 伪静态关键词，可能是：/article-12345
      */
     private static Pattern CONTENT_NONSTATIC_KEYWORD_PATTERN = Pattern.compile(
-            "[\\w\\d\\-]*(detail|article)[\\w\\d\\-]*\\d{4,}$",
+            "[\\w\\d\\-]*(detail|article|doc)[\\w\\d\\-]*\\d{4,}$",
             Pattern.CASE_INSENSITIVE
     );
+
 
     /**
      * 英文网站，可能是多个单词连接，限定 4 个单词以上， hi-china-hello-world
      */
     private static Pattern CONTENT_NONSTATIC_ENGLISH_PATTERN = Pattern.compile(
-            "[\\w\\d]*\\-[\\w\\d]*\\-[\\w\\d]*\\-[\\w\\d]*",
+            "[\\w\\d]*\\-+[\\w\\d]*\\-+[\\w\\d]*\\-[\\w\\d]*",
+            Pattern.CASE_INSENSITIVE
+    );
+
+    /**
+     * 英文网站，可能是多个单词连接，限定 3 个单词以上， hi_china_hello
+     */
+    private static Pattern CONTENT_NONSTATIC_ENGLISH2_PATTERN = Pattern.compile(
+            "[\\w\\d]*\\_+[\\w\\d]*\\_+[\\w\\d]*",
             Pattern.CASE_INSENSITIVE
     );
 
@@ -109,9 +120,29 @@ public class UrlUtils {
      * URL关键词过滤
      */
     private static Pattern ARTICLE_KEYWORD_FILTER_PATTERN = Pattern.compile(
-            "^(video(s?)|movie(s?)|photo(s?)|photoview(s?)|pic(s?)|member(s?)|channel(s?)|sublist(s?)|list(s?)|category(s?)|user(s?)|tag(s?)|topic(s?)|upload(s?)|footer(s?)|header(s?)|login(s?)|register(s?)|logout(s?)|u)$",
+            "^(video(s?)|movie(s?)|photo(s?)|photoview(s?)|pic(s?)|member(s?)|channel(s?)|sublist(s?)|list(s?)|category(s?)|user(s?)|tag(s?)|topic(s?)|upload(s?)|footer(s?)|header(s?)|login(s?)|register(s?)|logout(s?)|u|sitemap)$",
             Pattern.CASE_INSENSITIVE
     );
+
+    /**
+     * URL关键词过滤2
+     */
+    private static Pattern ARTICLE_KEYWORD_FILTER2_PATTERN = Pattern.compile(
+            "(zfcategory|sitemap)",
+            Pattern.CASE_INSENSITIVE
+    );
+
+    /**
+     * 中文
+     */
+    private static Pattern WORD_CHINESE_PATTERN = Pattern.compile("[\u4e00-\u9fa5]");
+
+    /**
+     * 列表匹配词
+     */
+    private static Pattern LIST_KEYWORD_FILTER_PATTERN = Pattern.compile(
+            "[^/]/(list|zhuanti|listings|search|category)+[/_-]*",
+            Pattern.CASE_INSENSITIVE);
 
     /**
      * 验证 URL 链接
@@ -134,7 +165,7 @@ public class UrlUtils {
      */
     public static boolean filterUrl(String url) {
         if (StringUtils.isNotBlank(url) && !StringUtils.containsAny(url, "{", "}", "[", "]", "@", "$", "<", ">")) {
-            if (StringUtils.endsWithAny(StringUtils.lowerCase(url),
+            if (StringUtils.containsAny(StringUtils.lowerCase(url),
                     ".pdf", ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".txt", ".xml", ".xls", ".xlsx",
                     ".apk", ".cgi", ".exe", ".rss", ".sig", ".sgf", ".bz2", ".play",".doc", ".docx", ".ppt", ".pptx",
                     ".rar", ".zip", ".gz", ".mp3", ".mp4", ".rm", ".rmvb", ".mov", ".ogv" )) {
@@ -177,6 +208,7 @@ public class UrlUtils {
      * @return
      */
     public static boolean guessContentUrl(String url, String strictDomain) {
+
         URL parseUrl = parse(url);
         if (parseUrl != null) {
             String host = parseUrl.getHost();
@@ -201,6 +233,14 @@ public class UrlUtils {
                     path = splitPaths[splitPaths.length - 1];
                 }
             }
+            try {
+                if (WORD_CHINESE_PATTERN.matcher(path).find()) {
+                    path = URLEncoder.encode(path, "utf8");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             // 静态纯数字
             Matcher matcher = CONTENT_STATIC_PATTERN.matcher(path);
             if (matcher.find()) {
@@ -217,9 +257,11 @@ public class UrlUtils {
             // 静态关键词
             } else if (CONTENT_STATIC_WORD_PATTERN.matcher(path).find()) {
                 if (StringUtils.startsWithIgnoreCase(path, "forum-")
+                        || StringUtils.startsWithIgnoreCase(path, "zhuanti")
                         || StringUtils.startsWithIgnoreCase(path, "list")) {
                     return false;
                 }
+
                 return true;
 
             // 动态
@@ -235,9 +277,12 @@ public class UrlUtils {
                         return true;
                     }
                 }
-
-
-
+                if (CONTENT_NONSTATIC_ENGLISH_PATTERN.matcher(path).find()) {
+                    return true;
+                }
+                if (CONTENT_NONSTATIC_ENGLISH2_PATTERN.matcher(path).find()) {
+                    return true;
+                }
             // 伪静态数字
             } else if (CONTENT_NONSTATIC_PATTERN.matcher(path).find()) {
                 return true;
@@ -245,7 +290,6 @@ public class UrlUtils {
             // 伪静态关键词
             } else if (CONTENT_NONSTATIC_KEYWORD_PATTERN.matcher(path).find()) {
                 return true;
-
             // HASH
             } else if (CONTENT_HASH_PATTERN.matcher(path).find()) {
                 if (path.length() >= 10 && !StringUtils.contains(path, ".")) {
@@ -253,6 +297,9 @@ public class UrlUtils {
                 }
             // 英文网站URL
             } else if (CONTENT_NONSTATIC_ENGLISH_PATTERN.matcher(path).find()) {
+                return true;
+            // 英文网站2URL
+            } else if (CONTENT_NONSTATIC_ENGLISH2_PATTERN.matcher(path).find()) {
                 return true;
             // 空 path，如：/?s=thread&tid=546595&bid=1
             } else if (StringUtils.isBlank(path) && StringUtils.isNotBlank(query)) {
@@ -273,6 +320,9 @@ public class UrlUtils {
      * @return
      */
     public static boolean guessArticleUrl(String url, String strictDomain) {
+        if (LIST_KEYWORD_FILTER_PATTERN.matcher(url).find()) {
+            return false;
+        }
         if (guessContentUrl(url, strictDomain)) {
             URL parseUrl = parse(url);
             if (parseUrl != null) {
@@ -284,6 +334,10 @@ public class UrlUtils {
                         return false;
                     }
                 }
+                if (ARTICLE_KEYWORD_FILTER2_PATTERN.matcher(fullPath).find()) {
+                    return false;
+                }
+
             }
 
             return true;
@@ -301,6 +355,9 @@ public class UrlUtils {
      * @return
      */
     public static boolean guessListUrl(String url, String strictDomain) {
+        if (LIST_KEYWORD_FILTER_PATTERN.matcher(url).find()) {
+            return true;
+        }
         if (!guessContentUrl(url, strictDomain)) {
             URL parseUrl = parse(url);
             if (parseUrl != null) {
@@ -309,7 +366,6 @@ public class UrlUtils {
                 String query = parseUrl.getQuery();
                 fullPath = StringUtils.removeStart(fullPath, "/");
                 String path = StringUtils.removeEnd(fullPath, "/");
-
                 if (CONTENT_DYNAMIC_PATH_KEYWORD_FILTER.matcher(path).find() && StringUtils.containsIgnoreCase(query, "mod=")) {
                     return false;
                 }
@@ -326,7 +382,6 @@ public class UrlUtils {
                 return true;
             }
         }
-
         return false;
     }
 

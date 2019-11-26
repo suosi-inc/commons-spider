@@ -8,6 +8,8 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class UrlUtilsTest {
 
@@ -57,7 +59,7 @@ public class UrlUtilsTest {
         int count = 0;
         int total_count = 0;
 
-        String filename = "es_wangmei_urls_201909.txt";
+        String filename = "es_wangmei_urls_201910.txt";
         try {
             /* 读入TXT文件 */
             InputStreamReader reader = new InputStreamReader(new FileInputStream(filename)); // 建立一个输入流对象reader
@@ -90,13 +92,31 @@ public class UrlUtilsTest {
 
     }
 
+    /**
+     * 文章 URL 测试
+     */
+    @Test
+    public void testPattern() {
+        String url = "http://www.siyst.org.cn/portal/article/index/id/12/cid/1.html";
+
+        Pattern LIST_KEYWORD_FILTER_PATTERN = Pattern.compile(
+                "/\\w+/\\d+/\\w+/\\d+",
+                Pattern.CASE_INSENSITIVE);
+
+        Matcher aaa = LIST_KEYWORD_FILTER_PATTERN.matcher(url);
+        if (aaa.find()) {
+            System.out.println(aaa.group());
+        }
+
+        System.exit(-1);
+    }
 
     /**
      * 文章 URL 测试
      */
     @Test
     public void guessArticleUrl() {
-        String url = "https://skda.co.id/forum/index.php?threads/pinjaman-dengan-agunan-sertifikat-rumah-di-bpr.1548/";
+        String url = "http://www.siyst.org.cn/portal/article/index/id/12/cid/1.html";
 
         if (UrlUtils.guessArticleUrl(url, null)) {
             System.out.println("A -> " + url);
