@@ -74,7 +74,7 @@ public class SiteExtract {
      * @param domain 域名
      * @return
      */
-    public static Site domain(String domain) {
+    public static Site domain(String domain) throws Exception {
         String[] protocols = {HTTP_PROTOCOL, HTTPS_PROTOCOL};
 
         if (StringUtils.isNotBlank(domain)) {
@@ -129,7 +129,8 @@ public class SiteExtract {
 
                     }
                 } catch (IOException e) {
-                    System.out.println(e.getLocalizedMessage() + ":" + url);
+                    // System.out.println(e.getLocalizedMessage() + ":" + url);
+                    throw new Exception("site domain except: " + e.getLocalizedMessage() + ":" + url);
                 }
             }
         }

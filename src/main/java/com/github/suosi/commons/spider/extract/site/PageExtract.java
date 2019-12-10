@@ -4,10 +4,10 @@ import com.github.suosi.commons.spider.extract.site.meta.Page;
 import com.github.suosi.commons.spider.utils.CharsetUtils;
 import com.github.suosi.commons.spider.utils.OkHttpUtils;
 import com.github.suosi.commons.spider.utils.UrlUtils;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.Set;
@@ -23,7 +23,7 @@ public class PageExtract {
      * @param url
      * @return
      */
-    public static Page url(String url) {
+    public static Page url(String url) throws Exception {
         if (UrlUtils.verifyUrl(url)) {
             URL parseUrl = UrlUtils.parse(url);
             if (parseUrl != null) {
@@ -34,7 +34,8 @@ public class PageExtract {
                         return response(response, host, url);
                     }
                 } catch (IOException e) {
-                    System.out.println(e.getLocalizedMessage() + ":" + url);
+                    // System.out.println(e.getLocalizedMessage() + ":" + url);
+                    throw new Exception("page url except: " + e.getLocalizedMessage() + ":" + url);
                 }
             }
         }
@@ -49,7 +50,7 @@ public class PageExtract {
      * @param timeoutSecond
      * @return
      */
-    public static Page url(String url, long timeoutSecond) {
+    public static Page url(String url, long timeoutSecond) throws Exception {
         if (UrlUtils.verifyUrl(url)) {
             URL parseUrl = UrlUtils.parse(url);
             if (parseUrl != null) {
@@ -62,7 +63,8 @@ public class PageExtract {
                         return response(response, host, url);
                     }
                 } catch (IOException e) {
-                    System.out.println(e.getLocalizedMessage() + ":" + url);
+                    // System.out.println(e.getLocalizedMessage() + ":" + url);
+                    throw new Exception("page url except: " +e.getLocalizedMessage() + ":" + url);
                 }
             }
         }
