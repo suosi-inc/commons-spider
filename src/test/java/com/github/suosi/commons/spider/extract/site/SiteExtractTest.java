@@ -14,11 +14,16 @@ public class SiteExtractTest {
 
     @Test
     public void domain() {
-        Site domain = SiteExtract.domain("dlt.gov.cn");
-        domain.setHtml("");
+        try {
+            Site domain = SiteExtract.domain("paper.chinaso.com");
+            domain.setHtml("");
 
-        System.out.println(domain.getLinks());
-        System.out.println(domain.getSubDomain());
+            System.out.println(domain.getLinks());
+            System.out.println(domain.getSubDomain());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
     }
 
     @Test
@@ -69,24 +74,29 @@ public class SiteExtractTest {
     @Test
     public void subDomain() {
         for (String domain : domains) {
-            Site site = SiteExtract.domain(domain);
-            Set<String> subDomains = site.getSubDomain();
+            try {
+                Site site = SiteExtract.domain(domain);
+                Set<String> subDomains = site.getSubDomain();
 
-            for (String subDomain : subDomains) {
-                StringBuilder sb = new StringBuilder();
-                sb.append(subDomain + " ");
-                if (SiteExtract.filterDomain(subDomain)) {
-                    Site subSite = SiteExtract.domain(subDomain);
-                    sb.append(subSite.getTitle());
-                    int total = UrlUtils.countArticleUrls(subSite.getLinks(), null);
-                    if (total < 10) {
-                        sb.append(" -> [total:" + total + "]");
+                for (String subDomain : subDomains) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(subDomain + " ");
+                    if (SiteExtract.filterDomain(subDomain)) {
+                        Site subSite = SiteExtract.domain(subDomain);
+                        sb.append(subSite.getTitle());
+                        int total = UrlUtils.countArticleUrls(subSite.getLinks(), null);
+                        if (total < 10) {
+                            sb.append(" -> [total:" + total + "]");
+                        }
+                    } else {
+                        sb.append(" -> [filter]");
                     }
-                } else {
-                    sb.append(" -> [filter]");
+                    System.out.println(sb.toString());
                 }
-                System.out.println(sb.toString());
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
             }
+
         }
 
     }
@@ -97,22 +107,27 @@ public class SiteExtractTest {
     @Test
     public void articleUrls() {
         for (String domain : domains) {
-            Site site = SiteExtract.domain(domain);
-            Set<String> subDomains = site.getSubDomain();
+            try {
+                Site site = SiteExtract.domain(domain);
+                Set<String> subDomains = site.getSubDomain();
 
-            for (String subDomain : subDomains) {
-                Site subSite = SiteExtract.domain(subDomain);
-                Set<String> subSiteLinks = subSite.getLinks();
-                if (subSiteLinks != null) {
-                    for (String subSiteLink : subSiteLinks) {
-                        if (UrlUtils.guessArticleUrl(subSiteLink, null)) {
-                            System.out.println(subDomain + " -> A -> " + subSiteLink);
-                        } else {
-                            System.out.println(subDomain + " -> L -> " + subSiteLink);
+                for (String subDomain : subDomains) {
+                    Site subSite = SiteExtract.domain(subDomain);
+                    Set<String> subSiteLinks = subSite.getLinks();
+                    if (subSiteLinks != null) {
+                        for (String subSiteLink : subSiteLinks) {
+                            if (UrlUtils.guessArticleUrl(subSiteLink, null)) {
+                                System.out.println(subDomain + " -> A -> " + subSiteLink);
+                            } else {
+                                System.out.println(subDomain + " -> L -> " + subSiteLink);
+                            }
                         }
                     }
                 }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
             }
+
         }
     }
 

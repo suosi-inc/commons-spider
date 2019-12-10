@@ -13,40 +13,43 @@ public class PageExtractTest {
      * 测试 一个 URL 中的链接抽取
      */
     @Test
-    public void url() {
-        String url = "http://11855.constructiondir.com/";
+    public void url(){
+        String url = "http://paper1.chinaso.com/papertt/news/index.html#1";
 
         ArrayList<String> articles = new ArrayList<>();
         ArrayList<String> lists = new ArrayList<>();
         ArrayList<String> nones = new ArrayList<>();
 
-
-        Page page = PageExtract.url(url, 1);
-        if (page != null) {
-            Set<String> links = page.getLinks();
-            if (links != null) {
-                for (String link : links) {
-                    if (UrlUtils.guessArticleUrl(link, null)) {
-                        articles.add(link);
-                    } else if (UrlUtils.guessListUrl(link, null)) {
-                        lists.add(link);
-                    } else {
-                        nones.add(link);
+        try {
+            Page page = PageExtract.url(url, 1);
+            if (page != null) {
+                Set<String> links = page.getLinks();
+                if (links != null) {
+                    for (String link : links) {
+                        if (UrlUtils.guessArticleUrl(link, null)) {
+                            articles.add(link);
+                        } else if (UrlUtils.guessListUrl(link, null)) {
+                            lists.add(link);
+                        } else {
+                            nones.add(link);
+                        }
                     }
                 }
             }
-        }
 
-        for (String article : articles) {
-            System.out.println("A -> " + article);
-        }
+            for (String article : articles) {
+                System.out.println("A -> " + article);
+            }
 
-        for (String list : lists) {
-            System.out.println("L -> " + list);
-        }
+            for (String list : lists) {
+                System.out.println("L -> " + list);
+            }
 
-        for (String none : nones) {
-            System.out.println("N -> " + none);
+            for (String none : nones) {
+                System.out.println("N -> " + none);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 }

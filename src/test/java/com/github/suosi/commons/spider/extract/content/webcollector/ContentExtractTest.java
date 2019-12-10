@@ -61,10 +61,15 @@ public class ContentExtractTest {
     @Test
     public void test3() {
         String url = "http://www.tflove.com/hua4/flowers4230557.html";
-        Page html1 = PageExtract.url(url);
-        assert html1 != null;
-        System.out.println(html1.getLinks());
-        System.out.println(html1.getTitle());
+        try {
+            Page html1 = PageExtract.url(url);
+            assert html1 != null;
+            System.out.println(html1.getLinks());
+            System.out.println(html1.getTitle());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
     }
 
     @Test
