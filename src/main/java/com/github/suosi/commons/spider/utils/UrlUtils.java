@@ -164,7 +164,7 @@ public class UrlUtils {
      * @return
      */
     public static boolean filterUrl(String url) {
-        if (StringUtils.isNotBlank(url) && !StringUtils.containsAny(url, "{", "}", "[", "]", "@", "$", "<", ">")) {
+        if (StringUtils.isNotBlank(url) && !StringUtils.containsAny(url, "{", "}", "[", "]", "@", "$", "<", ">", "\"")) {
             if (StringUtils.containsAny(StringUtils.lowerCase(url),
                     ".pdf", ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".txt", ".xml", ".xls", ".xlsx",
                     ".apk", ".cgi", ".exe", ".rss", ".sig", ".sgf", ".bz2", ".play",".doc", ".docx", ".ppt", ".pptx",

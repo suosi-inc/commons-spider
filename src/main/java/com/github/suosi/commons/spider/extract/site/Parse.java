@@ -11,6 +11,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.safety.Whitelist;
 import org.jsoup.select.Elements;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -237,11 +238,8 @@ public class Parse {
         if (elements.size() > 0) {
             for (Element element : elements) {
                 String link = StringUtils.trimToEmpty(element.attr("href"));
-
-                // 过滤垃圾链接
-                if (!UrlUtils.filterUrl(link)) {
-                    continue;
-                }
+                link = link.replace("\r\n", "");
+                link = link.replace("\n", "");
 
                 // 转换补全相对、绝对路径
                 if (!StringUtils.startsWithIgnoreCase(link, HTTP_PROTOCOL)
@@ -257,10 +255,15 @@ public class Parse {
 
                         URL parseUrl = new URL(absoluteUrl, link);
                         link = parseUrl.toString();
-                    } catch (MalformedURLException e) {
+                    } catch (IOException e) {
                         System.out.println(e.getLocalizedMessage() + ":" + url + ":" + link);
                         continue;
                     }
+                }
+
+                // 过滤垃圾链接
+                if (!UrlUtils.filterUrl(link)) {
+                    continue;
                 }
 
                 // 排除站外链接
