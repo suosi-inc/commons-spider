@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.Set;
@@ -24,8 +26,10 @@ public class PageExtract {
      * @return
      */
     public static Page url(String url) throws Exception {
+        url = url.trim();
         if (UrlUtils.verifyUrl(url)) {
             URL parseUrl = UrlUtils.parse(url);
+
             if (parseUrl != null) {
                 String host = parseUrl.getHost();
 

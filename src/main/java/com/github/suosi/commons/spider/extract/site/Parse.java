@@ -234,12 +234,13 @@ public class Parse {
         Set<String> links = new HashSet<>();
 
         // 获取所有a链接
-        Elements elements = document.select("a");
+        Elements elements = document.select("a,area");
         if (elements.size() > 0) {
             for (Element element : elements) {
                 String link = StringUtils.trimToEmpty(element.attr("href"));
                 link = link.replace("\r\n", "");
                 link = link.replace("\n", "");
+                link = link.trim();
 
                 // 转换补全相对、绝对路径
                 if (!StringUtils.startsWithIgnoreCase(link, HTTP_PROTOCOL)
