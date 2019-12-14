@@ -164,6 +164,41 @@ public class UrlUtils {
      * @return
      */
     public static boolean filterUrl(String url) {
+        if (StringUtils.isNotBlank(url) ) {
+
+            // 包含特殊字符
+            if (StringUtils.containsAny(StringUtils.lowerCase(url), "{", "}", "[", "]", "@", "$", "<", ">", "\"")) {
+                return false;
+            }
+
+            // 包含特殊后缀
+            if (StringUtils.containsAny(StringUtils.lowerCase(url),
+                    ".pdf", ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".txt", ".xml", ".xls", ".xlsx",
+                    ".apk", ".cgi", ".exe", ".rss", ".sig", ".sgf", ".bz2", ".play",".doc", ".docx", ".ppt", ".pptx",
+                    ".rar", ".zip", ".gz", ".mp3", ".mp4", ".rm", ".rmvb", ".mov", ".ogv" )) {
+                // 此处不能用反向排除法，如http://baseline.shps.org/www.shps.org
+                return false;
+            }
+
+            // 过滤非链接
+            if (StringUtils.startsWithAny(StringUtils.lowerCase(url),
+                    "java", "tel:", "tencent", "ftp:", "mailto:", "sms:", "msnim:", "skype:", "whatsapp:", "#" )) {
+                return false;
+            }
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 过滤垃圾链接
+     *
+     * @param url
+     * @return
+     */
+    public static boolean filterUrlOld(String url) {
         if (StringUtils.isNotBlank(url) && !StringUtils.containsAny(url, "{", "}", "[", "]", "@", "$", "<", ">", "\"")) {
             if (StringUtils.containsAny(StringUtils.lowerCase(url),
                     ".pdf", ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".txt", ".xml", ".xls", ".xlsx",

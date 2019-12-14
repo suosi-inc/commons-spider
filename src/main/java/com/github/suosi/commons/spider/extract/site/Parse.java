@@ -242,6 +242,11 @@ public class Parse {
                 link = link.replace("\n", "");
                 link = link.trim();
 
+                // 过滤垃圾链接
+                if (!UrlUtils.filterUrl(link)) {
+                    continue;
+                }
+
                 // 转换补全相对、绝对路径
                 if (!StringUtils.startsWithIgnoreCase(link, HTTP_PROTOCOL)
                         && !StringUtils.startsWithIgnoreCase(link, HTTPS_PROTOCOL)) {
@@ -262,8 +267,8 @@ public class Parse {
                     }
                 }
 
-                // 过滤垃圾链接
-                if (!UrlUtils.filterUrl(link)) {
+                // 验证链接
+                if (!UrlUtils.verifyUrl(link)) {
                     continue;
                 }
 
