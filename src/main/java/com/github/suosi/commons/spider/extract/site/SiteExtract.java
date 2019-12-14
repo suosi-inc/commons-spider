@@ -139,7 +139,7 @@ public class SiteExtract {
                     }
                 } catch (IOException e) {
                     System.out.println(e.getLocalizedMessage() + ":" + url);
-                    // throw new Exception("site domain except: " + e.getLocalizedMessage() + ":" + url);
+                    // throw new Exception("site domain except:  " + e.getLocalizedMessage() + ":" + url);
                 }
             }
         }
