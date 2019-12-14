@@ -97,7 +97,8 @@ public class SiteExtract {
                 // 构造 URL
                 String url;
                 if ("not_www".equals(protocol)) {
-                    url = "http" + "://" + domain;
+                    protocol = "http";
+                    url = protocol + "://" + domain;
                 } else {
                     url = protocol + "://" + mainDomain;
                 }
