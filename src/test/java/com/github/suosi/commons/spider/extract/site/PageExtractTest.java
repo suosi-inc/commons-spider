@@ -2,10 +2,16 @@ package com.github.suosi.commons.spider.extract.site;
 
 import com.github.suosi.commons.spider.extract.site.meta.Page;
 import com.github.suosi.commons.spider.utils.UrlUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PageExtractTest {
 
@@ -13,8 +19,8 @@ public class PageExtractTest {
      * 测试 一个 URL 中的链接抽取
      */
     @Test
-    public void url(){
-        String url = "http://paper1.chinaso.com/papertt/news/index.html#1";
+    public void url() {
+        String url = "http://www.quanrx.cn";
 
         ArrayList<String> articles = new ArrayList<>();
         ArrayList<String> lists = new ArrayList<>();
@@ -49,7 +55,7 @@ public class PageExtractTest {
                 System.out.println("N -> " + none);
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("error: " +  e.getMessage());
         }
     }
 }

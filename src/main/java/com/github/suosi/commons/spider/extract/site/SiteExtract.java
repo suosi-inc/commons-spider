@@ -10,7 +10,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 根据域名，尝试抽取站点信息
@@ -25,6 +28,14 @@ public class SiteExtract {
     private static final String HTTPS_PROTOCOL = "https";
 
     private static final String NOT_WWW = "not_www";
+
+    private static final Pattern REFRESH_PATTERN = Pattern.compile("<meta.*?url=(.*?)\".*?>", Pattern.CASE_INSENSITIVE);
+
+    private static final Pattern LOCATION_PATTERN = Pattern.compile("location\\.href\\s*=\\s*[\"\']+(.*?)[\"\']+", Pattern.CASE_INSENSITIVE);
+
+    private static final Pattern LOCATION2_PATTERN = Pattern.compile("\\.location\\s*=\\s*[\"\']+(.*?)[\"\']+", Pattern.CASE_INSENSITIVE);
+
+    private static final Pattern LOCATION3_PATTERN = Pattern.compile("jump\\([\"\']+(.*?)[\"\']+\\)", Pattern.CASE_INSENSITIVE);
 
     private static final String[] DOMAIN_FILTERS = {
             "user",
@@ -153,7 +164,7 @@ public class SiteExtract {
      * @param domain 域名
      * @return
      */
-    public static Site domain(String domain, Long timeoutSecond) throws Exception {
+    public static Site domain(String domain, Long timeoutSecond, boolean location) throws Exception {
         String[] protocols = {HTTP_PROTOCOL, HTTPS_PROTOCOL, NOT_WWW};
 
         if (StringUtils.isNotBlank(domain)) {
@@ -174,54 +185,107 @@ public class SiteExtract {
                 // 构造 URL
                 String url;
                 if ("not_www".equals(protocol)) {
-                    url = "http" + "://" + domain;
+                    protocol = "http";
+                    url = protocol + "://" + domain;
                 } else {
                     url = protocol + "://" + mainDomain;
                 }
 
-                long timeout = timeoutSecond > 0 ? timeoutSecond : 3;
-                try (Response response = OkHttpUtils.client(timeout).newCall(OkHttpUtils.request(url)).execute()) {
-                    if (response.isSuccessful() && response.body() != null) {
+                Site info =  getSiteByDomain(url, domain, mainDomain, protocol, timeoutSecond);
+                if (info != null) {
+                    Set<String> links = info.getLinks();
+                    if (links.isEmpty() && location) {
+                        String refreshUrl = "";
+                        String html = info.getHtml();
 
-                        // 编码
-                        byte[] htmlBytes = response.body().bytes();
-                        String charset = CharsetUtils.guessCharset(htmlBytes, response);
-                        String html = new String(htmlBytes, charset);
+                        Matcher matcher1 = LOCATION_PATTERN.matcher(html);
+                        Matcher matcher2 = LOCATION2_PATTERN.matcher(html);
+                        Matcher matcher3 = REFRESH_PATTERN.matcher(html);
+                        Matcher matcher4 = LOCATION3_PATTERN.matcher(html);
+                        if (matcher1.find()) {
+                            refreshUrl = matcher1.group(1);
+                        } else if (matcher2.find()) {
+                            refreshUrl = matcher2.group(1);
+                        } else if (matcher3.find()) {
+                            refreshUrl = matcher3.group(1);
+                        } else if (matcher4.find()) {
+                            refreshUrl = matcher4.group(1);
+                        }
 
-                        // 信息抽取
-                        Document document = Jsoup.parse(html);
-                        String title = Parse.parseTitle(document);
-                        String cleanTitle = Parse.parseCleanTitle(title);
-                        String keywords = Parse.parseKeywords(document);
-                        String description = Parse.parseDescription(document);
-                        String icp = Parse.parseIcp(html);
-                        Set<String> links = Parse.parseLinks(document, domain, url);
-                        Set<String> subDomains = Parse.parseSubDomain(document, domain, url);
+                        if (refreshUrl.length() > 0) {
+                            try {
+                                URL absoluteUrl = new URL(url);
 
-                        return Site.builder()
-                                .protocol(protocol)
-                                .mainDomain(mainDomain)
-                                .charset(charset)
-                                .html(html)
-                                .title(title)
-                                .cleanTitle(cleanTitle)
-                                .keywords(keywords)
-                                .description(description)
-                                .icp(icp)
-                                .subDomain(subDomains)
-                                .links(links)
-                                .build();
+                                // path 为空的情况，这种一般是错误，直接移除
+                                if (StringUtils.isBlank(absoluteUrl.getPath())) {
+                                    refreshUrl = Parse.removeStartComplete(refreshUrl, "./");
+                                    refreshUrl = Parse.removeStartComplete(refreshUrl, "../");
+                                }
 
+                                URL parseUrl = new URL(absoluteUrl, refreshUrl);
+                                refreshUrl = parseUrl.toString();
+
+                                Site info2 = getSiteByDomain(refreshUrl, domain, mainDomain, protocol, timeoutSecond);
+                                if (info2.getLinks().size() > 0) {
+                                    return info2;
+                                }
+                            } catch (IOException e) {
+                                System.out.println("again error:" + e.getLocalizedMessage() + ":" + refreshUrl);
+                            }
+                        }
+                    } else {
+                        return info;
                     }
-                } catch (IOException e) {
-                    System.out.println(e.getLocalizedMessage() + ":" + url);
-                    // throw new Exception("site domain except: " + e.getLocalizedMessage() + ":" + url);
                 }
             }
         }
 
         return null;
     }
+
+    public static Site getSiteByDomain(String url, String domain, String mainDomain, String protocol, long timeoutSecond) {
+        long timeout = timeoutSecond > 0 ? timeoutSecond : 3;
+        try (Response response = OkHttpUtils.client(timeout).newCall(OkHttpUtils.request(url)).execute()) {
+
+            if (response.isSuccessful() && response.body() != null) {
+
+                // 编码
+                byte[] htmlBytes = response.body().bytes();
+                String charset = CharsetUtils.guessCharset(htmlBytes, response);
+                String html = new String(htmlBytes, charset);
+
+                // 信息抽取
+                Document document = Jsoup.parse(html);
+                String title = Parse.parseTitle(document);
+                String cleanTitle = Parse.parseCleanTitle(title);
+                String keywords = Parse.parseKeywords(document);
+                String description = Parse.parseDescription(document);
+                String icp = Parse.parseIcp(html);
+                Set<String> links = Parse.parseLinks(document, domain, url);
+                Set<String> subDomains = Parse.parseSubDomain(document, domain, url);
+
+                return Site.builder()
+                        .protocol(protocol)
+                        .mainDomain(mainDomain)
+                        .charset(charset)
+                        .html(html)
+                        .title(title)
+                        .cleanTitle(cleanTitle)
+                        .keywords(keywords)
+                        .description(description)
+                        .icp(icp)
+                        .subDomain(subDomains)
+                        .links(links)
+                        .build();
+
+            }
+        } catch (Exception e) {
+            System.out.println(e.getLocalizedMessage() + ":" + url);
+            // throw new Exception("site domain except: " + e.getLocalizedMessage() + ":" + url);
+        }
+        return null;
+    }
+
 
     /**
      * 尝试过滤非有效域名，可能是登录，帮助，用户，下载等等

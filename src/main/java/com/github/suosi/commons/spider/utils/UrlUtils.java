@@ -182,7 +182,7 @@ public class UrlUtils {
 
             // 过滤非链接
             if (StringUtils.startsWithAny(StringUtils.lowerCase(url),
-                    "java", "tel:", "tencent", "ftp:", "mailto:", "sms:", "msnim:", "skype:", "whatsapp:", "#" )) {
+                    "java", "tel:", "tencent", "ftp:", "mailto:", "sms:", "msnim:", "skype:", "whatsapp:", "webcal:", "#" )) {
                 return false;
             }
 

@@ -9,20 +9,61 @@ import java.util.Set;
 
 public class SiteExtractTest {
     private static String[] domains = {
-            "zungu.net",
+            // "jzggzy.com",
+            // "ansteelgroup.com",
+            // "hscarbonfibre.com",
+            // "zzggzy.com",
+            // "hxb.com.cn",
+            // "saas.ac.cn",
+            // "chinafuning.gov.cn",
+            // "newmarketingcn.com",
+            // "wnggzy.com",
+            // "boznews.cn",
+            // "icbc.com.cn",
+            // "lyggzyjy.cn",
+            // "fsdt.com.cn",
+            // "lssggzy.com",
+            // "yaggzyjy.cn",
+            // "sfc.hk",
+            // "safp.gov.mo",
+            // "gzslyxx.com",
+            // "ccb.com",
+            // "fwol.cn",
+            // "cfpi.cn",
+            // "hnagroup.com",
+            // "szcdc.cn",
+            // "nmhms.org.cn",
+            // "xtxh.net",
+            // "hkbea.com.cn",
+            // "xhyc.net",
+            // "cinda.com.cn",
+            // "iwhr.com",
+            // "cmatc.cn",
+            // "zjwclw.cn",
+            // "i2863.com",
+            // "jyggjy.cn",
+            // "rcxxpt.cn",
+            "szftu.org",
+            // "qxnrtv.com",
+            // "bzggzyjy.gov.cn",
+            // "taggzyjy.com.cn",
+            // "hgggzy.com"
     };
 
     @Test
     public void domain() {
-        try {
-            Site domain = SiteExtract.domain("paper.chinaso.com");
-            domain.setHtml("");
-
-            System.out.println(domain.getLinks());
-            System.out.println(domain.getSubDomain());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        for (String domainUrl : domains) {
+            try {
+                System.out.println(domainUrl);
+                Site domain = SiteExtract.domain(domainUrl, 30L, true);
+                domain.setHtml("");
+                System.out.println(domain.getLinks());
+                System.out.println(domain.getSubDomain());
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
         }
+
 
     }
 
