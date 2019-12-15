@@ -100,47 +100,47 @@ public class PageExtract {
         String description = Parse.parseDescription(document);
         Set<String> links = Parse.parseLinks(document, host, url);
 
-        if (links.size() == 0) {
-            String refreshUrl = "";
-            Matcher matcher1 = LOCATION_PATTERN.matcher(html);
-            Matcher matcher2 = LOCATION2_PATTERN.matcher(html);
-            Matcher matcher3 = REFRESH_PATTERN.matcher(html);
-            Matcher matcher4 = LOCATION3_PATTERN.matcher(html);
-            if (matcher1.find()) {
-                refreshUrl = matcher1.group(1);
-            } else if (matcher2.find()) {
-                refreshUrl = matcher2.group(1);
-            } else if (matcher3.find()) {
-                refreshUrl = matcher3.group(1);
-            } else if (matcher4.find()) {
-                refreshUrl = matcher4.group(1);
-            }
-
-            if (refreshUrl.length() > 0) {
-                try {
-                    URL absoluteUrl = new URL(url);
-
-                    // path 为空的情况，这种一般是错误，直接移除
-                    if (StringUtils.isBlank(absoluteUrl.getPath())) {
-                        refreshUrl = Parse.removeStartComplete(refreshUrl, "./");
-                        refreshUrl = Parse.removeStartComplete(refreshUrl, "../");
-                    }
-
-                    URL parseUrl = new URL(absoluteUrl, refreshUrl);
-                    refreshUrl = parseUrl.toString();
-
-                    try (Response response2 = OkHttpUtils.client().newCall(OkHttpUtils.request(refreshUrl)).execute()) {
-                        if (response2.isSuccessful() && response2.body() != null) {
-                            return response(response2, host, refreshUrl);
-                        }
-                    } catch (IOException e) {
-                        System.out.println("refreshurl:" + e.getLocalizedMessage() + ":" + url);
-                    }
-                } catch (IOException e) {
-                    System.out.println("again error:" + e.getLocalizedMessage() + ":" + refreshUrl);
-                }
-            }
-        }
+        // if (links.size() == 0) {
+        //     String refreshUrl = "";
+        //     Matcher matcher1 = LOCATION_PATTERN.matcher(html);
+        //     Matcher matcher2 = LOCATION2_PATTERN.matcher(html);
+        //     Matcher matcher3 = REFRESH_PATTERN.matcher(html);
+        //     Matcher matcher4 = LOCATION3_PATTERN.matcher(html);
+        //     if (matcher1.find()) {
+        //         refreshUrl = matcher1.group(1);
+        //     } else if (matcher2.find()) {
+        //         refreshUrl = matcher2.group(1);
+        //     } else if (matcher3.find()) {
+        //         refreshUrl = matcher3.group(1);
+        //     } else if (matcher4.find()) {
+        //         refreshUrl = matcher4.group(1);
+        //     }
+        //
+        //     if (refreshUrl.length() > 0) {
+        //         try {
+        //             URL absoluteUrl = new URL(url);
+        //
+        //             // path 为空的情况，这种一般是错误，直接移除
+        //             if (StringUtils.isBlank(absoluteUrl.getPath())) {
+        //                 refreshUrl = Parse.removeStartComplete(refreshUrl, "./");
+        //                 refreshUrl = Parse.removeStartComplete(refreshUrl, "../");
+        //             }
+        //
+        //             URL parseUrl = new URL(absoluteUrl, refreshUrl);
+        //             refreshUrl = parseUrl.toString();
+        //
+        //             try (Response response2 = OkHttpUtils.client().newCall(OkHttpUtils.request(refreshUrl)).execute()) {
+        //                 if (response2.isSuccessful() && response2.body() != null) {
+        //                     return response(response2, host, refreshUrl);
+        //                 }
+        //             } catch (IOException e) {
+        //                 System.out.println("refreshurl:" + e.getLocalizedMessage() + ":" + url);
+        //             }
+        //         } catch (IOException e) {
+        //             System.out.println("again error:" + e.getLocalizedMessage() + ":" + refreshUrl);
+        //         }
+        //     }
+        // }
         return Page.builder()
                 .charset(charset)
                 .html(html)
