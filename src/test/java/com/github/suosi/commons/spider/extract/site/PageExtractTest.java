@@ -20,14 +20,14 @@ public class PageExtractTest {
      */
     @Test
     public void url() {
-        String url = "http://www.mmsonline.com.cn/mmsonline/downloadlist.jsp";
+        String url = "http://www2.qthnews.org.cn/qth/page.do?pId=1492";
 
         ArrayList<String> articles = new ArrayList<>();
         ArrayList<String> lists = new ArrayList<>();
         ArrayList<String> nones = new ArrayList<>();
 
         try {
-            Page page = PageExtract.url(url, 5);
+            Page page = PageExtract.url(url, 5, 0);
             if (page != null) {
                 Set<String> links = page.getLinks();
                 if (links != null) {

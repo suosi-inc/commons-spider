@@ -29,7 +29,7 @@ public class SiteExtract {
 
     private static final String NOT_WWW = "not_www";
 
-    private static final Pattern REFRESH_PATTERN = Pattern.compile("<meta.*?url=(.*?)\".*?>", Pattern.CASE_INSENSITIVE);
+    private static final Pattern REFRESH_PATTERN = Pattern.compile("<meta.*?url=(.*?)[\"\']+.*?>", Pattern.CASE_INSENSITIVE);
 
     private static final Pattern LOCATION_PATTERN = Pattern.compile("location\\.href\\s*=\\s*[\"\']+(.*?)[\"\']+", Pattern.CASE_INSENSITIVE);
 

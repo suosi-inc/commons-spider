@@ -172,10 +172,10 @@ public class UrlUtils {
             }
 
             // 包含特殊后缀
-            if (StringUtils.containsAny(StringUtils.lowerCase(url),
+            if (StringUtils.endsWithAny(StringUtils.lowerCase(url),
                     ".pdf", ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".txt", ".xml", ".xls", ".xlsx",
                     ".apk", ".cgi", ".exe", ".rss", ".sig", ".sgf", ".bz2", ".play",".doc", ".docx", ".ppt", ".pptx",
-                    ".rar", ".zip", ".gz", ".mp3", ".mp4", ".rm", ".rmvb", ".mov", ".ogv" )) {
+                    ".rar", ".zip", ".gz", ".mp3", ".mp4", ".rm", ".rmvb", ".mov", ".ogv", ".flv" )) {
                 // 此处不能用反向排除法，如http://baseline.shps.org/www.shps.org
                 return false;
             }

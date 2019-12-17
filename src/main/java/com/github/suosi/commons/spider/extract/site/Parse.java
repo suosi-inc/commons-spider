@@ -237,57 +237,67 @@ public class Parse {
         Elements elements = document.select("a,area");
         if (elements.size() > 0) {
             for (Element element : elements) {
-                String link = StringUtils.trimToEmpty(element.attr("href"));
-                link = link.replace("\r\n", "");
-                link = link.replace("\n", "");
-                link = link.trim();
+                String tmpLink = StringUtils.trimToEmpty(element.attr("href"));
+                Set<String> tmpLinks = new HashSet<>();
+                tmpLinks.add(tmpLink);
 
-                // 过滤垃圾链接
-                if (!UrlUtils.filterUrl(link)) {
-                    continue;
+                String tmpLink2 = StringUtils.trimToEmpty(element.attr("url"));
+                if (tmpLink2.length() > 0) {
+                    tmpLinks.add(tmpLink2);
                 }
 
-                // 转换补全相对、绝对路径
-                if (!StringUtils.startsWithIgnoreCase(link, HTTP_PROTOCOL)
-                        && !StringUtils.startsWithIgnoreCase(link, HTTPS_PROTOCOL)) {
-                    try {
-                        URL absoluteUrl = new URL(url);
+                for (String link : tmpLinks) {
+                    link = link.replace("\r\n", "");
+                    link = link.replace("\n", "");
+                    link = link.trim();
 
-                        // path 为空的情况，这种一般是错误，直接移除
-                        if (StringUtils.isBlank(absoluteUrl.getPath())) {
-                            link = removeStartComplete(link, "./");
-                            link = removeStartComplete(link, "../");
+                    // 过滤垃圾链接
+                    if (!UrlUtils.filterUrl(link)) {
+                        continue;
+                    }
+
+                    // 转换补全相对、绝对路径
+                    if (!StringUtils.startsWithIgnoreCase(link, HTTP_PROTOCOL)
+                            && !StringUtils.startsWithIgnoreCase(link, HTTPS_PROTOCOL)) {
+                        try {
+                            URL absoluteUrl = new URL(url);
+
+                            // path 为空的情况，这种一般是错误，直接移除
+                            if (StringUtils.isBlank(absoluteUrl.getPath())) {
+                                link = removeStartComplete(link, "./");
+                                link = removeStartComplete(link, "../");
+                            }
+
+                            URL parseUrl = new URL(absoluteUrl, link);
+                            link = parseUrl.toString();
+                        } catch (IOException e) {
+                            System.out.println(e.getLocalizedMessage() + ":" + url + ":" + link);
+                            continue;
                         }
+                    }
 
-                        URL parseUrl = new URL(absoluteUrl, link);
-                        link = parseUrl.toString();
-                    } catch (IOException e) {
-                        System.out.println(e.getLocalizedMessage() + ":" + url + ":" + link);
+                    // 验证链接
+                    if (!UrlUtils.verifyUrl(link)) {
                         continue;
                     }
-                }
 
-                // 验证链接
-                if (!UrlUtils.verifyUrl(link)) {
-                    continue;
-                }
-
-                // 排除站外链接
-                URL parse = UrlUtils.parse(link);
-                if (parse == null) {
-                    continue;
-                }
-                String host = parse.getHost();
-                String topDomain = DomainUtils.topDomain(domain);
-                if (topDomain != null) {
-                    if (!topDomain.equals(host) && !StringUtils.endsWithIgnoreCase(host, "." + topDomain)) {
+                    // 排除站外链接
+                    URL parse = UrlUtils.parse(link);
+                    if (parse == null) {
                         continue;
                     }
-                }
+                    String host = parse.getHost();
+                    String topDomain = DomainUtils.topDomain(domain);
+                    if (topDomain != null) {
+                        if (!topDomain.equals(host) && !StringUtils.endsWithIgnoreCase(host, "." + topDomain)) {
+                            continue;
+                        }
+                    }
 
-                // 最后验证一下这个 URL 的格式
-                if (UrlUtils.verifyUrl(link)) {
-                    links.add(link);
+                    // 最后验证一下这个 URL 的格式
+                    if (UrlUtils.verifyUrl(link)) {
+                        links.add(link);
+                    }
                 }
             }
         }

@@ -23,11 +23,11 @@ import java.util.regex.Pattern;
  */
 public class PageExtract {
 
-    private static final Pattern REFRESH_PATTERN = Pattern.compile("<meta.*?url=(.*?)\".*?>", Pattern.CASE_INSENSITIVE);
+    private static final Pattern REFRESH_PATTERN = Pattern.compile("<meta.*?url=(.*?)[\"\']+.*?>", Pattern.CASE_INSENSITIVE);
 
     private static final Pattern LOCATION_PATTERN = Pattern.compile("location\\.href\\s*=\\s*[\"\']+(.*?)[\"\']+", Pattern.CASE_INSENSITIVE);
 
-    private static final Pattern LOCATION2_PATTERN = Pattern.compile("\\.location\\s*=\\s*[\"\']+(.*?)[\"\']+", Pattern.CASE_INSENSITIVE);
+    private static final Pattern LOCATION2_PATTERN = Pattern.compile("\\.location\\s*=\\s*[(\"\']+(.*?)[\"\')]+", Pattern.CASE_INSENSITIVE);
 
     private static final Pattern LOCATION3_PATTERN = Pattern.compile("jump\\([\"\']+(.*?)[\"\']+\\)", Pattern.CASE_INSENSITIVE);
 
@@ -39,7 +39,7 @@ public class PageExtract {
      */
     public static Page url(String url) throws Exception {
         url = url.trim();
-        if (UrlUtils.verifyUrl(url)) {
+        if (UrlUtils.verifyUrl(url) && UrlUtils.filterUrl(url)) {
             URL parseUrl = UrlUtils.parse(url);
 
             if (parseUrl != null) {
@@ -67,7 +67,7 @@ public class PageExtract {
      * @return
      */
     public static Page url(String url, long timeoutSecond) throws Exception {
-        if (UrlUtils.verifyUrl(url)) {
+        if (UrlUtils.verifyUrl(url) && UrlUtils.filterUrl(url)) {
             URL parseUrl = UrlUtils.parse(url);
             if (parseUrl != null) {
                 String host = parseUrl.getHost();
@@ -95,7 +95,7 @@ public class PageExtract {
      * @return
      */
     public static Page url(String url, long timeoutSecond, int deep) throws Exception {
-        if (UrlUtils.verifyUrl(url)) {
+        if (UrlUtils.verifyUrl(url) && UrlUtils.filterUrl(url)) {
             URL parseUrl = UrlUtils.parse(url);
             if (parseUrl != null) {
                 String host = parseUrl.getHost();
@@ -125,7 +125,11 @@ public class PageExtract {
         String title = Parse.parseTitle(document);
         String keywords = Parse.parseKeywords(document);
         String description = Parse.parseDescription(document);
-        Set<String> links = Parse.parseLinks(document, host, url);
+        String lastUrl = "";
+        try {
+            lastUrl = response.networkResponse().request().url().toString();
+        } catch (Exception e) {}
+        Set<String> links = Parse.parseLinks(document, host, lastUrl);
 
         return Page.builder()
                 .charset(charset)
@@ -147,7 +151,11 @@ public class PageExtract {
         String title = Parse.parseTitle(document);
         String keywords = Parse.parseKeywords(document);
         String description = Parse.parseDescription(document);
-        Set<String> links = Parse.parseLinks(document, host, url);
+        String lastUrl = "";
+        try {
+            lastUrl = response.networkResponse().request().url().toString();
+        } catch (Exception e) {}
+        Set<String> links = Parse.parseLinks(document, host, lastUrl);
 
         if (links.size() == 0 && deep == 0) {
             String refreshUrl = "";
