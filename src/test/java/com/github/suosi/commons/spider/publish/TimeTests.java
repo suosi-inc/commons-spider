@@ -9,7 +9,7 @@ import org.junit.Test;
 public class TimeTests {
     @Test
     public void test() {
-        String url = "http://www.peoplerail.com/rail/list-246-1.html";
+        String url = "http://www.81.cn/jsjz/2016-01/25/content_6868310.htm";
         String time = getHtml(url);
         System.out.println(time);
     }
@@ -22,7 +22,7 @@ public class TimeTests {
                 "\t\t\t  <span>来源：</span>\n" +
                 "\t\t\t</div>\n";
 
-        System.out.println(Parse.parsePublishTime(html));
+        System.out.println(Parse.parsePublishTime(html, ""));
     }
 
     private static String getHtml(String url) {
@@ -31,7 +31,7 @@ public class TimeTests {
                 byte[] htmlBytes = response.body().bytes();
                 String charset = CharsetUtils.guessCharset(htmlBytes, response);
                 String html = new String(htmlBytes, charset);
-                return Parse.parsePublishTime(html);
+                return Parse.parsePublishTime(html, url);
             }
 
         } catch (Exception e) {
@@ -40,5 +40,6 @@ public class TimeTests {
 
         return "";
     }
+
 
 }

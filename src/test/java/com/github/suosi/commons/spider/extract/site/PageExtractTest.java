@@ -20,7 +20,7 @@ public class PageExtractTest {
      */
     @Test
     public void url() {
-        String url = "http://www2.qthnews.org.cn/qth/page.do?pId=1492";
+        String url = "http://www.81.cn/gfbmap/paperindex.htm";
 
         ArrayList<String> articles = new ArrayList<>();
         ArrayList<String> lists = new ArrayList<>();

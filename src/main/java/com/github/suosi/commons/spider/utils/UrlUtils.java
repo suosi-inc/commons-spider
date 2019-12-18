@@ -275,7 +275,6 @@ public class UrlUtils {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
             // 静态纯数字
             Matcher matcher = CONTENT_STATIC_PATTERN.matcher(path);
             if (matcher.find()) {
@@ -293,10 +292,10 @@ public class UrlUtils {
             } else if (CONTENT_STATIC_WORD_PATTERN.matcher(path).find()) {
                 if (StringUtils.startsWithIgnoreCase(path, "forum-")
                         || StringUtils.startsWithIgnoreCase(path, "zhuanti")
+                        || StringUtils.startsWithIgnoreCase(path, "node")
                         || StringUtils.startsWithIgnoreCase(path, "list")) {
                     return false;
                 }
-
                 return true;
 
             // 动态

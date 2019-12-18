@@ -26,7 +26,7 @@ public class ContentExtractTest {
                 String html = new String(bytes, charset);
                 News newsByHtml = ContentExtractor.getNewsByHtml(html);
 //                System.out.println(newsByHtml);
-                System.out.println(Parse.parsePublishTime(html));
+                System.out.println(Parse.parsePublishTime(html, url));
                 System.out.println(newsByHtml.getTitle());
             }
         } catch (IOException e) {
@@ -125,7 +125,7 @@ public class ContentExtractTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println(Parse.parsePublishTime(html));
+        System.out.println(Parse.parsePublishTime(html, ""));
         System.out.println(newsByHtml.getTitle());
     }
 }
