@@ -121,20 +121,18 @@ public class Parse {
         html = Pattern.compile("<script.*?>.*?</script>").matcher(html).replaceAll("");
 
         String res = "";
-        String chinese = "(发布|创建|出版|发表|编辑|星期|来源|时间)";
+        String chinese = "(发布|创建|出版|发表|编辑|星期|来源|时间|分享到)";
         String english = "(publish|create)";
-        String classSource = "(class=\"source\"|class=\"publishTime\")";
-        String timeReg = "(20\\d{2}[-/年.])?(0[1-9]|1[0-2]|[1-9])[-/月.](0[1-9]|[1-2][0-9]|3[0-1]|[1-9])[日T]?\\s{0,2}(([0-1][0-9]|2[0-3]|[1-9])[:点时]([0-5][0-9]|[0-9])([:分]([0-5][0-9]|[0-9]))?)?";
+        String classSource = "(class=\"source\"|class=\"publishTime\"|<div class=\"article|<div class=\"content)";
+        String timeReg = "(20)?(\\d{2}[-/年.])?(0[1-9]|1[0-2]|[1-9])[-/月.](0[1-9]|[1-2][0-9]|3[0-1]|[1-9])[日T]?\\s{0,2}(([0-1][0-9]|2[0-3]|[1-9])[:点时]([0-5][0-9]|[0-9])([:分]([0-5][0-9]|[0-9]))?)?";
         String ymd = "20\\d{2}[-/年.](0[1-9]|1[0-2]|[1-9])[-/月.](0[1-9]|[1-2][0-9]|3[0-1]|[1-9])[日T]?\\s{0,2}(([0-1][0-9]|2[0-3]|[1-9])[:点时]([0-5][0-9]|[0-9])([:分]([0-5][0-9]|[0-9]))?)?";
         String md = "(0[1-9]|1[0-2]|[1-9])[-/月.](0[1-9]|[1-2][0-9]|3[0-1]|[1-9])[日T]?\\s{0,2}(([0-1][0-9]|2[0-3]|[1-9])[:点时]([0-5][0-9]|[0-9])([:分]([0-5][0-9]|[0-9]))?)?";
-        String urlTimeReg = "20\\d{2}[-/年_]*(0[1-9]|1[0-2]|[1-9])[-/月_]*(0[1-9]|[1-2][0-9]|3[0-1]|[1-9])";
+        String urlTimeReg = "(20)?(1[0-9]|2[0-9]){2}[-/年_]*(0[1-9]|1[0-2]|[1-9])[-/月_]*(0[1-9]|[1-2][0-9]|3[0-1]|[1-9])[^\\d+]+";
         //第一优先级
         String[] first = {
                 "(pubdate|pubtime|dateupdate)",
-                english + "(.{0,10})(time|at|date)",
-                chinese + "(时间|于|日期)",
-                english + "(.{0,10})(time|at|date)",
-                chinese + "(时间|于|日期)",
+                english + "(.{0,10})(time|at|date)?",
+                chinese + "(时间|于|日期)?",
                 classSource
         };
 
@@ -155,84 +153,94 @@ public class Parse {
             if (matcherTime.find()) {
                 res = matcherTime.group();
                 resList.add(res);
+                // System.out.println("res1:" + res);
             }
         }
-
-        //第一优先级宽到可以没有年份
-        String match2 = matches(first, html, timeReg);
-        if (!"".equals(match2)) {
-            Matcher matcherTime = patternTime.matcher(match2);
-            if (matcherTime.find()) {
-                res = matcherTime.group();
-                resList.add(res);
-            }
-        }
-
-        // 额外增加URL提取时间
-        Matcher rm = Pattern.compile(urlTimeReg).matcher(url);
-        if (rm.find()) {
-            res = rm.group();
-            res = Pattern.compile("[/_-]").matcher(res).replaceAll("");
-            resList.add(res);
-        }
-
         // step 2
         if (resList.size() == 0) {
 
-            //第二优先级必须要有年份
-            String match3 = matches(second, html, ymd);
-            if (!"".equals(match3)) {
-                Matcher matcherTime = patternTime.matcher(match3);
+            //第一优先级宽到可以没有年份
+            String match2 = matches(first, html, timeReg);
+            if (!"".equals(match2)) {
+                Matcher matcherTime = patternTime.matcher(match2);
                 if (matcherTime.find()) {
                     res = matcherTime.group();
                     resList.add(res);
+                    // System.out.println("res2:" + res);
                 }
+            }
+
+            // 额外增加URL提取时间
+            Matcher rm = Pattern.compile(urlTimeReg).matcher(url);
+            if (rm.find()) {
+                res = rm.group();
+                // 去除最后面的非数字
+                res = Pattern.compile("[^\\d]+$").matcher(res).replaceAll("");
+                // 替换中间符
+                res = Pattern.compile("[/_]").matcher(res).replaceAll("-");
+                resList.add(res);
+                // System.out.println("res3:" + res);
             }
 
             // step 3
             if (resList.size() == 0) {
-                // 直接匹配日期
-                Matcher m = Pattern.compile(timeReg).matcher(html);
-                List<String> time = new ArrayList<>();
-                while (m.find()) {
-                    String item = m.group(0);
-                    time.add(item);
-                }
-                if (time.size() == 1) {
-                    res = time.get(0);
-                    resList.add(res);
-                } else {
-                    List<String> newTime = new ArrayList<>();
-                    for (String item : time) {
-                        if (Pattern.compile(ymd).matcher(item).matches()) {
-                            //优先找年月日齐全的
-                            newTime.add(item);
-                        }
-                    }
-                    if (!newTime.isEmpty()) {
-                        time = newTime;
-                    }
-                    Iterator<String> timeIterator = time.iterator();
-                    while (timeIterator.hasNext()) {
-                        String item = timeIterator.next();
-                        long ts = Static.strtotime(item);
-                        //取时间精度高的
-                        if (ts * 1000 > System.currentTimeMillis()) {
-                            timeIterator.remove();
-                            continue;
-                        }
-                        if (ts != 0 && ts % 100 != 0) {
-                            res = item;
-                            resList.add(res);
-                            break;
-                        }
-                    }
-                    if (res.equals("") && !time.isEmpty()) {
-                        res = time.get(0);
+
+                //第二优先级必须要有年份
+                String match3 = matches(second, html, ymd);
+                if (!"".equals(match3)) {
+                    Matcher matcherTime = patternTime.matcher(match3);
+                    if (matcherTime.find()) {
+                        res = matcherTime.group();
                         resList.add(res);
+                        // System.out.println("res4:" + res);
                     }
                 }
 
+                // step 4
+                if (resList.size() == 0) {
+                    // 直接匹配日期
+                    Matcher m = Pattern.compile(timeReg).matcher(html);
+                    List<String> time = new ArrayList<>();
+                    while (m.find()) {
+                        String item = m.group(0);
+                        time.add(item);
+                    }
+                    if (time.size() == 1) {
+                        res = time.get(0);
+                        resList.add(res);
+                    } else {
+                        List<String> newTime = new ArrayList<>();
+                        for (String item : time) {
+                            if (Pattern.compile(ymd).matcher(item).matches()) {
+                                //优先找年月日齐全的
+                                newTime.add(item);
+                            }
+                        }
+                        if (!newTime.isEmpty()) {
+                            time = newTime;
+                        }
+                        Iterator<String> timeIterator = time.iterator();
+                        while (timeIterator.hasNext()) {
+                            String item = timeIterator.next();
+                            long ts = Static.strtotime(item);
+                            //取时间精度高的
+                            if (ts * 1000 > System.currentTimeMillis()) {
+                                timeIterator.remove();
+                                continue;
+                            }
+                            if (ts != 0 && ts % 100 != 0) {
+                                res = item;
+                                resList.add(res);
+                                break;
+                            }
+                        }
+                        if (res.equals("") && !time.isEmpty()) {
+                            res = time.get(0);
+                            resList.add(res);
+                        }
+                    }
+
+                }
             }
         }
 
@@ -428,6 +436,7 @@ public class Parse {
             Pattern r = Pattern.compile(pattern);
             Matcher matcher = r.matcher(str);
             if (matcher.find()) {
+                // System.out.println(pattern);
                 return matcher.group();
             }
         }
@@ -452,10 +461,15 @@ public class Parse {
             str = StringUtils.substring(str, 0, 4) + "-" + StringUtils.substring(str, 4, 6)
                     + "-" + StringUtils.substring(str, 6, 8);
         }
+        // 年份少2位的
+        if (Pattern.compile("^\\d{2}-(0[1-9]|1[0-2]|[1-9])-(0[1-9]|[1-2][0-9]|3[0-1]|[1-9])").matcher(str).find()) {
+            str = "20" + str;
+        }
         //年份不齐的，补齐年份
         if (!Pattern.compile(ymd).matcher(str).find() && Pattern.compile(md).matcher(str).find()) {
             str = new SimpleDateFormat("yyyy").format(new Date()) + "-" + str;
         }
+
         return str.trim();
     }
 }
