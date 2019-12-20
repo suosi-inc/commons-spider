@@ -114,31 +114,40 @@ public class Parse {
      */
     public static String parsePublishTime(String html, String url) {
         html = Pattern.compile("\\s+").matcher(html).replaceAll(" ");
-        html = Pattern.compile("[\\u4e00-\\u9fa5]+来源").matcher(html).replaceAll(" ");
+        html = Pattern.compile("[\\u4e00-\\u9fa5]+来源").matcher(html).replaceAll("");
+        html = Pattern.compile("发布时间").matcher(html).replaceAll("发_ab_布_cd_时间");
+        html = Pattern.compile("[\\u4e00-\\u9fa5]+时间").matcher(html).replaceAll("");
+        html = Pattern.compile("发_ab_布_cd_时间").matcher(html).replaceAll("发布时间");
+        html = Pattern.compile("时间[\\u4e00-\\u9fa5]+").matcher(html).replaceAll("");
         html = Pattern.compile("<!--.*?-->").matcher(html).replaceAll("");
         html = Pattern.compile("/\\*.*?\\*/").matcher(html).replaceAll("");
         html = Pattern.compile("<style.*?>.*?</style>").matcher(html).replaceAll("");
         html = Pattern.compile("<script.*?>.*?</script>").matcher(html).replaceAll("");
+        html = Pattern.compile("href=[\"\']+.*?[\"\']+").matcher(html).replaceAll("");
+        html = Pattern.compile("src=[\"\']+.*?[\"\']+").matcher(html).replaceAll("");
+        html = Pattern.compile("url\\(.*?\\)").matcher(html).replaceAll("");
 
         String res = "";
-        String chinese = "(发布|创建|出版|发表|编辑|星期|来源|时间|分享到)";
+        String chinese = "(发布|创建|出版|发表|编辑)";
+        String chinese2 = "(星期|来源|时间|分享到|来自|浏览数|浏览量|访问量)";
         String english = "(publish|create)";
-        String classSource = "(class=\"source\"|class=\"publishTime\"|<div class=\"article|<div class=\"content)";
-        String timeReg = "(20)?(\\d{2}[-/年.])?(0[1-9]|1[0-2]|[1-9])[-/月.](0[1-9]|[1-2][0-9]|3[0-1]|[1-9])[日T]?\\s{0,2}(([0-1][0-9]|2[0-3]|[1-9])[:点时]([0-5][0-9]|[0-9])([:分]([0-5][0-9]|[0-9]))?)?";
+        String classSource = "(class=\"source\"|class=\"publishTime\"|class=\"publish-time\"|class=\"article|class=\"content|class=\"time\")";
+        String timeReg = "(20\\d{2}[-/年.])?(0[1-9]|1[0-2])[-/月.](0[1-9]|[1-2][0-9]|3[0-1])[日T]?\\s{0,2}(([0-1][0-9]|2[0-3]|[1-9])[:点时]([0-5][0-9]|[0-9])([:分]([0-5][0-9]|[0-9]))?)?";
         String ymd = "20\\d{2}[-/年.](0[1-9]|1[0-2]|[1-9])[-/月.](0[1-9]|[1-2][0-9]|3[0-1]|[1-9])[日T]?\\s{0,2}(([0-1][0-9]|2[0-3]|[1-9])[:点时]([0-5][0-9]|[0-9])([:分]([0-5][0-9]|[0-9]))?)?";
         String md = "(0[1-9]|1[0-2]|[1-9])[-/月.](0[1-9]|[1-2][0-9]|3[0-1]|[1-9])[日T]?\\s{0,2}(([0-1][0-9]|2[0-3]|[1-9])[:点时]([0-5][0-9]|[0-9])([:分]([0-5][0-9]|[0-9]))?)?";
-        String urlTimeReg = "(20)?(1[0-9]|2[0-9]){2}[-/年_]*(0[1-9]|1[0-2]|[1-9])[-/月_]*(0[1-9]|[1-2][0-9]|3[0-1]|[1-9])[^\\d+]+";
+        String urlTimeReg = "(20)?(1[0-9]|2[0-9]){2}[-/年_]*(0[1-9]|1[0-2])[-/月_]*(0[1-9]|[1-2][0-9]|3[0-1])[^\\d+]+";
         //第一优先级
         String[] first = {
-                "(pubdate|pubtime|dateupdate)",
+                chinese + "(时间|于|日期)",
+                chinese2 + "(时间|于|日期)?",
+                "(pubdate|pubtime|dateupdate|publish_time)",
                 english + "(.{0,10})(time|at|date)?",
-                chinese + "(时间|于|日期)?",
-                classSource
         };
 
         //第二优先级
         String[] second = {
                 chinese,
+                classSource
 //                "(时间|time|日期|date|at\\W)",
         };
 
@@ -170,18 +179,6 @@ public class Parse {
                 }
             }
 
-            // 额外增加URL提取时间
-            Matcher rm = Pattern.compile(urlTimeReg).matcher(url);
-            if (rm.find()) {
-                res = rm.group();
-                // 去除最后面的非数字
-                res = Pattern.compile("[^\\d]+$").matcher(res).replaceAll("");
-                // 替换中间符
-                res = Pattern.compile("[/_]").matcher(res).replaceAll("-");
-                resList.add(res);
-                // System.out.println("res3:" + res);
-            }
-
             // step 3
             if (resList.size() == 0) {
 
@@ -192,12 +189,26 @@ public class Parse {
                     if (matcherTime.find()) {
                         res = matcherTime.group();
                         resList.add(res);
-                        // System.out.println("res4:" + res);
+                        // System.out.println("res3:" + res);
                     }
                 }
 
+
                 // step 4
                 if (resList.size() == 0) {
+
+                    // 额外增加URL提取时间
+                    Matcher rm = Pattern.compile(urlTimeReg).matcher(url);
+                    if (rm.find()) {
+                        res = rm.group();
+                        // 去除最后面的非数字
+                        res = Pattern.compile("[^\\d]+$").matcher(res).replaceAll("");
+                        // 替换中间符
+                        res = Pattern.compile("[/_]").matcher(res).replaceAll("-");
+                        resList.add(res);
+                        // System.out.println("res4:" + res);
+                    }
+
                     // 直接匹配日期
                     Matcher m = Pattern.compile(timeReg).matcher(html);
                     List<String> time = new ArrayList<>();
@@ -432,7 +443,7 @@ public class Parse {
      */
     private static String matches(String[] rules, String str, String timeReg) {
         for (String pattern : rules) {
-            pattern = "(?i)((" + pattern + ".{0,50}" + timeReg + ")|(" + timeReg + ".{0,50}" + pattern + "))";
+            pattern = "(?i)((" + pattern + "[\\s\\S]{0,350}" + timeReg + ")|(" + timeReg + "[\\s\\S]{0,350}" + pattern + "))";
             Pattern r = Pattern.compile(pattern);
             Matcher matcher = r.matcher(str);
             if (matcher.find()) {

@@ -15,12 +15,13 @@ import java.util.regex.Pattern;
 
 public class PageExtractTest {
 
+
     /**
      * 测试 一个 URL 中的链接抽取
      */
     @Test
     public void url() {
-        String url = "http://www.81.cn/gfbmap/paperindex.htm";
+        String url = "http://www.cnbridge.cn/html/news/";
 
         ArrayList<String> articles = new ArrayList<>();
         ArrayList<String> lists = new ArrayList<>();
