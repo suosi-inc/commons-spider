@@ -38,25 +38,51 @@ public class PageExtract {
      * @return
      */
     public static Page url(String url) throws Exception {
-        url = url.trim();
-        if (UrlUtils.verifyUrl(url) && UrlUtils.filterUrl(url)) {
-            URL parseUrl = UrlUtils.parse(url);
-
-            if (parseUrl != null) {
-                String host = parseUrl.getHost();
-
-                try (Response response = OkHttpUtils.client().newCall(OkHttpUtils.request(url)).execute()) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        return response(response, host, url);
-                    }
-                } catch (IOException e) {
-                    // System.out.println(e.getLocalizedMessage() + ":" + url);
-                    throw new Exception("page url except: " + e.getLocalizedMessage() + ":" + url);
-                }
-            }
+        Page info;
+        try {
+            info = getUrl(url, 0, -1, "", 0, "", "");
+        } catch (Exception e) {
+            throw new Exception("page url except: " +e.getLocalizedMessage() + ":" + url);
         }
+        return info;
+    }
 
-        return null;
+    /**
+     * 根据URL，尝试抽取页面信息
+     *
+     * @param url
+     * @param proxyIp
+     * @param proxyPort
+     * @return
+     */
+    public static Page url(String url, String proxyIp, int proxyPort) throws Exception {
+        Page info;
+        try {
+            info = getUrl(url, 0, -1, proxyIp, proxyPort, "", "");
+        } catch (Exception e) {
+            throw new Exception("page url except: " +e.getLocalizedMessage() + ":" + url);
+        }
+        return info;
+    }
+
+    /**
+     * 根据URL，尝试抽取页面信息，带有超时时间 和 跳转
+     *
+     * @param url
+     * @param proxyIp
+     * @param proxyPort
+     * @param uname
+     * @param pwd
+     * @return
+     */
+    public static Page url(String url, String proxyIp, int proxyPort, String uname, String pwd) throws Exception {
+        Page info;
+        try {
+            info = getUrl(url, 0, -1, proxyIp, proxyPort, uname, pwd);
+        } catch (Exception e) {
+            throw new Exception("page url except: " +e.getLocalizedMessage() + ":" + url);
+        }
+        return info;
     }
 
     /**
@@ -67,46 +93,148 @@ public class PageExtract {
      * @return
      */
     public static Page url(String url, long timeoutSecond) throws Exception {
-        if (UrlUtils.verifyUrl(url) && UrlUtils.filterUrl(url)) {
-            URL parseUrl = UrlUtils.parse(url);
-            if (parseUrl != null) {
-                String host = parseUrl.getHost();
-
-                long timeout = timeoutSecond > 0 ? timeoutSecond : 3;
-                try (Response response = OkHttpUtils.client(timeout).newCall(OkHttpUtils.request(url)).execute()) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        return response(response, host, url);
-                    }
-                } catch (IOException e) {
-                    // System.out.println(e.getLocalizedMessage() + ":" + url);
-                    throw new Exception("page url except: " +e.getLocalizedMessage() + ":" + url);
-                }
-            }
+        Page info;
+        try {
+            info = getUrl(url, timeoutSecond, -1, "", 0, "", "");
+        } catch (Exception e) {
+            throw new Exception("page url except: " +e.getLocalizedMessage() + ":" + url);
         }
-
-        return null;
+        return info;
     }
 
     /**
-     * 根据URL，尝试抽取页面信息，带有超时时间
+     * 根据URL，尝试抽取页面信息，带有超时时间 和 跳转
      *
      * @param url
      * @param timeoutSecond
+     * @param proxyIp
+     * @param proxyPort
      * @return
      */
-    public static Page url(String url, long timeoutSecond, int deep) throws Exception {
+    public static Page url(String url, long timeoutSecond, String proxyIp, int proxyPort) throws Exception {
+        Page info;
+        try {
+            info = getUrl(url, timeoutSecond, -1, proxyIp, proxyPort, "", "");
+        } catch (Exception e) {
+            throw new Exception("page url except: " +e.getLocalizedMessage() + ":" + url);
+        }
+        return info;
+    }
+
+    /**
+     * 根据URL，尝试抽取页面信息，带有超时时间 和 跳转
+     *
+     * @param url
+     * @param timeoutSecond
+     * @param proxyIp
+     * @param proxyPort
+     * @param uname
+     * @param pwd
+     * @return
+     */
+    public static Page url(String url, long timeoutSecond, String proxyIp, int proxyPort, String uname, String pwd) throws Exception {
+        Page info;
+        try {
+            info = getUrl(url, timeoutSecond, -1, proxyIp, proxyPort, uname, pwd);
+        } catch (Exception e) {
+            throw new Exception("page url except: " +e.getLocalizedMessage() + ":" + url);
+        }
+        return info;
+    }
+
+    /**
+     * 根据URL，尝试抽取页面信息，带有超时时间 和 跳转
+     *
+     * @param url
+     * @param timeoutSecond
+     * @param location 是否考虑跳转
+     * @return
+     */
+    public static Page url(String url, long timeoutSecond, int location) throws Exception {
+        Page info;
+        try {
+            info = getUrl(url, timeoutSecond, location, "", 0, "", "");
+        } catch (Exception e) {
+            throw new Exception("page url except: " +e.getLocalizedMessage() + ":" + url);
+        }
+        return info;
+    }
+
+
+
+    /**
+     * 根据URL，尝试抽取页面信息，带有超时时间 和 跳转
+     *
+     * @param url
+     * @param timeoutSecond
+     * @param location 是否考虑跳转
+     * @param proxyIp
+     * @param proxyPort
+     * @return
+     */
+    public static Page url(String url, long timeoutSecond, int location, String proxyIp, int proxyPort) throws Exception {
+        Page info;
+        try {
+            info = getUrl(url, timeoutSecond, location, proxyIp, proxyPort, "", "");
+        } catch (Exception e) {
+            throw new Exception("page url except: " +e.getLocalizedMessage() + ":" + url);
+        }
+        return info;
+    }
+
+    /**
+     * 根据URL，尝试抽取页面信息，带有超时时间 和 跳转
+     *
+     * @param url
+     * @param timeoutSecond
+     * @param location 是否考虑跳转
+     * @param proxyIp
+     * @param proxyPort
+     * @param uname
+     * @param pwd
+     * @return
+     */
+    public static Page url(String url, long timeoutSecond, int location, String proxyIp, int proxyPort, String uname, String pwd) throws Exception {
+        Page info;
+        try {
+            info = getUrl(url, timeoutSecond, location, proxyIp, proxyPort, uname, pwd);
+        } catch (Exception e) {
+            throw new Exception("page url except: " +e.getLocalizedMessage() + ":" + url);
+        }
+        return info;
+    }
+
+    /**
+     * 根据URL，尝试抽取页面信息
+     *
+     * @param url
+     * @param timeoutSecond
+     * @param location 是否考虑跳转
+     * @param proxyIp
+     * @param proxyPort
+     * @param uname
+     * @param pwd
+     * @return
+     */
+    public static Page getUrl(String url, long timeoutSecond, int location, String proxyIp, int proxyPort, String uname, String pwd) throws Exception {
+        url = url.trim();
         if (UrlUtils.verifyUrl(url) && UrlUtils.filterUrl(url)) {
             URL parseUrl = UrlUtils.parse(url);
             if (parseUrl != null) {
                 String host = parseUrl.getHost();
 
                 long timeout = timeoutSecond > 0 ? timeoutSecond : 3;
-                try (Response response = OkHttpUtils.client(timeout).newCall(OkHttpUtils.request(url)).execute()) {
+                try (Response response = OkHttpUtils.client(timeout, proxyIp, proxyPort, uname, pwd).newCall(OkHttpUtils.request(url)).execute()) {
                     if (response.isSuccessful() && response.body() != null) {
-                        return response(response, host, url, deep);
+                        return response(response, host, url, location);
+                    } else {
+                        return Page.builder()
+                                .html("")
+                                .url(getResponseUrl(response, url))
+                                .httpcode(response.code())
+                                .build();
                     }
                 } catch (IOException e) {
-                    // System.out.println(e.getLocalizedMessage() + ":" + url);
                     throw new Exception("page url except: " +e.getLocalizedMessage() + ":" + url);
                 }
             }
@@ -115,7 +243,7 @@ public class PageExtract {
         return null;
     }
 
-    public static Page response(Response response, String host, String url) throws IOException {
+    public static Page response(Response response, String host, String url, int location) throws IOException {
         // 编码
         byte[] htmlBytes = response.body().bytes();
         String charset = CharsetUtils.guessCharset(htmlBytes, response);
@@ -125,39 +253,10 @@ public class PageExtract {
         String title = Parse.parseTitle(document);
         String keywords = Parse.parseKeywords(document);
         String description = Parse.parseDescription(document);
-        String lastUrl = "";
-        try {
-            lastUrl = response.networkResponse().request().url().toString();
-        } catch (Exception e) {}
-        Set<String> links = Parse.parseLinks(document, host, lastUrl);
+        url = getResponseUrl(response, url);
+        Set<String> links = Parse.parseLinks(document, host, url);
 
-        return Page.builder()
-                .charset(charset)
-                .html(html)
-                .title(title)
-                .keywords(keywords)
-                .description(description)
-                .links(links)
-                .build();
-    }
-
-    public static Page response(Response response, String host, String url, int deep) throws IOException {
-        // 编码
-        byte[] htmlBytes = response.body().bytes();
-        String charset = CharsetUtils.guessCharset(htmlBytes, response);
-        String html = new String(htmlBytes, charset);
-
-        Document document = Jsoup.parse(html);
-        String title = Parse.parseTitle(document);
-        String keywords = Parse.parseKeywords(document);
-        String description = Parse.parseDescription(document);
-        String lastUrl = "";
-        try {
-            lastUrl = response.networkResponse().request().url().toString();
-        } catch (Exception e) {}
-        Set<String> links = Parse.parseLinks(document, host, lastUrl);
-
-        if (links.size() == 0 && deep == 0) {
+        if (links.size() == 0 && location == 0) {
             String refreshUrl = "";
             Matcher matcher1 = LOCATION_PATTERN.matcher(html);
             Matcher matcher2 = LOCATION2_PATTERN.matcher(html);
@@ -188,7 +287,7 @@ public class PageExtract {
 
                     try (Response response2 = OkHttpUtils.client().newCall(OkHttpUtils.request(refreshUrl)).execute()) {
                         if (response2.isSuccessful() && response2.body() != null) {
-                            return response(response2, host, refreshUrl, deep + 1);
+                            return response(response2, host, refreshUrl, location + 1);
                         }
                     } catch (IOException e) {
                         System.out.println("refreshurl:" + e.getLocalizedMessage() + ":" + url);
@@ -205,6 +304,8 @@ public class PageExtract {
                 .keywords(keywords)
                 .description(description)
                 .links(links)
+                .httpcode(response.code())
+                .url(url)
                 .build();
     }
 
@@ -228,6 +329,18 @@ public class PageExtract {
                 .keywords(keywords)
                 .description(description)
                 .links(links)
+                .httpcode(200)
+                .url(url)
                 .build();
+    }
+
+    // 获取最终URL
+    private static String getResponseUrl(Response response, String url) {
+        String lastUrl = url;
+        try {
+            assert response.networkResponse() != null;
+            lastUrl = response.networkResponse().request().url().toString();
+        } catch (Exception e) {}
+        return lastUrl;
     }
 }

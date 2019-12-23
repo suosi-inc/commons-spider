@@ -21,7 +21,8 @@ public class PageExtractTest {
      */
     @Test
     public void url() {
-        String url = "http://www.cnbridge.cn/html/news/";
+        String url = "http://sdaic.gov.cn";
+        // String url = "http://ip.suosi.net.cn/t.php";
 
         ArrayList<String> articles = new ArrayList<>();
         ArrayList<String> lists = new ArrayList<>();
@@ -29,7 +30,10 @@ public class PageExtractTest {
 
         try {
             Page page = PageExtract.url(url, 5, 0);
+            // Page page = PageExtract.url(url, 5, 0, "127.0.0.1", 10809);
             if (page != null) {
+                System.out.println(page.getHttpcode());
+                System.out.println(page.getHtml());
                 Set<String> links = page.getLinks();
                 if (links != null) {
                     for (String link : links) {
@@ -58,5 +62,21 @@ public class PageExtractTest {
         } catch (Exception e) {
             System.out.println("error: " +  e.getMessage());
         }
+    }
+
+    /**
+     * 测试 一个 URL 中的链接抽取
+     */
+    @Test
+    public void urlContent() {
+        try {
+            String url = "https://www.zbytb.com/s-zb-6631607.html";
+            Page info = PageExtract.url(url, 3, 0);
+            System.out.println(info.getHttpcode());
+            System.out.println(info.getHtml());
+        }catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
     }
 }

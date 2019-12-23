@@ -55,7 +55,7 @@ public class TimeTests {
 
     @Test
     public void test() {
-        String url = "http://news.hexun.com/2018-07-20/193522374.html";
+        String url = "https://www.zbytb.com/s-zb-6631607.html";
         String time = getHtml(url);
         System.out.println(time);
     }

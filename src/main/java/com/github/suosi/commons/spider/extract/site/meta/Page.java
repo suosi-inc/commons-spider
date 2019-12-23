@@ -19,4 +19,8 @@ public class Page {
     private String html;
 
     private Set<String> links;
+
+    private int httpcode;
+    
+    private String url;
 }

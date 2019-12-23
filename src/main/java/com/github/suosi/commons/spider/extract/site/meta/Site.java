@@ -32,4 +32,6 @@ public class Site {
     private Set<String> subDomain;
 
     private Set<String> links;
+
+    private int httpcode;
 }

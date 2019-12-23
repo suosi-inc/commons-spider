@@ -116,11 +116,11 @@ public class UrlUtilsTest {
      */
     @Test
     public void guessArticleUrl() {
-        String url = "http://www.siyst.org.cn/portal/article/index/id/12/cid/1.html";
+        String url = "https://www.zbytb.com/s-zb-6631607.html";
 
-        if (UrlUtils.guessArticleUrl(url, null)) {
+        if (UrlUtils.guessArticleUrl(url, "zbytb.com")) {
             System.out.println("A -> " + url);
-        } else if (UrlUtils.guessListUrl(url, null)) {
+        } else if (UrlUtils.guessListUrl(url, "zbytb.com")) {
             System.out.println("L -> " + url);
         } else {
             System.out.println("N -> " + url);
@@ -148,10 +148,14 @@ public class UrlUtilsTest {
     public void parseUrl() {
         // String url = "http://jyj.suqian.gov.cn/../sjyj/mbjyjygl/list_wz.shtml";
         // String url = "http://www.jptour.cn/../../../../s_毛里求斯.html";
-        String url = "http://zggdjy.jyb.cn/./qkgk/";
+        // String url = "http://zggdjy.jyb.cn/./qkgk/";
+        String url = "https://www.baidu.com";
 
         try {
             URL absoluteUrl = new URL(url);
+            System.out.println(absoluteUrl);
+            System.out.println(absoluteUrl.getHost());
+            System.out.println(absoluteUrl.getProtocol());
             String file = absoluteUrl.getFile();
             file = StringUtils.removeStart(file, "/");
             file = Parse.removeStartComplete(file, "./");

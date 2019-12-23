@@ -4,6 +4,7 @@ import com.github.suosi.commons.spider.extract.site.meta.Site;
 import com.github.suosi.commons.spider.utils.CharsetUtils;
 import com.github.suosi.commons.spider.utils.DomainUtils;
 import com.github.suosi.commons.spider.utils.OkHttpUtils;
+import com.github.suosi.commons.spider.utils.UrlUtils;
 import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -11,6 +12,7 @@ import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,8 +28,6 @@ public class SiteExtract {
     private static final String HTTP_PROTOCOL = "http";
 
     private static final String HTTPS_PROTOCOL = "https";
-
-    private static final String NOT_WWW = "not_www";
 
     private static final Pattern REFRESH_PATTERN = Pattern.compile("<meta.*?url=(.*?)[\"\']+.*?>", Pattern.CASE_INSENSITIVE);
 
@@ -88,7 +88,7 @@ public class SiteExtract {
      * @return
      */
     public static Site domain(String domain) throws Exception {
-        String[] protocols = {HTTP_PROTOCOL, HTTPS_PROTOCOL, NOT_WWW};
+        String[] protocols = {HTTP_PROTOCOL, HTTPS_PROTOCOL,HTTP_PROTOCOL, HTTPS_PROTOCOL};
 
         if (StringUtils.isNotBlank(domain)) {
             String mainDomain = domain;
@@ -104,16 +104,16 @@ public class SiteExtract {
                 mainDomain = WWW_PREFIX + domain;
             }
 
+            int tryCnt = 0;
             for (String protocol : protocols) {
                 // 构造 URL
                 String url;
-                if ("not_www".equals(protocol)) {
-                    protocol = "http";
+                if (tryCnt > 1) {
                     url = protocol + "://" + domain;
                 } else {
                     url = protocol + "://" + mainDomain;
                 }
-
+                tryCnt += 1;
                 try (Response response = OkHttpUtils.client().newCall(OkHttpUtils.request(url)).execute()) {
                     // System.out.println(response.code());
                     if (response.isSuccessful() && response.body() != null) {
@@ -165,7 +165,7 @@ public class SiteExtract {
      * @return
      */
     public static Site domain(String domain, Long timeoutSecond, boolean location) throws Exception {
-        String[] protocols = {HTTP_PROTOCOL, HTTPS_PROTOCOL, NOT_WWW};
+        String[] protocols = {HTTP_PROTOCOL, HTTPS_PROTOCOL, HTTP_PROTOCOL, HTTPS_PROTOCOL};
 
         if (StringUtils.isNotBlank(domain)) {
             String mainDomain = domain;
@@ -181,16 +181,16 @@ public class SiteExtract {
                 mainDomain = WWW_PREFIX + domain;
             }
 
+            int tryCnt = 0;
             for (String protocol : protocols) {
                 // 构造 URL
                 String url;
-                if ("not_www".equals(protocol)) {
-                    protocol = "http";
+                if (tryCnt > 1) {
                     url = protocol + "://" + domain;
                 } else {
                     url = protocol + "://" + mainDomain;
                 }
-
+                tryCnt += 1;
                 Site info =  getSiteByDomain(url, domain, mainDomain, protocol, timeoutSecond);
                 if (info != null) {
                     Set<String> links = info.getLinks();
@@ -286,6 +286,50 @@ public class SiteExtract {
         return null;
     }
 
+
+    /**
+     * 根据用户传递的response 解析成site
+     *
+     * @param response
+     * @param url
+     * @param domain
+     * @return
+     */
+    public static Site responseToSite(Response response, String url, String domain) throws Exception {
+        // 编码
+        byte[] htmlBytes = response.body().bytes();
+        String charset = CharsetUtils.guessCharset(htmlBytes, response);
+        String html = new String(htmlBytes, charset);
+
+        URL parseUrl = UrlUtils.parse(url);
+
+        String protocol = parseUrl.getProtocol();
+        String mainDomain = parseUrl.getHost();
+
+        // 信息抽取
+        Document document = Jsoup.parse(html);
+        String title = Parse.parseTitle(document);
+        String cleanTitle = Parse.parseCleanTitle(title);
+        String keywords = Parse.parseKeywords(document);
+        String description = Parse.parseDescription(document);
+        String icp = Parse.parseIcp(html);
+        Set<String> links = Parse.parseLinks(document, domain, url);
+        Set<String> subDomains = Parse.parseSubDomain(document, domain, url);
+
+        return Site.builder()
+                .protocol(protocol)
+                .mainDomain(mainDomain)
+                .charset(charset)
+                .html(html)
+                .title(title)
+                .cleanTitle(cleanTitle)
+                .keywords(keywords)
+                .description(description)
+                .icp(icp)
+                .subDomain(subDomains)
+                .links(links)
+                .build();
+    }
 
     /**
      * 尝试过滤非有效域名，可能是登录，帮助，用户，下载等等

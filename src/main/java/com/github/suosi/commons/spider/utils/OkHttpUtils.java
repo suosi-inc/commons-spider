@@ -1,9 +1,9 @@
 package com.github.suosi.commons.spider.utils;
 
-import okhttp3.ConnectionPool;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
+import okhttp3.*;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -68,6 +68,31 @@ public class OkHttpUtils {
         return builder(DEFAULT_CONNECTION_POOL, timeoutSecond).build();
     }
 
+    /**
+     * OkHttpClient 自定义超时时间，默认连接池
+     *
+     * @param timeoutSecond
+     * @param host  代理ip
+     * @param port 端口
+     * @return OkHttpClient
+     */
+    public static OkHttpClient client(long timeoutSecond, String host, int port) {
+        return builder(DEFAULT_CONNECTION_POOL, timeoutSecond, host, port, "", "").build();
+    }
+
+    /**
+     * OkHttpClient 自定义超时时间，默认连接池
+     *
+     * @param timeoutSecond
+     * @param host  代理ip
+     * @param port  端口
+     * @param uname 用户名
+     * @param pwd  密码
+     * @return OkHttpClient
+     */
+    public static OkHttpClient client(long timeoutSecond, String host, int port, String uname, String pwd) {
+        return builder(DEFAULT_CONNECTION_POOL, timeoutSecond, host, port, uname, pwd).build();
+    }
 
     /**
      * OkHttpClient 自定义连接池，自定义超时时间
@@ -78,6 +103,35 @@ public class OkHttpUtils {
      */
     public static OkHttpClient client(ConnectionPool connectionPool, long timeoutSecond) {
         return builder(connectionPool, timeoutSecond).build();
+    }
+
+
+    /**
+     * OkHttpClient 自定义连接池，自定义超时时间
+     *
+     * @param connectionPool
+     * @param timeoutSecond
+     * @param host  代理ip
+     * @param port  端口
+     * @return
+     */
+    public static OkHttpClient client(ConnectionPool connectionPool, long timeoutSecond, String host, int port) {
+        return builder(connectionPool, timeoutSecond, host, port, "", "").build();
+    }
+
+    /**
+     * OkHttpClient 自定义连接池，自定义超时时间
+     *
+     * @param connectionPool
+     * @param timeoutSecond
+     * @param host  代理ip
+     * @param port  端口
+     * @param uname 用户名
+     * @param pwd  密码
+     * @return
+     */
+    public static OkHttpClient client(ConnectionPool connectionPool, long timeoutSecond, String host, int port, String uname, String pwd) {
+        return builder(connectionPool, timeoutSecond, host, port, uname, pwd).build();
     }
 
     /**
@@ -124,6 +178,49 @@ public class OkHttpUtils {
         HttpsUtils.SSLParams sslSocketFactory = HttpsUtils.getSslSocketFactory(null, null, null);
 
         OkHttpClient.Builder builder = DEFAULT_CLIENT.newBuilder();
+        builder.connectionPool(connectionPool);
+        builder.sslSocketFactory(sslSocketFactory.sSLSocketFactory, sslSocketFactory.trustManager);
+        builder.hostnameVerifier((hostname, session) -> true);
+        builder.followSslRedirects(true);
+        builder.followRedirects(true);
+        builder.connectTimeout(timeout, TimeUnit.SECONDS);
+        builder.readTimeout(timeout, TimeUnit.SECONDS);
+        builder.writeTimeout(timeout, TimeUnit.SECONDS);
+        builder.retryOnConnectionFailure(true);
+
+        return builder;
+    }
+
+    /**
+     * OkHttpClient 自定义连接池，超时时间 Builder
+     *
+     * @param connectionPool
+     * @param timeoutSecond
+     * @return
+     */
+    public static OkHttpClient.Builder builder(ConnectionPool connectionPool, long timeoutSecond, String host, int port, String uname, String pwd) {
+
+        connectionPool = connectionPool != null ? connectionPool : DEFAULT_CONNECTION_POOL;
+        long timeout = timeoutSecond > 0 ? timeoutSecond : DEFAULT_TIMEOUT;
+
+        HttpsUtils.SSLParams sslSocketFactory = HttpsUtils.getSslSocketFactory(null, null, null);
+
+        OkHttpClient.Builder builder = DEFAULT_CLIENT.newBuilder();
+        if (!host.isEmpty()) {
+            builder.proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(host, port)));
+        }
+
+        // 密码验证
+        if (!uname.isEmpty()) {
+            Authenticator proxyAuthenticator = (route, r) -> {
+                String credential = Credentials.basic(uname, pwd);
+                return r.request().newBuilder()
+                        .header("Proxy-Authorization", credential)
+                        .build();
+            };
+            builder.proxyAuthenticator(proxyAuthenticator);
+        }
+
         builder.connectionPool(connectionPool);
         builder.sslSocketFactory(sslSocketFactory.sSLSocketFactory, sslSocketFactory.trustManager);
         builder.hostnameVerifier((hostname, session) -> true);
