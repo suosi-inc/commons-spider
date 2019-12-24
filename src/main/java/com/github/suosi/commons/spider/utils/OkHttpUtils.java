@@ -23,7 +23,7 @@ public class OkHttpUtils {
     /**
      * DEFAULT_CONNECTION_POOL
      */
-    private static final ConnectionPool DEFAULT_CONNECTION_POOL = new ConnectionPool(3, 5, TimeUnit.SECONDS);
+    private static final ConnectionPool DEFAULT_CONNECTION_POOL = new ConnectionPool(5, 15, TimeUnit.SECONDS);
 
     /**
      * OkHttpClient
