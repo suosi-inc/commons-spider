@@ -49,6 +49,30 @@ public class OkHttpUtils {
     }
 
     /**
+     * OkHttpClient 自定义连接池，自定义超时时间
+     *
+     * @param host  代理ip
+     * @param port  端口
+     * @return
+     */
+    public static OkHttpClient client(String host, int port) {
+        return builder(DEFAULT_CONNECTION_POOL, 0, host, port, "", "").build();
+    }
+
+    /**
+     * OkHttpClient 自定义连接池，自定义超时时间
+     *
+     * @param host  代理ip
+     * @param port  端口
+     * @param uname 用户名
+     * @param pwd  密码
+     * @return
+     */
+    public static OkHttpClient client(String host, int port, String uname, String pwd) {
+        return builder(DEFAULT_CONNECTION_POOL, 0, host, port, uname, pwd).build();
+    }
+
+    /**
      * OkHttpClient 自定义连接池
      *
      * @param connectionPool

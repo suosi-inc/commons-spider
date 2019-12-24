@@ -21,7 +21,7 @@ public class PageExtractTest {
      */
     @Test
     public void url() {
-        String url = "http://sdaic.gov.cn";
+        String url = "https://bidnews.cn/caigou/zhaobiao-9718177.html";
         // String url = "http://ip.suosi.net.cn/t.php";
 
         ArrayList<String> articles = new ArrayList<>();
@@ -29,8 +29,8 @@ public class PageExtractTest {
         ArrayList<String> nones = new ArrayList<>();
 
         try {
-            Page page = PageExtract.url(url, 5, 0);
-            // Page page = PageExtract.url(url, 5, 0, "127.0.0.1", 10809);
+            // Page page = PageExtract.url(url, 5, 0);
+            Page page = PageExtract.url(url, 5, 0, "u3411.300.tp.16yun.cn", 6474, "16ZTBOZP", "335517");
             if (page != null) {
                 System.out.println(page.getHttpcode());
                 System.out.println(page.getHtml());
