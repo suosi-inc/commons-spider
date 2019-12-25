@@ -109,13 +109,11 @@ public class SiteExtract {
                 // 构造 URL
                 String url;
                 if (tryCnt > 1) {
-                    url = protocol + "://" + domain;
-                } else {
-                    url = protocol + "://" + mainDomain;
+                    mainDomain = domain;
                 }
+                url = protocol + "://" + mainDomain;
                 tryCnt += 1;
                 try (Response response = OkHttpUtils.client().newCall(OkHttpUtils.request(url)).execute()) {
-                    // System.out.println(response.code());
                     if (response.isSuccessful() && response.body() != null) {
 
                         // 编码
@@ -186,10 +184,9 @@ public class SiteExtract {
                 // 构造 URL
                 String url;
                 if (tryCnt > 1) {
-                    url = protocol + "://" + domain;
-                } else {
-                    url = protocol + "://" + mainDomain;
+                    mainDomain = domain;
                 }
+                url = protocol + "://" + mainDomain;
                 tryCnt += 1;
                 Site info =  getSiteByDomain(url, domain, mainDomain, protocol, timeoutSecond);
                 if (info != null) {
