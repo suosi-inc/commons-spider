@@ -88,7 +88,7 @@ public class SiteExtract {
      * @return
      */
     public static Site domain(String domain) throws Exception {
-        String[] protocols = {HTTP_PROTOCOL, HTTPS_PROTOCOL,HTTP_PROTOCOL, HTTPS_PROTOCOL};
+        String[] protocols = {HTTP_PROTOCOL, HTTPS_PROTOCOL};
 
         if (StringUtils.isNotBlank(domain)) {
             String mainDomain = domain;
@@ -102,6 +102,7 @@ public class SiteExtract {
 
             if (top && !StringUtils.startsWithIgnoreCase(domain, WWW_PREFIX)) {
                 mainDomain = WWW_PREFIX + domain;
+                protocols = new String[]{HTTP_PROTOCOL, HTTPS_PROTOCOL, HTTP_PROTOCOL, HTTPS_PROTOCOL};
             }
 
             int tryCnt = 0;
@@ -163,7 +164,7 @@ public class SiteExtract {
      * @return
      */
     public static Site domain(String domain, Long timeoutSecond, boolean location) throws Exception {
-        String[] protocols = {HTTP_PROTOCOL, HTTPS_PROTOCOL, HTTP_PROTOCOL, HTTPS_PROTOCOL};
+        String[] protocols = {HTTP_PROTOCOL, HTTPS_PROTOCOL};
 
         if (StringUtils.isNotBlank(domain)) {
             String mainDomain = domain;
@@ -177,13 +178,14 @@ public class SiteExtract {
 
             if (top && !StringUtils.startsWithIgnoreCase(domain, WWW_PREFIX)) {
                 mainDomain = WWW_PREFIX + domain;
+                protocols = new String[]{HTTP_PROTOCOL, HTTPS_PROTOCOL, HTTP_PROTOCOL, HTTPS_PROTOCOL};
             }
 
             int tryCnt = 0;
             for (String protocol : protocols) {
                 // 构造 URL
                 String url;
-                if (tryCnt > 1) {
+                if (tryCnt > 1 && top) {
                     mainDomain = domain;
                 }
                 url = protocol + "://" + mainDomain;
