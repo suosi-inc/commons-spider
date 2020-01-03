@@ -1,26 +1,20 @@
 package com.github.suosi.commons.spider.extract.site;
 
 import com.github.suosi.commons.spider.extract.site.meta.Page;
-import com.github.suosi.commons.spider.extract.site.meta.Site;
 import com.github.suosi.commons.spider.utils.CharsetUtils;
 import com.github.suosi.commons.spider.utils.OkHttpUtils;
 import com.github.suosi.commons.spider.utils.UrlUtils;
 import com.github.suosi.commons.spider.utils.okhttp.OkHttpInterceptor;
 import com.github.suosi.commons.spider.utils.okhttp.OkHttpProxy;
-import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.net.URL;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

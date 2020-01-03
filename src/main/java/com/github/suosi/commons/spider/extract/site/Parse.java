@@ -2,7 +2,6 @@ package com.github.suosi.commons.spider.extract.site;
 
 import com.github.suosi.commons.helper.Static;
 import com.github.suosi.commons.spider.extract.content.webcollector.contentextractor.ContentExtractor;
-import com.github.suosi.commons.spider.extract.site.meta.Page;
 import com.github.suosi.commons.spider.utils.DomainUtils;
 import com.github.suosi.commons.spider.utils.UrlUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -13,7 +12,6 @@ import org.jsoup.safety.Whitelist;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;

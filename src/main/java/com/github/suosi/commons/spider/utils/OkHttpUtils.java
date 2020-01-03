@@ -1,6 +1,5 @@
 package com.github.suosi.commons.spider.utils;
 
-import com.github.suosi.commons.spider.utils.okhttp.OkHttpInterceptor;
 import com.github.suosi.commons.spider.utils.okhttp.OkHttpProxy;
 import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
