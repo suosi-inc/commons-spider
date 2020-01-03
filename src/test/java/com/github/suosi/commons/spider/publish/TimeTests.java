@@ -55,7 +55,7 @@ public class TimeTests {
 
     @Test
     public void test() {
-        String url = "https://www.zbytb.com/s-zb-6631607.html";
+        String url = "http://bbs.jxnews.com.cn/forum.php?mod=viewthread&tid=3244181&extra=page%3D2%26filter%3Dauthor%26orderby%3Ddateline";
         String time = getHtml(url);
         System.out.println(time);
     }
@@ -113,4 +113,119 @@ public class TimeTests {
     }
 
 
+    @Test
+    public void testUrlList() {
+        String[] urls = urls();
+        for (String url : urls) {
+            String time = getHtml(url);
+            System.out.println(url + ", " + time);
+        }
+    }
+
+    private String[] urls() {
+        String[] urls = {
+                "http://xsc.dlvtc.edu.cn/web/guest/more-list;jsessionid=LJfXpK7cMn5HGlMLpzQRlTBvLvLzKGm319XMPnSmhYpsxN2SSSsX!-1416659116!1577761788496?id=201171",
+                "http://xsc.dlvtc.edu.cn/web/guest/home;jsessionid=Ts9QpK7bS99BTLn2TQ0TmTnjcFvhsgP7FYVVBb5Kyj1s54Qkx3wX!-1416659116!1577761787101",
+                "http://sy.fangxiaoer.com/shopsell;jsessionid=5DA8BD32443A2CBBD8394E48323523FA",
+                "http://xsc.dlvtc.edu.cn/web/guest/11;jsessionid=Ts9QpK7bS99BTLn2TQ0TmTnjcFvhsgP7FYVVBb5Kyj1s54Qkx3wX!-1416659116!1577761787101",
+                "http://xsc.dlvtc.edu.cn/web/guest/more-list;jsessionid=LJfXpK7cMn5HGlMLpzQRlTBvLvLzKGm319XMPnSmhYpsxN2SSSsX!-1416659116!1577761788496?id=869268",
+                "http://sy.fangxiaoer.com/shops/b1;jsessionid=2F5A3F262FE5D5FC0636F700B678D116",
+                "http://taopinquan.cn/index.php?r=every/miu&id=3222596&u=1097464&is_pc=1",
+                "http://sy.fangxiaoer.com/helpSearch;jsessionid=77F7D3C9BC92AF710B7EE96944C4EDDA?ids=1",
+                "https://www.xyaz.cn/gc/apps-3574946-1.html",
+                "http://xsc.dlvtc.edu.cn/web/guest/more-list;jsessionid=Ts9QpK7bS99BTLn2TQ0TmTnjcFvhsgP7FYVVBb5Kyj1s54Qkx3wX!-1416659116!1577761787101?id=77441",
+                "http://taopinquan.cn/index.php?r=every/miu&id=3223223&u=1097464&is_pc=1",
+                "http://zhaopin.tjau.edu.cn/newsInfo;jsessionid=83BC71C2F4DB7693A1E16482F1102DA1?id=1148111677220384768",
+                "http://sy.fangxiaoer.com/helpSearch;jsessionid=2F5A3F262FE5D5FC0636F700B678D116?ids=1",
+                "https://liudediy.com/Dgyk/detail/id/R0l3dndIQWIxSHVqUw%253D%253D.html",
+                "http://www.mnvym.com/vx680c/22508-89810-29716.html",
+                "http://www.fyyp.net/chushou/show/28921/",
+                "http://xsc.dlvtc.edu.cn/web/guest/more-list;jsessionid=LJfXpK7cMn5HGlMLpzQRlTBvLvLzKGm319XMPnSmhYpsxN2SSSsX!-1416659116!1577761788496?id=871544",
+                "http://sy.fangxiaoer.com/helpSearch;jsessionid=7A6A566DF8B0A225BCEC6C4C4D4C2C07?ids=4",
+                "http://taopinquan.cn/index.php?r=every/miu&id=3223214&u=1097464&is_pc=1",
+                "http://sy.fangxiaoer.com/shops/b1;jsessionid=8DB48DB717728FF5B62AF3E0B8A4EB0E",
+                "http://xsc.dlvtc.edu.cn/web/guest/more-list;jsessionid=LJfXpK7cMn5HGlMLpzQRlTBvLvLzKGm319XMPnSmhYpsxN2SSSsX!-1416659116!1577761788496?id=869195",
+                "http://taopinquan.cn/index.php?r=every/miu&id=3222586&u=1097464&is_pc=1",
+                "http://xsc.dlvtc.edu.cn/web/guest/45;jsessionid=LJfXpK7cMn5HGlMLpzQRlTBvLvLzKGm319XMPnSmhYpsxN2SSSsX!-1416659116!1577761788496",
+                "http://zhaopin.tjau.edu.cn/newsInfo;jsessionid=83BC71C2F4DB7693A1E16482F1102DA1?id=1154267426027925504",
+                "http://sy.fangxiaoer.com/shops/b2;jsessionid=2F3FD03B840FA6D3CA3E61C16AC07DBF",
+                "http://xsc.dlvtc.edu.cn/web/guest/46;jsessionid=Ts9QpK7bS99BTLn2TQ0TmTnjcFvhsgP7FYVVBb5Kyj1s54Qkx3wX!-1416659116!1577761787101",
+                "http://www.fyyp.net/caigo/show/14169/",
+                "http://xsc.dlvtc.edu.cn/web/guest/more-list;jsessionid=pGmTpK7Y8HZflvkp7QVwYrpzvpP14NkhrGdBHLqkZgH1kL1G8FNc!-1416659116!1577761784973?id=77440",
+                "http://www.htsjj1688.com/supply/4199209244.html",
+                "http://www.fyyp.net/chushou/show/28938/",
+                "https://www.ks95.com/hollywood-hot-dish-206/",
+                "http://www.htsjj1688.com/supply/4199214468.html",
+                "http://xsc.dlvtc.edu.cn/web/guest/43;jsessionid=Ts9QpK7bS99BTLn2TQ0TmTnjcFvhsgP7FYVVBb5Kyj1s54Qkx3wX!-1416659116!1577761787101",
+                "http://sy.fangxiaoer.com/secondPublish/;jsessionid=74DBD00E168D02ECFB66B29365CCFAE5",
+                "http://taopinquan.cn/index.php?r=every/miu&id=3223460&u=1097464&is_pc=1",
+                "http://qiche.wenshang.tv/shikebiao23699/",
+                "http://xsc.dlvtc.edu.cn/web/guest/11;jsessionid=LJfXpK7cMn5HGlMLpzQRlTBvLvLzKGm319XMPnSmhYpsxN2SSSsX!-1416659116!1577761788496",
+                "http://taopinquan.cn/index.php?r=every/miu&id=3223229&u=1097464&is_pc=1",
+                "http://www.jufantianxia.kim/index.php?r=every/miu&id=3222586&u=683759&is_pc=1",
+                "http://xsc.dlvtc.edu.cn/web/guest/2;jsessionid=LJfXpK7cMn5HGlMLpzQRlTBvLvLzKGm319XMPnSmhYpsxN2SSSsX!-1416659116!1577761788496",
+                "http://sy.fangxiaoer.com/shops/b1;jsessionid=87DD133693EA65E704ECDE05ECF56F6B",
+                "http://xsc.dlvtc.edu.cn/web/guest/more-list;jsessionid=LJfXpK7cMn5HGlMLpzQRlTBvLvLzKGm319XMPnSmhYpsxN2SSSsX!-1416659116!1577761788496?id=872261",
+                "http://xsc.dlvtc.edu.cn/web/guest/more-list;jsessionid=LJfXpK7cMn5HGlMLpzQRlTBvLvLzKGm319XMPnSmhYpsxN2SSSsX!-1416659116!1577761788496?id=77445",
+                "http://my.quanxi.cc/home/teacher.aspx?uid=493072",
+                "http://www.fyyp.net/chushou/show/28946/",
+                "http://www.webup247.com/6/05xxvaizf.html",
+                "https://dealer.autohome.com.cn/11086/order_2115_31580.html?eid=1|4|522|2978|203375|300951&Siteid=97&enfrom=1npc10000155#pvareaid=2113135",
+                "http://sy.fangxiaoer.com/shopsell;jsessionid=617EF99E07F9865D21CF3E142DFEF029",
+                "http://www.jufantianxia.kim/index.php?r=every/miu&id=3223223&u=683759&is_pc=1",
+                "http://xsc.dlvtc.edu.cn/web/guest/more-list;jsessionid=Ts9QpK7bS99BTLn2TQ0TmTnjcFvhsgP7FYVVBb5Kyj1s54Qkx3wX!-1416659116!1577761787101?id=872261",
+                "http://www.fyyp.net/chushou/show/28939/",
+                "http://xsc.dlvtc.edu.cn/web/guest/more-list;jsessionid=LJfXpK7cMn5HGlMLpzQRlTBvLvLzKGm319XMPnSmhYpsxN2SSSsX!-1416659116!1577761788496?id=869199",
+                "http://www.fyyp.net/chushou/show/28923/",
+                "http://sy.fangxiaoer.com/helpSearch;jsessionid=E8F5DA88A38754DE98C8EC160F8713C0?ids=4",
+                "http://xsc.dlvtc.edu.cn/web/guest/home;jsessionid=pGmTpK7Y8HZflvkp7QVwYrpzvpP14NkhrGdBHLqkZgH1kL1G8FNc!-1416659116!1577761784973",
+                "http://sy.fangxiaoer.com/scriptoriums/;jsessionid=87DD133693EA65E704ECDE05ECF56F6B",
+                "http://xsc.dlvtc.edu.cn/web/guest/more-list;jsessionid=LJfXpK7cMn5HGlMLpzQRlTBvLvLzKGm319XMPnSmhYpsxN2SSSsX!-1416659116!1577761788496?id=77440",
+                "http://xsc.dlvtc.edu.cn/web/guest/more-list;jsessionid=Ts9QpK7bS99BTLn2TQ0TmTnjcFvhsgP7FYVVBb5Kyj1s54Qkx3wX!-1416659116!1577761787101?id=869232",
+                "http://sy.fangxiaoer.com/scriptoriums/;jsessionid=77F7D3C9BC92AF710B7EE96944C4EDDA",
+                "http://xsc.dlvtc.edu.cn/web/guest/more-list;jsessionid=Ts9QpK7bS99BTLn2TQ0TmTnjcFvhsgP7FYVVBb5Kyj1s54Qkx3wX!-1416659116!1577761787101?id=201171",
+                "http://xsc.dlvtc.edu.cn/web/guest/6;jsessionid=Ts9QpK7bS99BTLn2TQ0TmTnjcFvhsgP7FYVVBb5Kyj1s54Qkx3wX!-1416659116!1577761787101",
+                "http://xsc.dlvtc.edu.cn/web/guest/more-list;jsessionid=pGmTpK7Y8HZflvkp7QVwYrpzvpP14NkhrGdBHLqkZgH1kL1G8FNc!-1416659116!1577761784973?id=869203",
+                "http://sy.fangxiaoer.com/helpSearch;jsessionid=D1298A263DC6A56516052FA6155C7082?ids=3",
+                "http://www.fyyp.net/chushou/show/28945/",
+                "http://www.fyyp.net/chushou/show/28922/",
+                "http://sy.fangxiaoer.com/shopsell;jsessionid=E8F5DA88A38754DE98C8EC160F8713C0",
+                "http://xsc.dlvtc.edu.cn/web/guest/more-list;jsessionid=LJfXpK7cMn5HGlMLpzQRlTBvLvLzKGm319XMPnSmhYpsxN2SSSsX!-1416659116!1577761788496?id=77430",
+                "http://xsc.dlvtc.edu.cn/web/guest/more-list;jsessionid=LJfXpK7cMn5HGlMLpzQRlTBvLvLzKGm319XMPnSmhYpsxN2SSSsX!-1416659116!1577761788496?id=871536",
+                "http://xsc.dlvtc.edu.cn/web/guest/more-list;jsessionid=pGmTpK7Y8HZflvkp7QVwYrpzvpP14NkhrGdBHLqkZgH1kL1G8FNc!-1416659116!1577761784973?id=872251",
+                "http://qiche.wenshang.tv/shikebiao19031/",
+                "http://www.fyyp.net/chushou/show/28947/",
+                "http://xj.dlvtc.edu.cn/web/guest/more-list;jsessionid=Ts9QpK7bS99BTLn2TQ0TmTnjcFvhsgP7FYVVBb5Kyj1s54Qkx3wX!-1416659116!1577761787101?id=921787",
+                "http://www.jufantianxia.kim/index.php?r=every/miu&id=3223219&u=683759&is_pc=1",
+                "http://www.fyyp.net/chushou/show/28935/",
+                "http://sy.fangxiaoer.com/scriptoriums/;jsessionid=7A6A566DF8B0A225BCEC6C4C4D4C2C07",
+                "http://www.fyyp.net/chushou/show/28948/",
+                "http://xsc.dlvtc.edu.cn/web/guest/home;jsessionid=sZgJpK7XmSpgTTnhpsVQyL0fjC4j0TdPsYPLQ2yJ0TnvGfTPLCrY!-1416659116!1577761783705",
+                "http://projectinfo.bhi.com.cn/Projects/BiddingDetail.aspx?id=27187582&d=11111250201931",
+                "http://projectinfo.bhi.com.cn/Projects/BiddingDetail.aspx?id=27199146&d=11111257201931",
+                "http://www.jufantianxia.kim/index.php?r=every/miu&id=3224281&u=683759&is_pc=1",
+                "http://sy.fangxiaoer.com/freeServiceIndex;jsessionid=646184BF0A18E270D55DC83E95061D86",
+                "http://xsc.dlvtc.edu.cn/web/guest/more-list;jsessionid=Ts9QpK7bS99BTLn2TQ0TmTnjcFvhsgP7FYVVBb5Kyj1s54Qkx3wX!-1416659116!1577761787101?id=77430",
+                "http://projectinfo.bhi.com.cn/Projects/BiddingDetail.aspx?id=27221288&d=11111250201931",
+                "http://sy.fangxiaoer.com/scriptoriums/;jsessionid=57E9DA6CC9B75F80ADB63A4971855E87",
+                "http://projectinfo.bhi.com.cn/Projects/BiddingDetail.aspx?id=27187371&d=11111250201931",
+                "http://www.xw59c.cn/q1jjtj/92476-42505-12396.html",
+                "http://xsc.dlvtc.edu.cn/web/guest/more-list;jsessionid=Ts9QpK7bS99BTLn2TQ0TmTnjcFvhsgP7FYVVBb5Kyj1s54Qkx3wX!-1416659116!1577761787101?id=869264",
+                "http://www.webup247.com/20195/qq_01_kyej.html",
+                "http://projectinfo.bhi.com.cn/Projects/Project_Details.aspx?id=27184601&d=11111250201931",
+                "http://www.webup247.com/5/670xx18ekv.html",
+                "http://www.fyyp.net/caigo/show/14167/",
+                "http://sy.fangxiaoer.com/officeRent;jsessionid=23468AAB95D28FB3DCFC93D9994B8C22",
+                "http://www.fyyp.net/chushou/show/28937/",
+                "http://lygtjbj.com/world/55279.html",
+                "http://www.fyyp.net/chushou/show/28949/",
+                "http://xsc.dlvtc.edu.cn/web/guest/more-list;jsessionid=pGmTpK7Y8HZflvkp7QVwYrpzvpP14NkhrGdBHLqkZgH1kL1G8FNc!-1416659116!1577761784973?id=869195",
+                "https://shop.fang.com/shou/3_441294731.html",
+                "http://sy.fangxiaoer.com/rentwhole;jsessionid=23468AAB95D28FB3DCFC93D9994B8C22",
+                "http://xsc.dlvtc.edu.cn/web/guest/more-detail;jsessionid=sZgJpK7XmSpgTTnhpsVQyL0fjC4j0TdPsYPLQ2yJ0TnvGfTPLCrY!-1416659116!1577761783705?articleId=2F195673-1756-7739-4EF7-D6F6C5852822",
+                "http://sy.fangxiaoer.com/helpSearch;jsessionid=D1298A263DC6A56516052FA6155C7082?ids=1"
+        };
+
+        return urls;
+    }
 }

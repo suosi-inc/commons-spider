@@ -18,6 +18,7 @@ public class DomainUtilsTest {
         System.out.println(DomainUtils.topDomain("xwxc.mwr.cn"));
         System.out.println(DomainUtils.topDomain("legismac.safp.gov.mo"));
         System.out.println(DomainUtils.topDomain("dezhou.rcsd.cn"));
+        System.out.println(DomainUtils.topDomain("www.gov.cn"));
 
 
 

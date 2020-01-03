@@ -1,6 +1,9 @@
 package com.github.suosi.commons.spider.utils;
 
+import com.github.suosi.commons.spider.utils.okhttp.OkHttpInterceptor;
+import com.github.suosi.commons.spider.utils.okhttp.OkHttpProxy;
 import okhttp3.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -14,6 +17,7 @@ public class OkHttpUtils {
      * DEFAULT_USER_AGENT
      */
     private static final String DEFAULT_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36";
+    // private static final String DEFAULT_USER_AGENT = "Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)";
 
     /**
      * DEFAULT_TIMEOUT
@@ -48,29 +52,6 @@ public class OkHttpUtils {
         return builder(DEFAULT_CONNECTION_POOL, 0).build();
     }
 
-    /**
-     * OkHttpClient 自定义连接池，自定义超时时间
-     *
-     * @param host  代理ip
-     * @param port  端口
-     * @return
-     */
-    public static OkHttpClient client(String host, int port) {
-        return builder(DEFAULT_CONNECTION_POOL, 0, host, port, "", "").build();
-    }
-
-    /**
-     * OkHttpClient 自定义连接池，自定义超时时间
-     *
-     * @param host  代理ip
-     * @param port  端口
-     * @param uname 用户名
-     * @param pwd  密码
-     * @return
-     */
-    public static OkHttpClient client(String host, int port, String uname, String pwd) {
-        return builder(DEFAULT_CONNECTION_POOL, 0, host, port, uname, pwd).build();
-    }
 
     /**
      * OkHttpClient 自定义连接池
@@ -81,6 +62,7 @@ public class OkHttpUtils {
     public static OkHttpClient client(ConnectionPool connectionPool) {
         return builder(connectionPool, 0).build();
     }
+
 
     /**
      * OkHttpClient 自定义超时时间，默认连接池
@@ -96,26 +78,11 @@ public class OkHttpUtils {
      * OkHttpClient 自定义超时时间，默认连接池
      *
      * @param timeoutSecond
-     * @param host  代理ip
-     * @param port 端口
+     * @param userProxy  代理ip
      * @return OkHttpClient
      */
-    public static OkHttpClient client(long timeoutSecond, String host, int port) {
-        return builder(DEFAULT_CONNECTION_POOL, timeoutSecond, host, port, "", "").build();
-    }
-
-    /**
-     * OkHttpClient 自定义超时时间，默认连接池
-     *
-     * @param timeoutSecond
-     * @param host  代理ip
-     * @param port  端口
-     * @param uname 用户名
-     * @param pwd  密码
-     * @return OkHttpClient
-     */
-    public static OkHttpClient client(long timeoutSecond, String host, int port, String uname, String pwd) {
-        return builder(DEFAULT_CONNECTION_POOL, timeoutSecond, host, port, uname, pwd).build();
+    public static OkHttpClient client(long timeoutSecond, OkHttpProxy userProxy) {
+        return builder(DEFAULT_CONNECTION_POOL, timeoutSecond, userProxy).build();
     }
 
     /**
@@ -135,28 +102,13 @@ public class OkHttpUtils {
      *
      * @param connectionPool
      * @param timeoutSecond
-     * @param host  代理ip
-     * @param port  端口
+     * @param userProxy  代理ip
      * @return
      */
-    public static OkHttpClient client(ConnectionPool connectionPool, long timeoutSecond, String host, int port) {
-        return builder(connectionPool, timeoutSecond, host, port, "", "").build();
+    public static OkHttpClient client(ConnectionPool connectionPool, long timeoutSecond, OkHttpProxy userProxy) {
+        return builder(connectionPool, timeoutSecond, userProxy).build();
     }
 
-    /**
-     * OkHttpClient 自定义连接池，自定义超时时间
-     *
-     * @param connectionPool
-     * @param timeoutSecond
-     * @param host  代理ip
-     * @param port  端口
-     * @param uname 用户名
-     * @param pwd  密码
-     * @return
-     */
-    public static OkHttpClient client(ConnectionPool connectionPool, long timeoutSecond, String host, int port, String uname, String pwd) {
-        return builder(connectionPool, timeoutSecond, host, port, uname, pwd).build();
-    }
 
     /**
      * 默认请求体
@@ -196,23 +148,7 @@ public class OkHttpUtils {
      */
     public static OkHttpClient.Builder builder(ConnectionPool connectionPool, long timeoutSecond) {
 
-        connectionPool = connectionPool != null ? connectionPool : DEFAULT_CONNECTION_POOL;
-        long timeout = timeoutSecond > 0 ? timeoutSecond : DEFAULT_TIMEOUT;
-
-        HttpsUtils.SSLParams sslSocketFactory = HttpsUtils.getSslSocketFactory(null, null, null);
-
-        OkHttpClient.Builder builder = DEFAULT_CLIENT.newBuilder();
-        builder.connectionPool(connectionPool);
-        builder.sslSocketFactory(sslSocketFactory.sSLSocketFactory, sslSocketFactory.trustManager);
-        builder.hostnameVerifier((hostname, session) -> true);
-        builder.followSslRedirects(true);
-        builder.followRedirects(true);
-        builder.connectTimeout(timeout, TimeUnit.SECONDS);
-        builder.readTimeout(timeout, TimeUnit.SECONDS);
-        builder.writeTimeout(timeout, TimeUnit.SECONDS);
-        builder.retryOnConnectionFailure(true);
-
-        return builder;
+        return builder(connectionPool, timeoutSecond, null);
     }
 
     /**
@@ -222,7 +158,7 @@ public class OkHttpUtils {
      * @param timeoutSecond
      * @return
      */
-    public static OkHttpClient.Builder builder(ConnectionPool connectionPool, long timeoutSecond, String host, int port, String uname, String pwd) {
+    public static OkHttpClient.Builder builder(ConnectionPool connectionPool, long timeoutSecond, OkHttpProxy userProxy) {
 
         connectionPool = connectionPool != null ? connectionPool : DEFAULT_CONNECTION_POOL;
         long timeout = timeoutSecond > 0 ? timeoutSecond : DEFAULT_TIMEOUT;
@@ -230,19 +166,22 @@ public class OkHttpUtils {
         HttpsUtils.SSLParams sslSocketFactory = HttpsUtils.getSslSocketFactory(null, null, null);
 
         OkHttpClient.Builder builder = DEFAULT_CLIENT.newBuilder();
-        if (!host.isEmpty()) {
-            builder.proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(host, port)));
-        }
 
-        // 密码验证
-        if (!uname.isEmpty()) {
-            Authenticator proxyAuthenticator = (route, r) -> {
-                String credential = Credentials.basic(uname, pwd);
-                return r.request().newBuilder()
-                        .header("Proxy-Authorization", credential)
-                        .build();
-            };
-            builder.proxyAuthenticator(proxyAuthenticator);
+        if (null != userProxy) {
+            if (StringUtils.isNotBlank(userProxy.getHost())) {
+                builder.proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(userProxy.getHost(), userProxy.getPort())));
+            }
+
+            // 密码验证
+            if (StringUtils.isNotBlank(userProxy.getUname())) {
+                Authenticator proxyAuthenticator = (route, r) -> {
+                    String credential = Credentials.basic(userProxy.getUname(), userProxy.getPwd());
+                    return r.request().newBuilder()
+                            .header("Proxy-Authorization", credential)
+                            .build();
+                };
+                builder.proxyAuthenticator(proxyAuthenticator);
+            }
         }
 
         builder.connectionPool(connectionPool);

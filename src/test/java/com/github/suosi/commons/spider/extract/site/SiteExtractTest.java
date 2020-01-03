@@ -55,7 +55,7 @@ public class SiteExtractTest {
         for (String domainUrl : domains) {
             try {
                 System.out.println(domainUrl);
-                Site domain = SiteExtract.domain(domainUrl, 30L, true);
+                Site domain = SiteExtract.domain(domainUrl, 30L);
                 domain.setHtml("");
                 System.out.println(domain.getLinks());
                 System.out.println(domain.getSubDomain());

@@ -5,6 +5,9 @@ import com.github.suosi.commons.spider.utils.CharsetUtils;
 import com.github.suosi.commons.spider.utils.DomainUtils;
 import com.github.suosi.commons.spider.utils.OkHttpUtils;
 import com.github.suosi.commons.spider.utils.UrlUtils;
+import com.github.suosi.commons.spider.utils.okhttp.OkHttpInterceptor;
+import com.github.suosi.commons.spider.utils.okhttp.OkHttpProxy;
+import okhttp3.OkHttpClient;
 import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -88,84 +91,42 @@ public class SiteExtract {
      * @return
      */
     public static Site domain(String domain) throws Exception {
-        String[] protocols = {HTTP_PROTOCOL, HTTPS_PROTOCOL};
-
-        if (StringUtils.isNotBlank(domain)) {
-            String mainDomain = domain;
-
-            // 是否是顶级域名，如果是顶级域名会进行 www 前缀主域名探测
-            boolean top = false;
-            String topDomain = DomainUtils.topDomain(domain);
-            if (domain.equals(topDomain)) {
-                top = true;
-            }
-
-            if (top && !StringUtils.startsWithIgnoreCase(domain, WWW_PREFIX)) {
-                mainDomain = WWW_PREFIX + domain;
-                protocols = new String[]{HTTP_PROTOCOL, HTTPS_PROTOCOL, HTTP_PROTOCOL, HTTPS_PROTOCOL};
-            }
-
-            int tryCnt = 0;
-            for (String protocol : protocols) {
-                // 构造 URL
-                String url;
-                if (tryCnt > 1) {
-                    mainDomain = domain;
-                }
-                url = protocol + "://" + mainDomain;
-                tryCnt += 1;
-                try (Response response = OkHttpUtils.client().newCall(OkHttpUtils.request(url)).execute()) {
-                    if (response.isSuccessful() && response.body() != null) {
-
-                        // 编码
-                        byte[] htmlBytes = response.body().bytes();
-                        String charset = CharsetUtils.guessCharset(htmlBytes, response);
-                        String html = new String(htmlBytes, charset);
-
-                        // 信息抽取
-                        Document document = Jsoup.parse(html);
-                        String title = Parse.parseTitle(document);
-                        String cleanTitle = Parse.parseCleanTitle(title);
-                        String keywords = Parse.parseKeywords(document);
-                        String description = Parse.parseDescription(document);
-                        String icp = Parse.parseIcp(html);
-                        Set<String> links = Parse.parseLinks(document, domain, url);
-                        Set<String> subDomains = Parse.parseSubDomain(document, domain, url);
-
-                        return Site.builder()
-                                .protocol(protocol)
-                                .mainDomain(mainDomain)
-                                .charset(charset)
-                                .html(html)
-                                .title(title)
-                                .cleanTitle(cleanTitle)
-                                .keywords(keywords)
-                                .description(description)
-                                .icp(icp)
-                                .subDomain(subDomains)
-                                .links(links)
-                                .build();
-
-                    }
-                } catch (IOException e) {
-                    System.out.println(e.getLocalizedMessage() + ":" + url);
-                    // throw new Exception("site domain except:  " + e.getLocalizedMessage() + ":" + url);
-                }
-            }
-        }
-
-        return null;
+        return getDomain(domain, 0L, null);
     }
 
     /**
      * 根据域名抽取站点关键信息
      *
      * @param domain 域名
+     * @param timeoutSecond 超时时间
      * @return
      */
-    public static Site domain(String domain, Long timeoutSecond, boolean location) throws Exception {
+    public static Site domain(String domain, Long timeoutSecond) throws Exception {
+        return getDomain(domain, timeoutSecond, null);
+    }
+
+    /**
+     * 根据域名抽取站点关键信息
+     *
+     * @param domain 域名
+     * @param timeoutSecond 超时时间
+     * @return
+     */
+    public static Site domain(String domain, Long timeoutSecond, OkHttpProxy userProxy) throws Exception {
+        return getDomain(domain, timeoutSecond, userProxy);
+    }
+
+    /**
+     *  Domain中间处理方法
+     * @param domain
+     * @param timeoutSecond
+     * @return
+     * @throws Exception
+     */
+    public static Site getDomain(String domain, Long timeoutSecond, OkHttpProxy userProxy) throws Exception {
         String[] protocols = {HTTP_PROTOCOL, HTTPS_PROTOCOL};
 
+        Site res = null;
         if (StringUtils.isNotBlank(domain)) {
             String mainDomain = domain;
 
@@ -178,76 +139,52 @@ public class SiteExtract {
 
             if (top && !StringUtils.startsWithIgnoreCase(domain, WWW_PREFIX)) {
                 mainDomain = WWW_PREFIX + domain;
-                protocols = new String[]{HTTP_PROTOCOL, HTTPS_PROTOCOL, HTTP_PROTOCOL, HTTPS_PROTOCOL};
             }
 
-            int tryCnt = 0;
             for (String protocol : protocols) {
                 // 构造 URL
-                String url;
-                if (tryCnt > 1 && top) {
-                    mainDomain = domain;
+                String url = protocol + "://" + mainDomain;
+                res = dealDomainResponse(url, domain, mainDomain, protocol, timeoutSecond, userProxy);
+                if (null != res) {
+                    break;
                 }
-                url = protocol + "://" + mainDomain;
-                tryCnt += 1;
-                Site info =  getSiteByDomain(url, domain, mainDomain, protocol, timeoutSecond);
-                if (info != null) {
-                    Set<String> links = info.getLinks();
-                    if (links.isEmpty() && location) {
-                        String refreshUrl = "";
-                        String html = info.getHtml();
+            }
 
-                        Matcher matcher1 = LOCATION_PATTERN.matcher(html);
-                        Matcher matcher2 = LOCATION2_PATTERN.matcher(html);
-                        Matcher matcher3 = REFRESH_PATTERN.matcher(html);
-                        Matcher matcher4 = LOCATION3_PATTERN.matcher(html);
-                        if (matcher1.find()) {
-                            refreshUrl = matcher1.group(1);
-                        } else if (matcher2.find()) {
-                            refreshUrl = matcher2.group(1);
-                        } else if (matcher3.find()) {
-                            refreshUrl = matcher3.group(1);
-                        } else if (matcher4.find()) {
-                            refreshUrl = matcher4.group(1);
-                        }
-
-                        if (refreshUrl.length() > 0) {
-                            try {
-                                URL absoluteUrl = new URL(url);
-
-                                // path 为空的情况，这种一般是错误，直接移除
-                                if (StringUtils.isBlank(absoluteUrl.getPath())) {
-                                    refreshUrl = Parse.removeStartComplete(refreshUrl, "./");
-                                    refreshUrl = Parse.removeStartComplete(refreshUrl, "../");
-                                }
-
-                                URL parseUrl = new URL(absoluteUrl, refreshUrl);
-                                refreshUrl = parseUrl.toString();
-
-                                Site info2 = getSiteByDomain(refreshUrl, domain, mainDomain, protocol, timeoutSecond);
-                                if (info2.getLinks().size() > 0) {
-                                    return info2;
-                                }
-                            } catch (IOException e) {
-                                System.out.println("again error:" + e.getLocalizedMessage() + ":" + refreshUrl);
-                            }
-                        }
-                    } else {
-                        return info;
+            if (null == res && !mainDomain.equals(domain)) {
+                // 再探不带www的
+                for (String protocol : protocols) {
+                    // 构造 URL
+                    String url = protocol + "://" + domain;
+                    res = dealDomainResponse(url, domain, domain, protocol, timeoutSecond, userProxy);
+                    if (null != res) {
+                        break;
                     }
                 }
             }
         }
 
-        return null;
+        return res;
     }
 
-    public static Site getSiteByDomain(String url, String domain, String mainDomain, String protocol, long timeoutSecond) {
+    /**
+     * 处理Domain请求
+     * @param url
+     * @param domain
+     * @param mainDomain
+     * @param protocol
+     * @param timeoutSecond
+     * @return
+     */
+    public static Site dealDomainResponse(String url, String domain, String mainDomain, String protocol, long timeoutSecond, OkHttpProxy userProxy) {
         long timeout = timeoutSecond > 0 ? timeoutSecond : 3;
-        try (Response response = OkHttpUtils.client(timeout).newCall(OkHttpUtils.request(url)).execute()) {
-
+        Response response = null;
+        try {
+            OkHttpClient client = OkHttpUtils.builder(null, timeout, userProxy)
+                    // 增加下载拦截器
+                    .addInterceptor(new OkHttpInterceptor())
+                    .build();
+            response = client.newCall(OkHttpUtils.request(url)).execute();
             if (response.isSuccessful() && response.body() != null) {
-
                 // 编码
                 byte[] htmlBytes = response.body().bytes();
                 String charset = CharsetUtils.guessCharset(htmlBytes, response);
@@ -280,7 +217,10 @@ public class SiteExtract {
             }
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage() + ":" + url);
-            // throw new Exception("site domain except: " + e.getLocalizedMessage() + ":" + url);
+        } finally {
+            if (null != response) {
+                response.close();
+            }
         }
         return null;
     }
@@ -294,7 +234,7 @@ public class SiteExtract {
      * @param domain
      * @return
      */
-    public static Site responseToSite(Response response, String url, String domain) throws Exception {
+    public static Site dealResponseToSite(Response response, String url, String domain) throws Exception {
         // 编码
         byte[] htmlBytes = response.body().bytes();
         String charset = CharsetUtils.guessCharset(htmlBytes, response);
