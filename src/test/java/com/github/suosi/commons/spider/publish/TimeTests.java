@@ -55,7 +55,7 @@ public class TimeTests {
 
     @Test
     public void test() {
-        String url = "http://bbs.jxnews.com.cn/forum.php?mod=viewthread&tid=3244181&extra=page%3D2%26filter%3Dauthor%26orderby%3Ddateline";
+        String url = "https://www.cnet.com/news/the-best-antivirus-protection-in-2020-for-windows-10/";
         String time = getHtml(url);
         System.out.println(time);
     }

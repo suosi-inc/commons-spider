@@ -43,11 +43,12 @@ public class SiteExtractTest {
             // "i2863.com",
             // "jyggjy.cn",
             // "rcxxpt.cn",
-            "szftu.org",
+            // "szftu.org",
             // "qxnrtv.com",
             // "bzggzyjy.gov.cn",
             // "taggzyjy.com.cn",
             // "hgggzy.com"
+            "122.gov.cn"
     };
 
     @Test

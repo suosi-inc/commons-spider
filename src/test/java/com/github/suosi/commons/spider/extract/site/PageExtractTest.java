@@ -31,7 +31,8 @@ public class PageExtractTest {
         // String url = "http://mirrors.163.com/centos/7.7.1908/isos/x86_64/CentOS-7-x86_64-DVD-1908.iso";
         // String url = "https://m.weibo.cn/statuses/show?id=IgM3CxqiC";
         // String url = "http://bbs.jxnews.com.cn/forum.php?mod=forumdisplay&fid=298&orderby=dateline&filter=author&orderby=dateline&page=2";
-        String url = "http://ip.suosi.net.cn/t.php";
+        // String url = "http://ip.suosi.net.cn/t.php";
+        String url = "http://www.henannu.edu.cn/";
 
         ArrayList<String> articles = new ArrayList<>();
         ArrayList<String> lists = new ArrayList<>();
@@ -42,19 +43,22 @@ public class PageExtractTest {
             // 设置代理
             String proxyIp = "u3411.300.tp.16yun.cn";
             Integer proxyPort = 6474;
-            String uname = "16ZTBOZP";
-            String pwd = "335517";
+            String username = "16ZTBOZP";
+            String password = "335517";
             OkHttpProxy userProxy = OkHttpProxy.builder()
                     .host(proxyIp).port(proxyPort)
-                    .uname(uname).pwd(pwd)
+                    .username(username).password(password)
                     .build();
 
-            // Page page = PageExtract.url(url, 50, 0);
-            Page page = PageExtract.url(url, 50,  userProxy);
+            Page page = PageExtract.url(url, 3);
+            // Page page = PageExtract.url(url, 50,  userProxy);
             if (page != null) {
                 // System.out.println(page.getHttpcode());
-                System.out.println(page.getHtml());
+                // System.out.println(page.getHtml());
                 Set<String> links = page.getLinks();
+
+                String newUrl = PageExtract.getHtmlLocationUrl(page.getHtml(), url);
+                System.out.println(newUrl);
                 if (links != null) {
                     for (String link : links) {
                         if (UrlUtils.guessArticleUrl(link, null)) {

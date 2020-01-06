@@ -14,6 +14,7 @@ import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -109,8 +110,16 @@ public class PageExtract {
                         // 编码
                         byte[] htmlBytes = response.body().bytes();
                         String charset = CharsetUtils.guessCharset(htmlBytes, response);
-                        String html = new String(htmlBytes, charset);
-
+                        String html = "";
+                        try {
+                            html = new String(htmlBytes, charset);
+                        } catch (Exception e) {
+                            if (!StringUtils.containsAny(StringUtils.lowerCase(charset), "utf-8", "utf8")) {
+                                html = new String(htmlBytes, StandardCharsets.UTF_8);
+                            } else {
+                                throw new Exception(e.getMessage());
+                            }
+                        }
                         Document document = Jsoup.parse(html);
                         String title = Parse.parseTitle(document);
                         String keywords = Parse.parseKeywords(document);

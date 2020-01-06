@@ -172,9 +172,9 @@ public class OkHttpUtils {
             }
 
             // 密码验证
-            if (StringUtils.isNotBlank(userProxy.getUname())) {
+            if (StringUtils.isNotBlank(userProxy.getUsername())) {
                 Authenticator proxyAuthenticator = (route, r) -> {
-                    String credential = Credentials.basic(userProxy.getUname(), userProxy.getPwd());
+                    String credential = Credentials.basic(userProxy.getUsername(), userProxy.getPassword());
                     return r.request().newBuilder()
                             .header("Proxy-Authorization", credential)
                             .build();

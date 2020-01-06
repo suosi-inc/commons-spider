@@ -8,7 +8,7 @@ import lombok.Data;
 public class OkHttpProxy {
     private String host;
     private Integer port;
-    private String uname;
-    private String pwd;
+    private String username;
+    private String password;
 
 }
