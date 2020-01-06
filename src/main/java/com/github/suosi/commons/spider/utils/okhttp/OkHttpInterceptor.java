@@ -5,27 +5,24 @@ import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+
 import java.io.IOException;
 
 /**
  * Todo 代理不起效果
  */
 public class OkHttpInterceptor implements Interceptor {
-    private static final String TAG = "OkHttpInterceptor";
+    /**
+     * 最大内容长度 3M
+     */
+    private static final Long MAX_LENGTH = 3072000L;
 
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
 
-        // long startTime = System.nanoTime();
-        // System.out.println(TAG + String.format(" Sending request %s on %s%n%s",
-        //         request.url(), chain.connection(), request.headers()));
-
         Response response =  chain.proceed(request);
-
-        // long endTime = System.nanoTime();
-        // System.out.println(TAG +  String.format(" Received response for %s in %.1fms%n%s",
-        //         response.request().url(), (endTime - startTime) / 1e6d, response.headers()));
 
         String lastUrl = response.request().url().toString();
         String contentType = response.headers().get("Content-Type");
@@ -38,15 +35,21 @@ public class OkHttpInterceptor implements Interceptor {
 
         // 排除非以下类型的
         if (contentType != null && !StringUtils.containsAny(StringUtils.lowerCase(contentType),
-                "text/html", "text/xml","application/atom+xml", "application/rss+xml",
-                "text/mathml", "application/json", "application/xhtml+xml", "application/xspf+xml",
-                "text/vnd.wap.wml", "application/javascript")) {
+                "text/html",
+                "text/xml",
+                "text/mathml",
+                "text/vnd.wap.wml",
+                "application/atom+xml",
+                "application/rss+xml",
+                "application/json",
+                "application/xhtml+xml",
+                "application/xspf+xml",
+                "application/javascript")) {
             response.close();
         }
 
         // 排除超过3M的
-        if (contentLength != null && Long.parseLong(contentLength) > 3072000) {
-            // 3M
+        if (contentLength != null && NumberUtils.toLong(contentLength) > MAX_LENGTH) {
             response.close();
         }
 
