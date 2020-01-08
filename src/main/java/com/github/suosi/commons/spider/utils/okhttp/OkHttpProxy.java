@@ -10,5 +10,5 @@ public class OkHttpProxy {
     private Integer port;
     private String username;
     private String password;
-
+    private String key;
 }

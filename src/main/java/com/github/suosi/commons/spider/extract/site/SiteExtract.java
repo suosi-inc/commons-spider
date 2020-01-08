@@ -209,8 +209,16 @@ public class SiteExtract {
                         .icp(icp)
                         .subDomain(subDomains)
                         .links(links)
+                        .httpcode(response.code())
                         .build();
 
+            } else {
+                return Site.builder()
+                        .protocol(protocol)
+                        .mainDomain(mainDomain)
+                        .html("")
+                        .httpcode(response.code())
+                        .build();
             }
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage() + ":" + url);

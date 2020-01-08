@@ -48,7 +48,7 @@ public class SiteExtractTest {
             // "bzggzyjy.gov.cn",
             // "taggzyjy.com.cn",
             // "hgggzy.com"
-            "122.gov.cn"
+            "scio.gov.cn"
     };
 
     @Test
@@ -60,6 +60,7 @@ public class SiteExtractTest {
                 domain.setHtml("");
                 System.out.println(domain.getLinks());
                 System.out.println(domain.getSubDomain());
+                System.out.println(domain.getHttpcode());
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
