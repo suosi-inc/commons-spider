@@ -48,6 +48,27 @@ public class PageExtract {
         return info;
     }
 
+    /**
+     * 根据URL，尝试抽取页面信息
+     *
+     * @param url
+     * @return
+     */
+    public static Page url(String url, boolean location) throws Exception {
+        Page info;
+        try {
+            info = getUrl(url, 0,null);
+            if (location && info != null) {
+                String locationUrl = getHtmlLocationUrl(info.getHtml(), url);
+                if (locationUrl != null && !locationUrl.equals(url)) {
+                    info = getUrl(locationUrl, 0, null);
+                }
+            }
+        } catch (Exception e) {
+            throw new Exception("page url except: " +e.getLocalizedMessage() + ":" + url);
+        }
+        return info;
+    }
 
     /**
      * 根据URL，尝试抽取页面信息，带有超时时间
@@ -67,6 +88,29 @@ public class PageExtract {
     }
 
     /**
+     * 根据URL，尝试抽取页面信息，带有超时时间
+     *
+     * @param url
+     * @param timeoutSecond
+     * @return
+     */
+    public static Page url(String url, long timeoutSecond, boolean location) throws Exception {
+        Page info;
+        try {
+            info = getUrl(url, timeoutSecond, null);
+            if (location && info != null) {
+                String locationUrl = getHtmlLocationUrl(info.getHtml(), url);
+                if (locationUrl != null && !locationUrl.equals(url)) {
+                    info = getUrl(locationUrl, timeoutSecond, null);
+                }
+            }
+        } catch (Exception e) {
+            throw new Exception("page url except: " +e.getLocalizedMessage() + ":" + url);
+        }
+        return info;
+    }
+
+    /**
      * 根据URL，尝试抽取页面信息，带有超时时间 和 跳转
      *
      * @param url
@@ -78,6 +122,31 @@ public class PageExtract {
         Page info;
         try {
             info = getUrl(url, timeoutSecond, userProxy);
+        } catch (Exception e) {
+            throw new Exception("page url except: " +e.getLocalizedMessage() + ":" + url);
+        }
+        return info;
+    }
+
+    /**
+     * 根据URL，尝试抽取页面信息，带有超时时间 和 跳转
+     *
+     * @param url
+     * @param timeoutSecond
+     * @param userProxy 代理
+     * @param location
+     * @return
+     */
+    public static Page url(String url, long timeoutSecond, OkHttpProxy userProxy, boolean location) throws Exception {
+        Page info;
+        try {
+            info = getUrl(url, timeoutSecond, userProxy);
+            if (location && info != null) {
+                String locationUrl = getHtmlLocationUrl(info.getHtml(), url);
+                if (locationUrl != null && !locationUrl.equals(url)) {
+                    info = getUrl(locationUrl, timeoutSecond, userProxy);
+                }
+            }
         } catch (Exception e) {
             throw new Exception("page url except: " +e.getLocalizedMessage() + ":" + url);
         }

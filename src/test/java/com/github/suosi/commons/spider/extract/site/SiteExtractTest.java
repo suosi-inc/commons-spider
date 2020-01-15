@@ -48,7 +48,8 @@ public class SiteExtractTest {
             // "bzggzyjy.gov.cn",
             // "taggzyjy.com.cn",
             // "hgggzy.com"
-            "scio.gov.cn"
+            // "scio.gov.cn"
+            "yisu.com"
     };
 
     @Test
@@ -56,7 +57,7 @@ public class SiteExtractTest {
         for (String domainUrl : domains) {
             try {
                 System.out.println(domainUrl);
-                Site domain = SiteExtract.domain(domainUrl, 30L);
+                Site domain = SiteExtract.domain(domainUrl, 3L);
                 domain.setHtml("");
                 System.out.println(domain.getLinks());
                 System.out.println(domain.getSubDomain());

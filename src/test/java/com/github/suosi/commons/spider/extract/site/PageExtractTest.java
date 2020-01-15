@@ -32,7 +32,7 @@ public class PageExtractTest {
         // String url = "https://m.weibo.cn/statuses/show?id=IgM3CxqiC";
         // String url = "http://bbs.jxnews.com.cn/forum.php?mod=forumdisplay&fid=298&orderby=dateline&filter=author&orderby=dateline&page=2";
         // String url = "http://ip.suosi.net.cn/t.php";
-        String url = "http://www.henannu.edu.cn/";
+        String url = "http://www.cntv.cn/";
 
         ArrayList<String> articles = new ArrayList<>();
         ArrayList<String> lists = new ArrayList<>();
@@ -50,16 +50,15 @@ public class PageExtractTest {
                     .username(username).password(password)
                     .build();
 
-            Page page = PageExtract.url(url, 3);
+            Page page = PageExtract.url(url, 3, true);
             // Page page = PageExtract.url(url, 50,  userProxy);
             if (page != null) {
-                // System.out.println(page.getHttpcode());
-                // System.out.println(page.getHtml());
+                System.out.println(page.getHttpcode());
+                System.out.println(page.getHtml());
                 Set<String> links = page.getLinks();
+                System.out.println(links);
 
-                String newUrl = PageExtract.getHtmlLocationUrl(page.getHtml(), url);
-                System.out.println(newUrl);
-                if (links != null) {
+                if (links != null && links.size() > 0) {
                     for (String link : links) {
                         if (UrlUtils.guessArticleUrl(link, null)) {
                             articles.add(link);
