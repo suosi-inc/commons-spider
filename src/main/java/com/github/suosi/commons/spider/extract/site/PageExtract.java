@@ -58,7 +58,7 @@ public class PageExtract {
         Page info;
         try {
             info = getUrl(url, 0,null);
-            if (location && info != null) {
+            if (location && info != null && info.getLinks().size() == 0) {
                 String locationUrl = getHtmlLocationUrl(info.getHtml(), url);
                 if (locationUrl != null && !locationUrl.equals(url)) {
                     info = getUrl(locationUrl, 0, null);
@@ -98,7 +98,7 @@ public class PageExtract {
         Page info;
         try {
             info = getUrl(url, timeoutSecond, null);
-            if (location && info != null) {
+            if (location && info != null && info.getLinks().size() == 0) {
                 String locationUrl = getHtmlLocationUrl(info.getHtml(), url);
                 if (locationUrl != null && !locationUrl.equals(url)) {
                     info = getUrl(locationUrl, timeoutSecond, null);
@@ -141,7 +141,7 @@ public class PageExtract {
         Page info;
         try {
             info = getUrl(url, timeoutSecond, userProxy);
-            if (location && info != null) {
+            if (location && info != null && info.getLinks().size() == 0) {
                 String locationUrl = getHtmlLocationUrl(info.getHtml(), url);
                 if (locationUrl != null && !locationUrl.equals(url)) {
                     info = getUrl(locationUrl, timeoutSecond, userProxy);
@@ -273,6 +273,8 @@ public class PageExtract {
      */
     public static String getHtmlLocationUrl(String html, String url) {
         String refreshUrl = "";
+        // 去除一些可能导致异常的注释
+        html = html.replaceAll("[\\s]+//[^\\n]+", "");
         Matcher matcher1 = LOCATION_PATTERN.matcher(html);
         Matcher matcher2 = LOCATION2_PATTERN.matcher(html);
         Matcher matcher3 = REFRESH_PATTERN.matcher(html);
