@@ -6,7 +6,7 @@
 
     <groupId>com.github.suosi.commons</groupId>
     <artifactId>commons-spider</artifactId>
-    <version>0.59.9-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
 
     <name>commons-spider</name>
     <url>http://www.suosi.com.cn</url>
@@ -19,7 +19,7 @@
         <jsoup.version>1.12.1</jsoup.version>
         <junit.version>4.12</junit.version>
         <juniversalchardet.version>1.0.3</juniversalchardet.version>
-        <commons-helper.version>0.12</commons-helper.version>
+        <commons-helper.version>1.2</commons-helper.version>
     </properties>
 
     <dependencies>
