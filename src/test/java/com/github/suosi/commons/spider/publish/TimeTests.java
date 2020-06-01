@@ -38,6 +38,11 @@ public class TimeTests {
                 put("https://sports.eastday.com/a/191220105653388000000.html", "2019-12-20");
                 put("https://news.hexun.com/2019-04-16/196838758.html", "2019-04-16");
                 put("http://news.hexun.com/2018-07-20/193522374.html", "2018-07-20");
+                put("http://bbs.suyoo.cn/forum.php?mod=viewthread&tid=1137228&extra=page%3D3%26filter%3Dlastpost%26orderby%3Dlastpost%26orderby%3Dlastpost", "2017-11-09");
+                put("http://www.pz.gov.cn/pzweb/xinxiang/XJDetail.aspx?HistoryGuid=0a3665bb-7fb7-4a05-a95a-27b200f8dd81&boxGuid=97c9918c-8575-4a8c-bf29-9a4158d4e82c", "2020-04-05");
+                put("https://bbs.gdmm.com/thread-2663109-1-2.html", "2013-02-05");
+                put("http://www.tmbbs.com/forum.php?mod=viewthread&tid=118120&extra=page%3D10%26filter%3Dtypeid%26typeid%3D40", "2011-10-09");
+
             }
         };
         int total = 0;
@@ -45,8 +50,8 @@ public class TimeTests {
         for (String url : urls.keySet()) {
             total += 1;
             String time = getHtml(url);
-            System.out.println(url + ", " + urls.get(url)+ ", " + time.substring(0, 10));
-            if (urls.get(url).equals(time.substring(0, 10))) {
+            System.out.println(url + ", " + urls.get(url)+ ", " + time);
+            if (time.length() > 0 && urls.get(url).equals(time.substring(0, 10))) {
                 success += 1;
             }
         }
@@ -87,13 +92,17 @@ public class TimeTests {
 
     @Test
     public void time() {
-        String html = "<div class=\"entry-info\">\n" +
-                "\t\t\t\t<span>2018-11-14 12:23:38</span>\n" +
-                "\t\t\t\t<span class=\"dot\">•</span>\n" +
-                "\t\t\t  <span>来源：</span>\n" +
-                "\t\t\t</div>\n";
+        String html = "<em id=\"authorposton2650240\">发表于 2017-11-9 10:59:27</em>";
 
-        System.out.println(Parse.parsePublishTime(html, ""));
+        String pattern = "(?i)(((发布|创建|出版|发表|编辑)(时间|于|日期)[\\s\\S]{0,350}20\\d{2}[-/年.](0[1-9]|1[0-2]|[1-9])[-/月.](0[1-9]|[1-2][0-9]|3[0-1]|[1-9])[日T]?\\s{0,2}(([0-1][0-9]|2[0-3]|[1-9])[:点时]([0-5][0-9]|[0-9])([:分]([0-5][0-9]|[0-9]))?)?)|(20\\d{2}[-/年.](0[1-9]|1[0-2]|[1-9])[-/月.](0[1-9]|[1-2][0-9]|3[0-1]|[1-9])[日T]?\\s{0,2}(([0-1][0-9]|2[0-3]|[1-9])[:点时]([0-5][0-9]|[0-9])([:分]([0-5][0-9]|[0-9]))?)?[\\s\\S]{0,350}(发布|创建|出版|发表|编辑)(时间|于|日期)))";
+        Pattern r = Pattern.compile(pattern);
+        Matcher matcher = r.matcher(html);
+        if (matcher.find()) {
+            System.out.println(matcher.group());
+        } else {
+            System.out.println("error");
+        }
+
     }
 
     private static String getHtml(String url) {
@@ -102,6 +111,7 @@ public class TimeTests {
                 byte[] htmlBytes = response.body().bytes();
                 String charset = CharsetUtils.guessCharset(htmlBytes, response);
                 String html = new String(htmlBytes, charset);
+                // System.out.println(html);
                 return Parse.parsePublishTime(html, url);
             }
 

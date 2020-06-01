@@ -32,7 +32,7 @@ public class PageExtractTest {
         // String url = "https://m.weibo.cn/statuses/show?id=IgM3CxqiC";
         // String url = "http://bbs.jxnews.com.cn/forum.php?mod=forumdisplay&fid=298&orderby=dateline&filter=author&orderby=dateline&page=2";
         // String url = "http://ip.suosi.net.cn/t.php";
-        String url = "http://www.cntv.cn/";
+        String url = "http://dzb.whb.cn/";
 
         ArrayList<String> articles = new ArrayList<>();
         ArrayList<String> lists = new ArrayList<>();

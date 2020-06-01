@@ -130,7 +130,7 @@ public class Parse {
         String chinese2 = "(星期|来源|时间|分享到|来自|浏览数|浏览量|访问量)";
         String english = "(publish|create)";
         String classSource = "(class=\"source\"|class=\"publishTime\"|class=\"publish-time\"|class=\"article|class=\"content|class=\"time\")";
-        String timeReg = "(20\\d{2}[-/年.])?(0[1-9]|1[0-2])[-/月.](0[1-9]|[1-2][0-9]|3[0-1])[日T]?\\s{0,2}(([0-1][0-9]|2[0-3]|[1-9])[:点时]([0-5][0-9]|[0-9])([:分]([0-5][0-9]|[0-9]))?)?";
+        String timeReg = "(20\\d{2}[-/年.])?(0[1-9]|1[0-2]|[1-9])[-/月.](0[1-9]|[1-2][0-9]|3[0-1]|[1-9])[日T]?\\s{0,2}(([0-1][0-9]|2[0-3]|[1-9])[:点时]([0-5][0-9]|[0-9])([:分]([0-5][0-9]|[0-9]))?)?";
         String ymd = "20\\d{2}[-/年.](0[1-9]|1[0-2]|[1-9])[-/月.](0[1-9]|[1-2][0-9]|3[0-1]|[1-9])[日T]?\\s{0,2}(([0-1][0-9]|2[0-3]|[1-9])[:点时]([0-5][0-9]|[0-9])([:分]([0-5][0-9]|[0-9]))?)?";
         String md = "(0[1-9]|1[0-2]|[1-9])[-/月.](0[1-9]|[1-2][0-9]|3[0-1]|[1-9])[日T]?\\s{0,2}(([0-1][0-9]|2[0-3]|[1-9])[:点时]([0-5][0-9]|[0-9])([:分]([0-5][0-9]|[0-9]))?)?";
         String urlTimeReg = "(20)?(1[0-9]|2[0-9]){2}[-/年_]*(0[1-9]|1[0-2])[-/月_]*(0[1-9]|[1-2][0-9]|3[0-1])[^\\d+]+";
@@ -313,6 +313,11 @@ public class Parse {
                 String tmpLink2 = StringUtils.trimToEmpty(element.attr("url"));
                 if (tmpLink2.length() > 0) {
                     tmpLinks.add(tmpLink2);
+                }
+
+                String tmpLink3 = StringUtils.trimToEmpty(element.attr("data-href"));
+                if (tmpLink3.length() > 0) {
+                    tmpLinks.add(tmpLink3);
                 }
 
                 for (String link : tmpLinks) {
