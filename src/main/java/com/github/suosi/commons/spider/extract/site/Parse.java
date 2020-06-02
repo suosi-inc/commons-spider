@@ -482,8 +482,12 @@ public class Parse {
         //年份不齐的，补齐年份
         if (!Pattern.compile(ymd).matcher(str).find() && Pattern.compile(md).matcher(str).find()) {
             str = new SimpleDateFormat("yyyy").format(new Date()) + "-" + str;
+            if (Static.strtotime(str.trim()) > Static.time()) {
+                // 超过当前时间 减1年
+                int tmpYear = Integer.parseInt(new SimpleDateFormat("yyyy").format(new Date())) - 1;
+                str = tmpYear + "-" + str.substring(5);
+            }
         }
-
         return str.trim();
     }
 }

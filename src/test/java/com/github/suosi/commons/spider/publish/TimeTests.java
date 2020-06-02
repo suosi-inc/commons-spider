@@ -60,7 +60,7 @@ public class TimeTests {
 
     @Test
     public void test() {
-        String url = "https://www.cnet.com/news/the-best-antivirus-protection-in-2020-for-windows-10/";
+        String url = "http://rumen.southmoney.com/jbmfx/hgfx/96793.html";
         String time = getHtml(url);
         System.out.println(time);
     }
@@ -92,7 +92,37 @@ public class TimeTests {
 
     @Test
     public void time() {
-        String html = "<em id=\"authorposton2650240\">发表于 2017-11-9 10:59:27</em>";
+        String html = "\n" +
+                "<!-- end plus area -->\n" +
+                "<!-- main area -->\n" +
+                "<div class=\"main final fn-clear\">\n" +
+                "\t<div class=\"wrap fn-clear\">\n" +
+                "    \t<div class=\"breadcrumb fn-left\">\n" +
+                "        \t您现在的位置：&nbsp;<a class='LinkPath' href='http://rumen.southmoney.com'>股票入门</a>&nbsp;>>&nbsp;<a class='LinkPath' href='/jbmfx/'>股票基本面分析</a>&nbsp;>>&nbsp;<a class='LinkPath' href='/jbmfx/hgfx/'>宏观分析</a>&nbsp;>>&nbsp;正文\n" +
+                "        </div>        \n" +
+                "    \t<div class=\"col1 fn-left\">\n" +
+                "\t\t\t<div class=\"article\">\n" +
+                "            \t<h1 class=\"artTitle\">8月3日周一股市开盘走势 </h1>\n" +
+                "                <p class=\"artDate\">2015-8-3 10:51:58 股票入门 http://rumen.southmoney.com</p>\n" +
+                "                <div class=\"gg-3\"><script src='/page/inc/tuijian.js' language='javascript'></script></div>\n" +
+                "                <div class=\"articleCon\"> <div style=\"FLOAT: right;\">\n" +
+                "<script language=\"javascript\" src=\"/page/inc/l001.js\"></script> \n" +
+                "</div><P>　　8月3日周一<STRONG>股市<a class=\"channel_keylink\" href=\"http://rumen.southmoney.com/gsjj/kaipan/\">开盘</a>走势</STRONG>。下面南方财富网的小编为您整理介绍8月3日周一股市开盘走势。</P>\n" +
+                "<P>　　今天是8月第一个股市交易日，也是本周股市首个交易日，不知道今天的全球股市具体走势会是如何？</P>\n" +
+                "<P>　　A股市场</P>\n" +
+                "<P>　　周五A股市场大幅下跌。上证指数收报3，663.73点，跌幅1.13%；深证成指收报12，374.25点，跌幅0.17%。沪深两市全日共<a class=\"channel_keylink\" href=\"http://rumen.southmoney.com/gprm/chengjiao/\">成交</a>7，871.52亿元，较前一交易日缩小25.35%。中小板指报8，336.12点，涨幅0.36%，<a class=\"channel_keylink\" href=\"http://rumen.southmoney.com/chuangyeban/\">创业板</a>指报2，539.84点，跌幅0.83%。盘面上，29个中信一级行业指数跌多涨少，跌幅居前的板块为国防军工、农林牧渔、计算机和餐饮旅游等。</P>\n" +
+                "<P>　　香港市场</P>\n" +
+                "<P>　　港股周五反复上涨；截至收盘，恒生指数报24，636点，涨0.56%；国企指数跑输大市，报11，131点，跌0.05%。大市成交萎缩至777亿港元。中资板块普遍下跌，电讯板块支？ 撑大市，涨1.5%。燃气股普遍造好，华润燃气 （01193.HK） 及中国燃气 （00384.HK） 分别涨9.0和6.3%。中资保险股逆市受压，平均下跌1.0%。个股方面，东吴水泥 （00695.HK） 受投资者追捧，股价涨12.1%。</P>\n" +
+                "<P>　　海外市场</P>\n" +
+                "<P>　　周五纽约原油期货下跌。NYMEX原油期货收盘报47.12美元，下跌1.40美元，跌幅2.89%。伦敦ICE欧洲期货<a class=\"channel_keylink\" href=\"http://rumen.southmoney.com/gprm/jys/\">交易所</a>北海布伦特原油期货报52.21美元，下跌1.10美元，跌幅2.06%。</P>\n" +
+                "<P>　　美国股市下跌，道琼斯工业指数下跌56.12点，收盘报17，689.86点，跌幅0.32%；标准普尔500指数下跌4.79点，报2103.84点，跌幅0.23%；纳斯达克指数下跌0.5 点，报5，128.28点，跌幅0.01%。亚太主要股指涨多跌少，欧洲主要股指涨多跌少。</P>\n" +
+                "<P>　　更多8月3日周一股市开盘走势的相关信息请关注南方财富网。</P>\n" +
+                "<script language=\"javascript\" src=\"/page/inc/l002.js\"></script>  \n" +
+                "                </div>\n" +
+                "                <div class=\"articleFoot\">\n" +
+                "                \t<div class=\"tip\">\n" +
+                "                    <p><span class=\"fn-left\"><script language=\"javascript\" src=\"/page/inc/l003.js\"></script></span>\n" +
+                "                    \t<span class=\"fn-right\">";
 
         String pattern = "(?i)(((发布|创建|出版|发表|编辑)(时间|于|日期)[\\s\\S]{0,350}20\\d{2}[-/年.](0[1-9]|1[0-2]|[1-9])[-/月.](0[1-9]|[1-2][0-9]|3[0-1]|[1-9])[日T]?\\s{0,2}(([0-1][0-9]|2[0-3]|[1-9])[:点时]([0-5][0-9]|[0-9])([:分]([0-5][0-9]|[0-9]))?)?)|(20\\d{2}[-/年.](0[1-9]|1[0-2]|[1-9])[-/月.](0[1-9]|[1-2][0-9]|3[0-1]|[1-9])[日T]?\\s{0,2}(([0-1][0-9]|2[0-3]|[1-9])[:点时]([0-5][0-9]|[0-9])([:分]([0-5][0-9]|[0-9]))?)?[\\s\\S]{0,350}(发布|创建|出版|发表|编辑)(时间|于|日期)))";
         Pattern r = Pattern.compile(pattern);
