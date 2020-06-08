@@ -42,6 +42,9 @@ public class TimeTests {
                 put("http://www.pz.gov.cn/pzweb/xinxiang/XJDetail.aspx?HistoryGuid=0a3665bb-7fb7-4a05-a95a-27b200f8dd81&boxGuid=97c9918c-8575-4a8c-bf29-9a4158d4e82c", "2020-04-05");
                 put("https://bbs.gdmm.com/thread-2663109-1-2.html", "2013-02-05");
                 put("http://www.tmbbs.com/forum.php?mod=viewthread&tid=118120&extra=page%3D10%26filter%3Dtypeid%26typeid%3D40", "2011-10-09");
+                put("http://www.tmbbs.com/forum.php?mod=viewthread&tid=75601&extra=page%3D43%26filter%3Dreply%26orderby%3Dviews", "2011-07-12 ");
+                put("http://www.tmbbs.com/forum.php?mod=viewthread&tid=118120&extra=page%3D9%26filter%3Dtypeid%26typeid%3D40%26orderby%3Ddateline", "2011-10-09");
+                put("http://finance.china.com.cn/industry/ny/20120214/532476.shtml", "2012-02-14");
 
             }
         };

@@ -124,6 +124,7 @@ public class Parse {
         html = Pattern.compile("href=[\"\']+.*?[\"\']+").matcher(html).replaceAll("");
         html = Pattern.compile("src=[\"\']+.*?[\"\']+").matcher(html).replaceAll("");
         html = Pattern.compile("url\\(.*?\\)").matcher(html).replaceAll("");
+        html = Pattern.compile("\\d+年\\d+月\\d+日\\s+星期").matcher(html).replaceAll("");
 
         String res = "";
         String chinese = "(发布|创建|出版|发表|编辑)";
