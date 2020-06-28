@@ -3,6 +3,7 @@ package com.github.suosi.commons.spider.publish;
 import com.github.suosi.commons.spider.extract.site.Parse;
 import com.github.suosi.commons.spider.utils.CharsetUtils;
 import com.github.suosi.commons.spider.utils.OkHttpUtils;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.Response;
 import org.junit.Test;
 
@@ -63,7 +64,7 @@ public class TimeTests {
 
     @Test
     public void test() {
-        String url = "http://rumen.southmoney.com/jbmfx/hgfx/96793.html";
+        String url = "http://www.afinance.cn/gp/gsxw/201207/464349.html";
         String time = getHtml(url);
         System.out.println(time);
     }
