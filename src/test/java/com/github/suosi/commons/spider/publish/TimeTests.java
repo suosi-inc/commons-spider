@@ -46,6 +46,7 @@ public class TimeTests {
                 put("http://www.tmbbs.com/forum.php?mod=viewthread&tid=75601&extra=page%3D43%26filter%3Dreply%26orderby%3Dviews", "2011-07-12 ");
                 put("http://www.tmbbs.com/forum.php?mod=viewthread&tid=118120&extra=page%3D9%26filter%3Dtypeid%26typeid%3D40%26orderby%3Ddateline", "2011-10-09");
                 put("http://finance.china.com.cn/industry/ny/20120214/532476.shtml", "2012-02-14");
+                put("https://tech.sina.com.cn/roll/2020-08-24/doc-iivhvpwy2701327.shtml", "2020-08-24");
 
             }
         };
@@ -64,7 +65,10 @@ public class TimeTests {
 
     @Test
     public void test() {
-        String url = "http://www.afinance.cn/gp/gsxw/201207/464349.html";
+        // String url = "https://tech.sina.com.cn/roll/2020-08-24/doc-iivhvpwy2701327.shtml";
+        // String url = "http://3g.cnfol.com/bank/yinhangyeneidongtai/20200826/28363160.shtml";
+        // String url = "https://m.jrj.com.cn/madapter/bank/2020/08/24092930572952.shtml";
+        String url = "http://www.walekan.com/news/20602";
         String time = getHtml(url);
         System.out.println(time);
     }

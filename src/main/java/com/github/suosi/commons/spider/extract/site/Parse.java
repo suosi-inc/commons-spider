@@ -463,7 +463,7 @@ public class Parse {
      */
     private static String matches(String[] rules, String str, String timeReg) {
         for (String pattern : rules) {
-            pattern = "(?i)((" + pattern + "[\\s\\S]{0,350}" + timeReg + ")|(" + timeReg + "[\\s\\S]{0,350}" + pattern + "))";
+            pattern = "(?i)((" + pattern + "[\\s\\S]{0,200}" + timeReg + ")|(" + timeReg + "[\\s\\S]{0,200}" + pattern + "))";
             Pattern r = Pattern.compile(pattern);
             Matcher matcher = r.matcher(str);
             if (matcher.find()) {
