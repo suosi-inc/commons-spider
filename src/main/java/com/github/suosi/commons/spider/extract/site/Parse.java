@@ -566,7 +566,7 @@ public class Parse {
                 // System.out.println("author="+ bbsmap.get("author"));
                 // System.out.println("publish_time="+ bbsmap.get("publish_time"));
 
-                bbsmap.put("content", parseBbsContent(reqBbsContent(link)));
+                // bbsmap.put("content", parseBbsContent(reqBbsContent(link)));
                 bbsset.add(bbsmap);
             }
         } else if (document.getElementById("subcontent").select(".list_dl").size() > 0) {
@@ -589,7 +589,7 @@ public class Parse {
                 if (duration.toDays() > 16) {
                     continue;
                 }
-                bbsmap.put("content", parseBbsContent(reqBbsContent(link)));
+                // bbsmap.put("content", parseBbsContent(reqBbsContent(link)));
                 bbsset.add(bbsmap);
             }
         }

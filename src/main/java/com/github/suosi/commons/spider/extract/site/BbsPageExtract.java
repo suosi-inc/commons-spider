@@ -312,5 +312,18 @@ public class BbsPageExtract {
         return null;
     }
 
+    /**
+     * 单独请求论坛内容页
+     * @param url
+     * @return
+     */
+    public static String parseBbsContent(String url) {
+        try {
+            String bbsHtml = Parse.reqBbsContent(url);
+            return Parse.parseBbsContent(bbsHtml);
+        } catch (Exception e) {
+            return "";
+        }
+    }
 
 }

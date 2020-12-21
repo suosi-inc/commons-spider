@@ -26,4 +26,10 @@ public class BbsPageExtractTest {
        System.out.println(info.getLists());
     }
 
+    @Test
+    public void content() {
+        String url = "https://www.discuz.net/forum.php?mod=viewthread&tid=3852333&extra=page%3D1%26filter%3Dsortid%26sortid%3D154";
+        String content  = BbsPageExtract.parseBbsContent(url);
+        System.out.println(content);
+    }
 }
