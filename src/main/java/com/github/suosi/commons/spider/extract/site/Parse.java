@@ -2,8 +2,14 @@ package com.github.suosi.commons.spider.extract.site;
 
 import com.github.suosi.commons.helper.Static;
 import com.github.suosi.commons.spider.extract.content.webcollector.contentextractor.ContentExtractor;
+import com.github.suosi.commons.spider.extract.site.meta.BbsPage;
+import com.github.suosi.commons.spider.utils.CharsetUtils;
 import com.github.suosi.commons.spider.utils.DomainUtils;
+import com.github.suosi.commons.spider.utils.OkHttpUtils;
 import com.github.suosi.commons.spider.utils.UrlUtils;
+import com.github.suosi.commons.spider.utils.okhttp.OkHttpInterceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,7 +19,11 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -506,5 +516,206 @@ public class Parse {
             }
         }
         return str.trim();
+    }
+
+
+    /**
+     * 获取当前页面所有列表信息
+     *
+     * @param html
+     * @param domain   顶级域名
+     * @param url      当前请求URL
+     * @return
+     */
+    public static Set<HashMap> parseBbsLists(String html, String domain, String url) throws Exception {
+        Set<HashMap> bbsset = new HashSet<>();
+
+        // System.out.println(html);
+        if (!StringUtils.containsAny(html, "最后回复", "最后发表", "最新发表", "最新发布")) {
+            return bbsset;
+        };
+        Document document = Jsoup.parse(html);
+        if (document.getElementsByAttributeValueStarting("id", "normalthread").size() > 0) {
+            // discuz   http://bbs.ydss.cn/forum-honor4x-2.html
+            for (Element doc: document.getElementsByAttributeValueStarting("id", "normalthread")) {
+                // System.out.println(doc.html());
+                HashMap<String,String> bbsmap = new HashMap<>();
+                String link = doc.select(".icn").select("a").attr("href");
+                link = appendUrlPrefix(link, url);
+                bbsmap.put("url", link);
+                bbsmap.put("title", doc.select(".new").select(".xst").text());
+                bbsmap.put("author", doc.select(".by").first().select("a").first().text());
+                String publishTime = doc.select(".by").first().select("span").attr("title");
+                if (publishTime.length() == 0) {
+                    publishTime = doc.select(".by").first().select("span").last().text();
+                }
+                publishTime = Static.date(Static.strtotime(publishTime));
+                bbsmap.put("publish_time", publishTime);
+
+                // System.out.println("url="+ bbsmap.get("url"));
+                // System.out.println("title="+ bbsmap.get("title"));
+                // System.out.println("author="+ bbsmap.get("author"));
+                // System.out.println("publish_time="+ bbsmap.get("publish_time"));
+
+                Duration duration = Duration.between(LocalDateTime.parse(publishTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), LocalDateTime.now());
+                if (duration.toDays() > 16) {
+                    continue;
+                }
+                // System.out.println("url="+ bbsmap.get("url"));
+                // System.out.println("title="+ bbsmap.get("title"));
+                // System.out.println("author="+ bbsmap.get("author"));
+                // System.out.println("publish_time="+ bbsmap.get("publish_time"));
+
+                bbsmap.put("content", parseBbsContent(reqBbsContent(link)));
+                bbsset.add(bbsmap);
+            }
+        } else if (document.getElementById("subcontent").select(".list_dl").size() > 0) {
+            // autohome   https://club.autohome.com.cn/bbs/brand-48-c-354-1.html
+            for (Element doc: document.getElementById("subcontent").select(".list_dl")) {
+                if (doc.select("dd").last().select("a").size() == 0) {
+                    continue;
+                }
+                HashMap<String,String> bbsmap = new HashMap<>();
+                String link = doc.select("dt").select("a").attr("href");
+                link = appendUrlPrefix(link, url);
+                bbsmap.put("url", link);
+                bbsmap.put("title", doc.select("dt").select("a").text());
+                bbsmap.put("author", doc.select("dd").first().select("a").first().text());
+                String publishTime = doc.select("dd").first().select("span").last().text();
+                publishTime = Static.date(Static.strtotime(publishTime));
+                bbsmap.put("publish_time", publishTime);
+
+                Duration duration = Duration.between(LocalDateTime.parse(publishTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), LocalDateTime.now());
+                if (duration.toDays() > 16) {
+                    continue;
+                }
+                bbsmap.put("content", parseBbsContent(reqBbsContent(link)));
+                bbsset.add(bbsmap);
+            }
+        }
+        // else if (document.getElementById("subcontent").select(".list_dl").size() > 0) {
+        //     // autohome   https://club.autohome.com.cn/bbs/brand-48-c-354-1.html
+        //     for (Element doc: document.getElementById("subcontent").select(".list_dl")) {
+        //         HashMap<String,String> bbsmap = new HashMap<>();
+        //         System.out.println(doc.html());
+        //         System.out.println("=======================");
+        //
+        //         if (doc.select("dd").last().select("a").size() == 0) {
+        //             continue;
+        //         }
+        //
+        //         String link = doc.select("dt").select("a").attr("href");
+        //         link = appendUrlPrefix(link, url);
+        //         bbsmap.put("url", link);
+        //         bbsmap.put("title", doc.select("dt").select("a").text());
+        //         bbsmap.put("author", doc.select("dd").first().select("a").first().text());
+        //         String publishTime = doc.select("dd").first().select("span").last().text();
+        //         System.out.println("publish_time11="+ publishTime);
+        //         publishTime = Static.date(Static.strtotime(publishTime));
+        //         bbsmap.put("publish_time", publishTime);
+        //         System.out.println("url="+ bbsmap.get("url"));
+        //         System.out.println("title="+ bbsmap.get("title"));
+        //         System.out.println("author="+ bbsmap.get("author"));
+        //         System.out.println("publish_time="+ bbsmap.get("publish_time"));
+        //
+        //         Duration duration = Duration.between(LocalDateTime.parse(publishTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), LocalDateTime.now());
+        //         System.out.println("days=="+duration.toDays() );
+        //         if (duration.toDays() > 16) {
+        //             System.out.println("=========over 15 days==============");
+        //             continue;
+        //         }
+        //         System.out.println("=======================");
+        //     }
+        // }
+
+        return bbsset;
+    }
+
+    /**
+     * 补全连接
+     * @return
+     */
+    public static String appendUrlPrefix(String link, String url) {
+        // 转换补全相对、绝对路径
+        if (!StringUtils.startsWithIgnoreCase(link, HTTP_PROTOCOL)
+                && !StringUtils.startsWithIgnoreCase(link, HTTPS_PROTOCOL)) {
+            try {
+                URL absoluteUrl = new URL(url);
+
+                // path 为空的情况，这种一般是错误，直接移除
+                if (StringUtils.isBlank(absoluteUrl.getPath())) {
+                    link = removeStartComplete(link, "./");
+                    link = removeStartComplete(link, "../");
+                }
+
+                URL parseUrl = new URL(absoluteUrl, link);
+                link = parseUrl.toString();
+            } catch (IOException e) {
+                System.out.println(e.getLocalizedMessage() + ":" + url + ":" + link);
+            }
+        }
+        return link;
+    }
+
+    /**
+     * 请求论坛内容
+     * @param link
+     * @return
+     */
+    public static String reqBbsContent(String link) throws Exception {
+        Response response = null;
+        try {
+            OkHttpClient client = OkHttpUtils.builder(null, 0, null)
+                    // 增加下载拦截器
+                    .addInterceptor(new OkHttpInterceptor())
+                    .build();
+            response = client.newCall(OkHttpUtils.request(link)).execute();
+            if (response.isSuccessful() && response.body() != null) {
+                // 编码
+                byte[] htmlBytes = response.body().bytes();
+                String charset = CharsetUtils.guessCharset(htmlBytes, response);
+                String html = "";
+                try {
+                    html = new String(htmlBytes, charset);
+                } catch (Exception e) {
+                    if (!StringUtils.containsAny(StringUtils.lowerCase(charset), "utf-8", "utf8")) {
+                        html = new String(htmlBytes, StandardCharsets.UTF_8);
+                    } else {
+                        throw new Exception(e.getMessage());
+                    }
+                }
+                return html;
+            }
+        } catch (IOException e) {
+            throw new Exception("page url except: " +e.getLocalizedMessage() + ":" + link);
+        } finally {
+            if (null != response) {
+                response.close();
+            }
+        }
+        return "";
+    }
+
+    /**
+     * 解析论坛内容
+     * @param html
+     * @return
+     */
+    public static String parseBbsContent(String html) {
+        if (html.length() < 1) return "";
+        Document document = Jsoup.parse(html);
+        StringBuilder res = new StringBuilder();
+        if (document.getElementsByAttributeValueStarting("id", "postmessage_").size() > 0) {
+            // discuz   http://bbs.ydss.cn/forum-honor4x-2.html
+            for (Element doc: document.getElementsByAttributeValueStarting("id", "postmessage_")) {
+                res.append(doc.text());
+            }
+        } else if (document.select(".post-container").size() > 0) {
+            // autohome   https://club.autohome.com.cn/bbs/brand-48-c-354-1.html
+            for (Element doc: document.select(".post-container")) {
+                res.append(doc.text());
+            }
+        }
+        return res.toString();
     }
 }
