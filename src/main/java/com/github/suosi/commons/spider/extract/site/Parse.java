@@ -527,7 +527,7 @@ public class Parse {
      * @param url      当前请求URL
      * @return
      */
-    public static Set<HashMap> parseBbsLists(String html, String domain, String url) throws Exception {
+    public static Set<HashMap> parseBbsLists(String html, String domain, String url) {
         Set<HashMap> bbsset = new HashSet<>();
 
         // System.out.println(html);
@@ -535,98 +535,148 @@ public class Parse {
             return bbsset;
         };
         Document document = Jsoup.parse(html);
-        if (document.getElementsByAttributeValueStarting("id", "normalthread").size() > 0) {
+
+        try {
             // discuz   http://bbs.ydss.cn/forum-honor4x-2.html
-            for (Element doc: document.getElementsByAttributeValueStarting("id", "normalthread")) {
-                // System.out.println(doc.html());
-                HashMap<String,String> bbsmap = new HashMap<>();
-                String link = doc.select(".icn").select("a").attr("href");
-                link = appendUrlPrefix(link, url);
-                bbsmap.put("url", link);
-                bbsmap.put("title", doc.select(".new").select(".xst").text());
-                bbsmap.put("author", doc.select(".by").first().select("a").first().text());
-                String publishTime = doc.select(".by").first().select("span").attr("title");
-                if (publishTime.length() == 0) {
-                    publishTime = doc.select(".by").first().select("span").last().text();
+            if (document.getElementsByAttributeValueStarting("id", "normalthread").size() > 0) {
+                for (Element doc: document.getElementsByAttributeValueStarting("id", "normalthread")) {
+                    HashMap<String,String> bbsmap = new HashMap<>();
+                    String link = doc.select(".icn").select("a").attr("href");
+                    link = appendUrlPrefix(link, url);
+                    bbsmap.put("url", link);
+                    bbsmap.put("title", doc.select(".new").select(".xst").text());
+                    bbsmap.put("author", doc.select(".by").first().select("a").first().text());
+                    String publishTime = doc.select(".by").first().select("span").attr("title");
+                    if (publishTime.length() == 0) {
+                        publishTime = doc.select(".by").first().select("span").last().text();
+                    }
+                    publishTime = Static.date(Static.strtotime(publishTime));
+                    bbsmap.put("publish_time", publishTime);
+
+                    // System.out.println("url="+ bbsmap.get("url"));
+                    // System.out.println("title="+ bbsmap.get("title"));
+                    // System.out.println("author="+ bbsmap.get("author"));
+                    // System.out.println("publish_time="+ bbsmap.get("publish_time"));
+
+                    Duration duration = Duration.between(LocalDateTime.parse(publishTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), LocalDateTime.now());
+                    if (duration.toDays() > 16) { continue; }
+                    bbsset.add(bbsmap);
                 }
-                publishTime = Static.date(Static.strtotime(publishTime));
-                bbsmap.put("publish_time", publishTime);
-
-                // System.out.println("url="+ bbsmap.get("url"));
-                // System.out.println("title="+ bbsmap.get("title"));
-                // System.out.println("author="+ bbsmap.get("author"));
-                // System.out.println("publish_time="+ bbsmap.get("publish_time"));
-
-                Duration duration = Duration.between(LocalDateTime.parse(publishTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), LocalDateTime.now());
-                if (duration.toDays() > 16) {
-                    continue;
-                }
-                // System.out.println("url="+ bbsmap.get("url"));
-                // System.out.println("title="+ bbsmap.get("title"));
-                // System.out.println("author="+ bbsmap.get("author"));
-                // System.out.println("publish_time="+ bbsmap.get("publish_time"));
-
-                // bbsmap.put("content", parseBbsContent(reqBbsContent(link)));
-                bbsset.add(bbsmap);
+                return bbsset;
             }
-        } else if (document.getElementById("subcontent").select(".list_dl").size() > 0) {
+        } catch (Exception e) { }
+
+        try {
             // autohome   https://club.autohome.com.cn/bbs/brand-48-c-354-1.html
-            for (Element doc: document.getElementById("subcontent").select(".list_dl")) {
-                if (doc.select("dd").last().select("a").size() == 0) {
-                    continue;
+            if (document.getElementById("subcontent").select(".list_dl").size() > 0) {
+                for (Element doc: document.getElementById("subcontent").select(".list_dl")) {
+                    if (doc.select("dd").last().select("a").size() == 0) { continue; }
+                    HashMap<String,String> bbsmap = new HashMap<>();
+                    String link = doc.select("dt").select("a").attr("href");
+                    link = appendUrlPrefix(link, url);
+                    bbsmap.put("url", link);
+                    bbsmap.put("title", doc.select("dt").select("a").text());
+                    bbsmap.put("author", doc.select("dd").first().select("a").first().text());
+                    String publishTime = doc.select("dd").first().select("span").last().text();
+                    publishTime = Static.date(Static.strtotime(publishTime));
+                    bbsmap.put("publish_time", publishTime);
+                    Duration duration = Duration.between(LocalDateTime.parse(publishTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), LocalDateTime.now());
+                    if (duration.toDays() > 16) { continue; }
+                    bbsset.add(bbsmap);
                 }
-                HashMap<String,String> bbsmap = new HashMap<>();
-                String link = doc.select("dt").select("a").attr("href");
-                link = appendUrlPrefix(link, url);
-                bbsmap.put("url", link);
-                bbsmap.put("title", doc.select("dt").select("a").text());
-                bbsmap.put("author", doc.select("dd").first().select("a").first().text());
-                String publishTime = doc.select("dd").first().select("span").last().text();
-                publishTime = Static.date(Static.strtotime(publishTime));
-                bbsmap.put("publish_time", publishTime);
-
-                Duration duration = Duration.between(LocalDateTime.parse(publishTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), LocalDateTime.now());
-                if (duration.toDays() > 16) {
-                    continue;
-                }
-                // bbsmap.put("content", parseBbsContent(reqBbsContent(link)));
-                bbsset.add(bbsmap);
+                return bbsset;
             }
-        }
-        // else if (document.getElementById("subcontent").select(".list_dl").size() > 0) {
-        //     // autohome   https://club.autohome.com.cn/bbs/brand-48-c-354-1.html
-        //     for (Element doc: document.getElementById("subcontent").select(".list_dl")) {
-        //         HashMap<String,String> bbsmap = new HashMap<>();
-        //         System.out.println(doc.html());
-        //         System.out.println("=======================");
-        //
-        //         if (doc.select("dd").last().select("a").size() == 0) {
-        //             continue;
-        //         }
-        //
-        //         String link = doc.select("dt").select("a").attr("href");
-        //         link = appendUrlPrefix(link, url);
-        //         bbsmap.put("url", link);
-        //         bbsmap.put("title", doc.select("dt").select("a").text());
-        //         bbsmap.put("author", doc.select("dd").first().select("a").first().text());
-        //         String publishTime = doc.select("dd").first().select("span").last().text();
-        //         System.out.println("publish_time11="+ publishTime);
-        //         publishTime = Static.date(Static.strtotime(publishTime));
-        //         bbsmap.put("publish_time", publishTime);
-        //         System.out.println("url="+ bbsmap.get("url"));
-        //         System.out.println("title="+ bbsmap.get("title"));
-        //         System.out.println("author="+ bbsmap.get("author"));
-        //         System.out.println("publish_time="+ bbsmap.get("publish_time"));
-        //
-        //         Duration duration = Duration.between(LocalDateTime.parse(publishTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), LocalDateTime.now());
-        //         System.out.println("days=="+duration.toDays() );
-        //         if (duration.toDays() > 16) {
-        //             System.out.println("=========over 15 days==============");
-        //             continue;
-        //         }
-        //         System.out.println("=======================");
-        //     }
-        // }
+
+        } catch (Exception e) {}
+
+
+        try {
+            // http://www.020lg.com/bbs/showforum-117.aspx
+            if (document.getElementById("threadlist").select("tbody").size() > 0) {
+
+                for (Element doc: document.getElementById("threadlist").select("tbody")) {
+                    HashMap<String,String> bbsmap = new HashMap<>();
+
+                    if (doc.select(".subject").first().select("a").size() == 0) { continue; }
+
+                    String link = doc.select(".subject").first().select("a").attr("href");
+                    link = appendUrlPrefix(link, url);
+
+                    bbsmap.put("url", link);
+                    bbsmap.put("title",doc.select(".subject").first().select("a").text());
+                    bbsmap.put("author", doc.select(".by").first().select("a").first().text());
+                    String publishTime = doc.select(".by").first().select("em").last().text();
+                    publishTime = Static.date(Static.strtotime(publishTime));
+                    bbsmap.put("publish_time", publishTime);
+
+                    Duration duration = Duration.between(LocalDateTime.parse(publishTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), LocalDateTime.now());
+                    if (duration.toDays() > 16) { continue; }
+                }
+                return bbsset;
+            }
+        } catch (Exception e) { }
+
+
+        try {
+            // http://bbs.0668hz.com/index.php?c=thread&fid=12
+            if (document.getElementById("J_posts_list").select("tr").size() > 0) {
+
+                for (Element doc: document.getElementById("J_posts_list").select("tr")) {
+                    HashMap<String,String> bbsmap = new HashMap<>();
+
+                    String link = doc.select(".subject").select(".title").select("a").last().attr("href");
+                    link = appendUrlPrefix(link, url);
+
+                    bbsmap.put("url", link);
+                    bbsmap.put("title", doc.select(".subject").select(".title").select("a").last().text());
+                    bbsmap.put("author", doc.select(".subject").select(".info").select("a").first().text());
+                    String publishTime = doc.select(".subject").select(".info").select("span").first().text();
+                    publishTime = Static.date(Static.strtotime(publishTime));
+                    bbsmap.put("publish_time", publishTime);
+
+                    Duration duration = Duration.between(LocalDateTime.parse(publishTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), LocalDateTime.now());
+                    if (duration.toDays() > 16) { continue; }
+                }
+                return bbsset;
+            }
+        } catch (Exception e) { }
+
+        // try {
+            // if (document.getElementById("subcontent").select(".list_dl").size() > 0) {
+            //     // autohome   https://club.autohome.com.cn/bbs/brand-48-c-354-1.html
+            //     for (Element doc: document.getElementById("subcontent").select(".list_dl")) {
+            //         HashMap<String,String> bbsmap = new HashMap<>();
+            //         System.out.println(doc.html());
+            //         System.out.println("=======================");
+            //
+            //         if (doc.select("dd").last().select("a").size() == 0) {
+            //             continue;
+            //         }
+            //
+            //         String link = doc.select("dt").select("a").attr("href");
+            //         link = appendUrlPrefix(link, url);
+            //         bbsmap.put("url", link);
+            //         bbsmap.put("title", doc.select("dt").select("a").text());
+            //         bbsmap.put("author", doc.select("dd").first().select("a").first().text());
+            //         String publishTime = doc.select("dd").first().select("span").last().text();
+            //         System.out.println("publish_time11="+ publishTime);
+            //         publishTime = Static.date(Static.strtotime(publishTime));
+            //         bbsmap.put("publish_time", publishTime);
+            //         System.out.println("url="+ bbsmap.get("url"));
+            //         System.out.println("title="+ bbsmap.get("title"));
+            //         System.out.println("author="+ bbsmap.get("author"));
+            //         System.out.println("publish_time="+ bbsmap.get("publish_time"));
+            //
+            //         Duration duration = Duration.between(LocalDateTime.parse(publishTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), LocalDateTime.now());
+            //         System.out.println("days=="+duration.toDays() );
+            //         if (duration.toDays() > 16) {
+            //             System.out.println("=========over 15 days==============");
+            //             continue;
+            //         }
+            //         System.out.println("=======================");
+            //     }
+            // }
+        // } catch (Exception e) { }
 
         return bbsset;
     }
@@ -670,6 +720,7 @@ public class Parse {
                     .addInterceptor(new OkHttpInterceptor())
                     .build();
             response = client.newCall(OkHttpUtils.request(link)).execute();
+            // System.out.println(response);
             if (response.isSuccessful() && response.body() != null) {
                 // 编码
                 byte[] htmlBytes = response.body().bytes();
@@ -702,20 +753,51 @@ public class Parse {
      * @return
      */
     public static String parseBbsContent(String html) {
-        if (html.length() < 1) return "";
+        // System.out.println("content html = " + html);
+        if (html.length() < 1) { return ""; }
         Document document = Jsoup.parse(html);
         StringBuilder res = new StringBuilder();
-        if (document.getElementsByAttributeValueStarting("id", "postmessage_").size() > 0) {
-            // discuz   http://bbs.ydss.cn/forum-honor4x-2.html
-            for (Element doc: document.getElementsByAttributeValueStarting("id", "postmessage_")) {
-                res.append(doc.text());
+
+        try {
+            // discuz   http://bbs.ydss.cn/thread-601900-1-2.html
+            if (document.getElementsByAttributeValueStarting("id", "postmessage_").size() > 0) {
+                for (Element doc: document.getElementsByAttributeValueStarting("id", "postmessage_")) {
+                    res.append(doc.text());
+                }
+                return res.toString();
             }
-        } else if (document.select(".post-container").size() > 0) {
-            // autohome   https://club.autohome.com.cn/bbs/brand-48-c-354-1.html
-            for (Element doc: document.select(".post-container")) {
-                res.append(doc.text());
+        } catch (Exception e) {}
+
+        try {
+            // autohome   https://club.autohome.com.cn/bbs/thread/697dbaf791ca1bc0/90956277-1.html
+            if (document.select(".post-container").size() > 0) {
+                for (Element doc: document.select(".post-container")) {
+                    res.append(doc.text());
+                }
+                return res.toString();
             }
-        }
+        } catch (Exception e) {}
+
+        try {
+            // http://www.020lg.com/bbs/showtopic-10672.aspx
+            if (document.select(".postmessage").size() > 0) {
+                for (Element doc: document.select(".postmessage")) {
+                    res.append(doc.text());
+                }
+                return res.toString();
+            }
+        } catch (Exception e) {}
+
+        try {
+            // http://www.020lg.com/bbs/showtopic-10672.aspx
+            if (document.select("#J_read_main").size() > 0) {
+                for (Element doc: document.select("#J_read_main")) {
+                    res.append(doc.text());
+                }
+                return res.toString();
+            }
+        } catch (Exception e) {}
+
         return res.toString();
     }
 }
