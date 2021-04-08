@@ -2,7 +2,6 @@ package com.github.suosi.commons.spider.extract.site;
 
 import com.github.suosi.commons.helper.Static;
 import com.github.suosi.commons.spider.extract.content.webcollector.contentextractor.ContentExtractor;
-import com.github.suosi.commons.spider.extract.site.meta.BbsPage;
 import com.github.suosi.commons.spider.utils.CharsetUtils;
 import com.github.suosi.commons.spider.utils.DomainUtils;
 import com.github.suosi.commons.spider.utils.OkHttpUtils;
@@ -398,6 +397,99 @@ public class Parse {
                     // 最后验证一下这个 URL 的格式
                     if (UrlUtils.verifyUrl(link)) {
                         links.add(link);
+                    }
+                }
+            }
+        }
+
+        return links;
+    }
+
+    /**
+     * 获取当前页面所有链接集合，同时返回标题
+     *
+     * @param document
+     * @param domain   顶级域名
+     * @param url      当前请求URL
+     * @return
+     */
+    public static Map<String, String> parseLinkTitles(Document document, String domain, String url) {
+        Map<String, String> links = new HashMap<>();
+
+        // 获取所有a链接
+        Elements elements = document.select("a,area");
+        if (elements.size() > 0) {
+            for (Element element : elements) {
+                Map<String, String> tmpLinks = new HashMap<>();
+                String tmpLink1 = StringUtils.trimToEmpty(element.attr("href"));
+                String tmpText1 = StringUtils.trimToEmpty(element.text());
+                tmpLinks.put(tmpLink1, tmpText1);
+
+                String tmpLink2 = StringUtils.trimToEmpty(element.attr("url"));
+                String tmpText2 = StringUtils.trimToEmpty(element.text());
+                if (tmpLink2.length() > 0) {
+                    tmpLinks.put(tmpLink2, tmpText2);
+                }
+
+                String tmpLink3 = StringUtils.trimToEmpty(element.attr("data-href"));
+                String tmpText3 = StringUtils.trimToEmpty(element.text());
+                if (tmpLink3.length() > 0) {
+                    tmpLinks.put(tmpLink3, tmpText3);
+                }
+
+                for (Map.Entry<String, String> tmpLink : tmpLinks.entrySet()) {
+
+                    String link = tmpLink.getKey();
+                    link = link.replace("\r\n", "");
+                    link = link.replace("\n", "");
+                    link = link.trim();
+
+                    // 过滤垃圾链接
+                    if (!UrlUtils.filterUrl(link)) {
+                        continue;
+                    }
+
+                    // 转换补全相对、绝对路径
+                    if (!StringUtils.startsWithIgnoreCase(link, HTTP_PROTOCOL)
+                            && !StringUtils.startsWithIgnoreCase(link, HTTPS_PROTOCOL)) {
+                        try {
+                            URL absoluteUrl = new URL(url);
+
+                            // path 为空的情况，这种一般是错误，直接移除
+                            if (StringUtils.isBlank(absoluteUrl.getPath())) {
+                                link = removeStartComplete(link, "./");
+                                link = removeStartComplete(link, "../");
+                            }
+
+                            URL parseUrl = new URL(absoluteUrl, link);
+                            link = parseUrl.toString();
+                        } catch (IOException e) {
+                            System.out.println(e.getLocalizedMessage() + ":" + url + ":" + link);
+                            continue;
+                        }
+                    }
+
+                    // 验证链接
+                    if (!UrlUtils.verifyUrl(link)) {
+                        continue;
+                    }
+
+                    // 排除站外链接
+                    URL parse = UrlUtils.parse(link);
+                    if (parse == null) {
+                        continue;
+                    }
+                    String host = parse.getHost();
+                    String topDomain = DomainUtils.topDomain(domain);
+                    if (topDomain != null) {
+                        if (!topDomain.equals(host) && !StringUtils.endsWithIgnoreCase(host, "." + topDomain)) {
+                            continue;
+                        }
+                    }
+
+                    // 最后验证一下这个 URL 的格式
+                    if (UrlUtils.verifyUrl(link)) {
+                        links.put(link, tmpLink.getValue());
                     }
                 }
             }

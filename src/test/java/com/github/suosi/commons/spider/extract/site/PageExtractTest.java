@@ -1,18 +1,20 @@
 package com.github.suosi.commons.spider.extract.site;
 
 import com.github.suosi.commons.spider.extract.site.meta.Page;
+import com.github.suosi.commons.spider.utils.OkHttpUtils;
 import com.github.suosi.commons.spider.utils.UrlUtils;
 import com.github.suosi.commons.spider.utils.okhttp.OkHttpProxy;
-import org.apache.commons.lang3.StringUtils;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.StringTokenizer;
 
 public class PageExtractTest {
 
@@ -83,8 +85,67 @@ public class PageExtractTest {
                 System.out.println("N -> " + none);
             }
         } catch (Exception e) {
-            System.out.println("error: " +  e.getMessage());
+            System.out.println("error: " + e.getMessage());
         }
+    }
+
+    @Test
+    public void titleUrl() throws IOException {
+        String url = "https://www.ft.com/";
+        ArrayList<String> articles = new ArrayList<>();
+        ArrayList<String> lists = new ArrayList<>();
+        ArrayList<String> nones = new ArrayList<>();
+
+        OkHttpProxy userProxy = OkHttpProxy.builder()
+                .host("127.0.0.1").port(1087)
+                .username("").password("")
+                .build();
+        OkHttpClient client = OkHttpUtils.builder(null, 3000, userProxy).build();
+
+        Response response = client.newCall(OkHttpUtils.request(url)).execute();
+        if (response.isSuccessful() && response.body() != null) {
+            String html = response.body().string();
+            Document document = Jsoup.parse(html);
+
+            Map<String, String> links = Parse.parseLinkTitles(document, "ft.com", url);
+
+            if (links.size() > 0) {
+                for (Map.Entry<String, String> link : links.entrySet()) {
+                    String href = link.getKey();
+                    String text = link.getValue();
+
+                    StringTokenizer token = new StringTokenizer(text, " &");
+
+                    if (token.countTokens() > 3) {
+                        System.out.println(href + "，" + text);
+                    }
+
+                    // 历史
+                    if (UrlUtils.guessArticleUrl(href, null)) {
+                        articles.add(href);
+                    } else if (UrlUtils.guessListUrl(href, null)) {
+                        lists.add(href);
+                    } else {
+                        nones.add(href);
+                    }
+
+                }
+            }
+
+        }
+
+        for (String article : articles) {
+            System.out.println("A -> " + article);
+        }
+
+        for (String list : lists) {
+            System.out.println("L -> " + list);
+        }
+
+        for (String none : nones) {
+            System.out.println("N -> " + none);
+        }
+
     }
 
     /**
@@ -97,7 +158,7 @@ public class PageExtractTest {
             Page info = PageExtract.url(url, 3);
             System.out.println(info.getHttpcode());
             System.out.println(info.getHtml());
-        }catch (Exception e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 

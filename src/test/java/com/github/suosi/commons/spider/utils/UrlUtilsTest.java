@@ -4,7 +4,9 @@ import com.github.suosi.commons.spider.extract.site.Parse;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -147,9 +149,10 @@ public class UrlUtilsTest {
     @Test
     public void parseUrl() {
         // String url = "http://jyj.suqian.gov.cn/../sjyj/mbjyjygl/list_wz.shtml";
-        // String url = "http://www.jptour.cn/../../../../s_毛里求斯.html";
+//         String url = "http://www.jptour.cn/../../../../s_毛里求斯.html";
+         String url = "http://www.jptour.cn/abc/../../../../s_毛里求斯.html";
         // String url = "http://zggdjy.jyb.cn/./qkgk/";
-        String url = "https://www.baidu.com";
+//        String url = "https://www.baidu.com";
 
         try {
             URL absoluteUrl = new URL(url);
