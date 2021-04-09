@@ -471,7 +471,7 @@ public class UrlUtils {
             // 英文
             StringTokenizer token = new StringTokenizer(title, " &:,");
 
-            System.out.println(url + "," + title +  "," + token.countTokens());
+            // System.out.println(url + "," + title +  "," + token.countTokens());
 
             // 英文单词大于3个 算内容页
             if (token.countTokens()  > 4) {
