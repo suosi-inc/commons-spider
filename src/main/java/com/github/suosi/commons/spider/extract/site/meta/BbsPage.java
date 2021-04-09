@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @Data
@@ -20,6 +21,8 @@ public class BbsPage {
     private String html;
 
     private Set<String> links;
+
+    private Map<String, String> linkTitles;
 
     private int httpcode;
     

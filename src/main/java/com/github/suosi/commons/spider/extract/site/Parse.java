@@ -414,7 +414,7 @@ public class Parse {
      * @return
      */
     public static Map<String, String> parseLinkTitles(Document document, String domain, String url) {
-        Map<String, String> links = new HashMap<>();
+        Map<String, String> linkTitles = new HashMap<>();
 
         // 获取所有a链接
         Elements elements = document.select("a,area");
@@ -446,6 +446,11 @@ public class Parse {
 
                     // 过滤垃圾链接
                     if (!UrlUtils.filterUrl(link)) {
+                        continue;
+                    }
+
+                    // 过滤特殊链接login等
+                    if (!UrlUtils.filterSpecialUrl(link, null)) {
                         continue;
                     }
 
@@ -489,13 +494,13 @@ public class Parse {
 
                     // 最后验证一下这个 URL 的格式
                     if (UrlUtils.verifyUrl(link)) {
-                        links.put(link, tmpLink.getValue());
+                        linkTitles.put(link, tmpLink.getValue());
                     }
                 }
             }
         }
 
-        return links;
+        return linkTitles;
     }
 
     /**

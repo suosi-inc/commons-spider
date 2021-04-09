@@ -10,6 +10,8 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -301,5 +303,29 @@ public class UrlUtilsTest {
         };
 
         return urls;
+    }
+
+    @Test
+    public void guessArticleUrlByTitle()
+    {
+        Map<String,String> links = new HashMap<>();
+        links.put("https://news.sina.com.cn/c/2021-04-08/doc-ikmxzfmk5647999.shtml", "武汉重启一周年：“英雄的城市”重新起航");
+        links.put("https://news.sina.com.cn/c/2021-04-08/doc-ikmyaawa8554866.shtml", "39天，湖南清除129名“害群之马”");
+
+        for (Map.Entry<String,String> link : links.entrySet()) {
+            boolean isArticle = UrlUtils.guessArticleUrlByTitle(link.getKey(), link.getValue());
+            if (isArticle) {
+                System.out.println("A => " + link.getKey() + "," + link.getValue());
+            } else {
+                System.out.println("L => " + link.getKey() + "," + link.getValue());
+            }
+        }
+    }
+
+    @Test
+    public void filterSpecialUrlTest()
+    {
+        boolean res =  UrlUtils.filterSpecialUrl("https://www.zbytb.com/member/register.php");
+        System.out.println(res);
     }
 }

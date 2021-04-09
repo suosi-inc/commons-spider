@@ -14,6 +14,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.net.URL;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -195,6 +196,7 @@ public class SiteExtract {
                 String description = Parse.parseDescription(document);
                 String icp = Parse.parseIcp(html);
                 Set<String> links = Parse.parseLinks(document, domain, url);
+                Map<String, String> linkTitles = Parse.parseLinkTitles(document, domain, url);
                 Set<String> subDomains = Parse.parseSubDomain(document, domain, url);
 
                 return Site.builder()
@@ -209,6 +211,7 @@ public class SiteExtract {
                         .icp(icp)
                         .subDomain(subDomains)
                         .links(links)
+                        .linkTitles(linkTitles)
                         .httpcode(response.code())
                         .build();
 
@@ -258,6 +261,7 @@ public class SiteExtract {
         String description = Parse.parseDescription(document);
         String icp = Parse.parseIcp(html);
         Set<String> links = Parse.parseLinks(document, domain, url);
+        Map<String, String> linkTitles = Parse.parseLinkTitles(document, domain, url);
         Set<String> subDomains = Parse.parseSubDomain(document, domain, url);
 
         return Site.builder()
@@ -272,6 +276,7 @@ public class SiteExtract {
                 .icp(icp)
                 .subDomain(subDomains)
                 .links(links)
+                .linkTitles(linkTitles)
                 .build();
     }
 

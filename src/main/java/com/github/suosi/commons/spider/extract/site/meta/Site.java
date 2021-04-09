@@ -3,6 +3,7 @@ package com.github.suosi.commons.spider.extract.site.meta;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -32,6 +33,8 @@ public class Site {
     private Set<String> subDomain;
 
     private Set<String> links;
+
+    private Map<String, String> linkTitles;
 
     private int httpcode;
 }

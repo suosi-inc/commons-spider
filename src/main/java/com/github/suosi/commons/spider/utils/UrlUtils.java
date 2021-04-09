@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -136,6 +137,13 @@ public class UrlUtils {
      */
     private static Pattern WORD_CHINESE_PATTERN = Pattern.compile("[\u4e00-\u9fa5]");
 
+
+    /**
+     * 英文
+     */
+    private static Pattern WORD_ENGLISH_PATTERN = Pattern.compile("[\\w]+");
+
+
     /**
      * 列表匹配词
      */
@@ -190,6 +198,7 @@ public class UrlUtils {
             return false;
         }
     }
+
 
     /**
      * 过滤垃圾链接
@@ -370,12 +379,9 @@ public class UrlUtils {
                 if (ARTICLE_KEYWORD_FILTER2_PATTERN.matcher(fullPath).find()) {
                     return false;
                 }
-
             }
-
             return true;
         }
-
         return false;
     }
 
@@ -436,4 +442,98 @@ public class UrlUtils {
 
         return count;
     }
+
+
+    /**
+     * 根据标题 判断文章是否为内容页URL
+     *
+     * @param url
+     * @param title
+     * @return
+     */
+    public static boolean guessArticleUrlByTitle(String url, String title) {
+
+        if (WORD_CHINESE_PATTERN.matcher(title).find()) {
+            // 中文
+
+            // 去除非中文和英文字母以外的字符
+            String removeTitle = title.replaceAll("[^\u4e00-\u9fa5]+", "");
+
+            // 中文汉字大于3个 算内容页
+            if (StringUtils.length(removeTitle) > 6) {
+
+                if (checkUrlIsListByPath(url, 5)) return false; // 过滤 标题很长 链接很短
+
+                return true;
+            }
+
+        } else if (WORD_ENGLISH_PATTERN.matcher(title).find()){
+            // 英文
+            StringTokenizer token = new StringTokenizer(title, " &:,");
+
+            System.out.println(url + "," + title +  "," + token.countTokens());
+
+            // 英文单词大于3个 算内容页
+            if (token.countTokens()  > 4) {
+
+                if (checkUrlIsListByPath(url, 15)) return false; // 过滤 标题很长 链接很短
+                return true;
+            }
+
+        } else {
+            // 标题为空 或 不符合的 走原路
+            return guessArticleUrl(url, DomainUtils.topDomainFromUrl(url));
+        }
+
+
+        return false;
+    }
+
+    public static boolean filterSpecialUrl(String url)
+    {
+        return filterSpecialUrl(url, null);
+    }
+    /**
+     * 过滤login等特殊链接
+     * @param url
+     * @return
+     */
+    public static boolean filterSpecialUrl(String url, URL parseUrl)
+    {
+        if (parseUrl  == null)  parseUrl = parse(url);
+        if (parseUrl != null) {
+            String fullPath = parseUrl.getPath();
+            String[] paths = StringUtils.split(fullPath, "/");
+
+            for (String path : paths) {
+                if (ARTICLE_KEYWORD_FILTER_PATTERN.matcher(path).find()) {
+                    return false;
+                }
+            }
+            if (ARTICLE_KEYWORD_FILTER2_PATTERN.matcher(fullPath).find()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 判断url path
+     * @param url
+     * @return
+     */
+    public static boolean checkUrlIsListByPath(String url, int limit)
+    {
+        URL parseUrl = parse(url);
+        if (parseUrl != null) {
+            String host = parseUrl.getHost();
+            String fullPath = parseUrl.getPath();
+
+            if (StringUtils.length(fullPath) < limit)  return true;
+
+            // System.out.println(host + "," +  fullPath + "," + StringUtils.length(fullPath) );
+        }
+        return false;
+    }
+
 }

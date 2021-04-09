@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -197,6 +198,7 @@ public class BbsPageExtract {
                         String description = Parse.parseDescription(document);
                         url = getResponseUrl(response, url);
                         Set<String> links = Parse.parseLinks(document, host, url);
+                        Map<String, String> linkTitles = Parse.parseLinkTitles(document, host, url);
                         Set<HashMap> lists = Parse.parseBbsLists(html, host, url);
 
                         return BbsPage.builder()
@@ -206,6 +208,7 @@ public class BbsPageExtract {
                                 .keywords(keywords)
                                 .description(description)
                                 .links(links)
+                                .linkTitles(linkTitles)
                                 .httpcode(response.code())
                                 .url(url)
                                 .lists(lists)
@@ -237,9 +240,11 @@ public class BbsPageExtract {
         String description = Parse.parseDescription(document);
         URL parseUrl = UrlUtils.parse(url);
         Set<String> links = null;
+        Map<String, String> linkTitles = null;
         if (parseUrl != null) {
             String host = parseUrl.getHost();
             links = Parse.parseLinks(document, host, url);
+            linkTitles = Parse.parseLinkTitles(document, host, url);
         }
 
         return BbsPage.builder()
@@ -249,6 +254,7 @@ public class BbsPageExtract {
                 .keywords(keywords)
                 .description(description)
                 .links(links)
+                .linkTitles(linkTitles)
                 .httpcode(200)
                 .url(url)
                 .build();

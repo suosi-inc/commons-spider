@@ -34,56 +34,59 @@ public class PageExtractTest {
         // String url = "https://m.weibo.cn/statuses/show?id=IgM3CxqiC";
         // String url = "http://bbs.jxnews.com.cn/forum.php?mod=forumdisplay&fid=298&orderby=dateline&filter=author&orderby=dateline&page=2";
         // String url = "http://ip.suosi.net.cn/t.php";
-        String url = "http://dzb.whb.cn/";
+        // String url = "http://dzb.whb.cn/";
+        String url = "http://www.ft.com/";
 
-        ArrayList<String> articles = new ArrayList<>();
-        ArrayList<String> lists = new ArrayList<>();
+        ArrayList<Map.Entry> articles = new ArrayList<>();
+        ArrayList<Map.Entry> lists = new ArrayList<>();
         ArrayList<String> nones = new ArrayList<>();
 
         try {
 
             // 设置代理
-            String proxyIp = "u3411.300.tp.16yun.cn";
-            Integer proxyPort = 6474;
-            String username = "16ZTBOZP";
-            String password = "335517";
+            // String proxyIp = "u3411.300.tp.16yun.cn";
+            // Integer proxyPort = 6474;
+            // String username = "16ZTBOZP";
+            // String password = "335517";
+            // OkHttpProxy userProxy = OkHttpProxy.builder()
+            //         .host(proxyIp).port(proxyPort)
+            //         .username(username).password(password)
+            //         .build();
+
+
             OkHttpProxy userProxy = OkHttpProxy.builder()
-                    .host(proxyIp).port(proxyPort)
-                    .username(username).password(password)
+                    .host("127.0.0.1").port(10809)
+                    .username("").password("")
                     .build();
 
-            Page page = PageExtract.url(url, 3, true);
-            // Page page = PageExtract.url(url, 50,  userProxy);
+            // Page page = PageExtract.url(url, 3, true);
+            Page page = PageExtract.url(url, 50,  userProxy);
             if (page != null) {
                 System.out.println(page.getHttpcode());
-                System.out.println(page.getHtml());
+                // System.out.println(page.getHtml());
                 Set<String> links = page.getLinks();
-                System.out.println(links);
+                Map<String,String> linkTitles = page.getLinkTitles();
+                // System.out.println(linkTitles);
 
-                if (links != null && links.size() > 0) {
-                    for (String link : links) {
-                        if (UrlUtils.guessArticleUrl(link, null)) {
+                if (linkTitles != null && linkTitles.size() > 0) {
+                    for (Map.Entry<String,String> link : linkTitles.entrySet()) {
+                        if (UrlUtils.guessArticleUrlByTitle(link.getKey(), link.getValue())) {
                             articles.add(link);
-                        } else if (UrlUtils.guessListUrl(link, null)) {
+                        }else {
                             lists.add(link);
-                        } else {
-                            nones.add(link);
                         }
                     }
                 }
             }
 
-            for (String article : articles) {
-                System.out.println("A -> " + article);
+            for (Map.Entry article : articles) {
+                System.out.println("A -> " + article.getKey() + " -> " + article.getValue());
             }
 
-            for (String list : lists) {
-                System.out.println("L -> " + list);
+            for (Map.Entry list : lists) {
+                System.out.println("L -> " +  list.getKey() + " -> " + list.getValue());
             }
 
-            for (String none : nones) {
-                System.out.println("N -> " + none);
-            }
         } catch (Exception e) {
             System.out.println("error: " + e.getMessage());
         }
@@ -91,43 +94,44 @@ public class PageExtractTest {
 
     @Test
     public void titleUrl() throws IOException {
-        String url = "https://www.ft.com/";
+        String url = "https://www.zbytb.com/gongcheng/";
         ArrayList<String> articles = new ArrayList<>();
         ArrayList<String> lists = new ArrayList<>();
         ArrayList<String> nones = new ArrayList<>();
 
         OkHttpProxy userProxy = OkHttpProxy.builder()
-                .host("127.0.0.1").port(1087)
+                .host("127.0.0.1").port(10809)
                 .username("").password("")
                 .build();
-        OkHttpClient client = OkHttpUtils.builder(null, 3000, userProxy).build();
+        OkHttpClient client = OkHttpUtils.builder(null, 3000, null).build();
 
         Response response = client.newCall(OkHttpUtils.request(url)).execute();
         if (response.isSuccessful() && response.body() != null) {
             String html = response.body().string();
             Document document = Jsoup.parse(html);
 
-            Map<String, String> links = Parse.parseLinkTitles(document, "ft.com", url);
+            Map<String, String> links = Parse.parseLinkTitles(document, "zbytb.com", url);
 
             if (links.size() > 0) {
                 for (Map.Entry<String, String> link : links.entrySet()) {
                     String href = link.getKey();
                     String text = link.getValue();
-
-                    StringTokenizer token = new StringTokenizer(text, " &");
+                    StringTokenizer token = new StringTokenizer(text, " &:,");
 
                     if (token.countTokens() > 3) {
-                        System.out.println(href + "，" + text);
+                        System.out.println("A ->" + href + "，" + text + "," + token.countTokens());
+                    } else {
+                        System.out.println("L ->" + href + "，" + text+ "," + token.countTokens());
                     }
 
                     // 历史
-                    if (UrlUtils.guessArticleUrl(href, null)) {
-                        articles.add(href);
-                    } else if (UrlUtils.guessListUrl(href, null)) {
-                        lists.add(href);
-                    } else {
-                        nones.add(href);
-                    }
+                    // if (UrlUtils.guessArticleUrl(href, null)) {
+                    //     articles.add(href);
+                    // } else if (UrlUtils.guessListUrl(href, null)) {
+                    //     lists.add(href);
+                    // } else {
+                    //     nones.add(href);
+                    // }
 
                 }
             }

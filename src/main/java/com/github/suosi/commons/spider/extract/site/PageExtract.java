@@ -15,6 +15,7 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -195,6 +196,8 @@ public class PageExtract {
                         String description = Parse.parseDescription(document);
                         url = getResponseUrl(response, url);
                         Set<String> links = Parse.parseLinks(document, host, url);
+                        // 新增带标题的链接组
+                        Map<String, String> linkTitles = Parse.parseLinkTitles(document, host, url);
 
                         return Page.builder()
                                 .charset(charset)
@@ -203,6 +206,7 @@ public class PageExtract {
                                 .keywords(keywords)
                                 .description(description)
                                 .links(links)
+                                .linkTitles(linkTitles)
                                 .httpcode(response.code())
                                 .url(url)
                                 .build();
@@ -233,9 +237,12 @@ public class PageExtract {
         String description = Parse.parseDescription(document);
         URL parseUrl = UrlUtils.parse(url);
         Set<String> links = null;
+        Map<String, String> linkTitles = null;
         if (parseUrl != null) {
             String host = parseUrl.getHost();
             links = Parse.parseLinks(document, host, url);
+            // 新增带标题的链接组
+            linkTitles = Parse.parseLinkTitles(document, host, url);
         }
 
         return Page.builder()
@@ -245,6 +252,7 @@ public class PageExtract {
                 .keywords(keywords)
                 .description(description)
                 .links(links)
+                .linkTitles(linkTitles)
                 .httpcode(200)
                 .url(url)
                 .build();
