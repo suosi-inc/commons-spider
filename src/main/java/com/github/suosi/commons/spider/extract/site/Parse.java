@@ -897,4 +897,20 @@ public class Parse {
 
         return res.toString();
     }
+
+
+
+    /**
+     * 获取文章标题
+     *
+     * @param html
+     * @return
+     */
+    public static String parseArticleContent(String html) {
+        try {
+            return ContentExtractor.getNewsByHtml(html).getContent();
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }
