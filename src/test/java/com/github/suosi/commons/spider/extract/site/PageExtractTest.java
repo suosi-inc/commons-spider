@@ -103,7 +103,7 @@ public class PageExtractTest {
 
     @Test
     public void titleUrl() throws IOException {
-        String url = "https://www.zbytb.com/gongcheng/";
+        String url = "https://www.csis.org/";
         ArrayList<String> articles = new ArrayList<>();
         ArrayList<String> lists = new ArrayList<>();
         ArrayList<String> nones = new ArrayList<>();
@@ -117,9 +117,9 @@ public class PageExtractTest {
         Response response = client.newCall(OkHttpUtils.request(url)).execute();
         if (response.isSuccessful() && response.body() != null) {
             String html = response.body().string();
-            Document document = Jsoup.parse(html);
+            Document document = Jsoup.parse(html);  
 
-            Map<String, String> links = Parse.parseLinkTitles(document, "zbytb.com", url);
+            Map<String, String> links = Parse.parseLinkTitles(document, "csis.org", url);
 
             if (links.size() > 0) {
                 for (Map.Entry<String, String> link : links.entrySet()) {
@@ -180,7 +180,7 @@ public class PageExtractTest {
     public void parseTitle()
     {
         try {
-            String url = "https://www.reuters.com/business/retail-consumer/amazon-sales-forecast-misses-estimates-shares-fall-2021-07-29/";
+            String url = "https://www.163.com/news/article/GG5HFTIG000189FH.html?clickfrom=w_yw";
             Page info = PageExtract.url(url, 3);
             System.out.println(info.getHttpcode());
             System.out.println(info.getHtml());

@@ -513,8 +513,9 @@ public class UrlUtils {
             if (ARTICLE_KEYWORD_FILTER2_PATTERN.matcher(fullPath).find()) {
                 return false;
             }
+            return true;
         }
-        return true;
+        return false;
     }
 
     /**

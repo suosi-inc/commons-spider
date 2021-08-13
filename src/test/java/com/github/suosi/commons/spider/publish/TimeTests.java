@@ -3,7 +3,9 @@ package com.github.suosi.commons.spider.publish;
 import com.github.suosi.commons.spider.extract.site.Parse;
 import com.github.suosi.commons.spider.utils.CharsetUtils;
 import com.github.suosi.commons.spider.utils.OkHttpUtils;
+import com.github.suosi.commons.spider.utils.okhttp.OkHttpInterceptor;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.OkHttpClient;
 import okhttp3.Response;
 import org.junit.Test;
 
@@ -17,36 +19,52 @@ public class TimeTests {
     public void testHasVeiry() {
         HashMap<String, String> urls = new HashMap<String,String>() {
             {
-                put("http://www.xinhuanet.com/2019-03/25/c_1124279677.htm", "2019-03-25");
-                put("https://www.18183.com/yxzjol/201903/1918691.html", "2019-03-22");
-                put("http://finance.eastmoney.com/a/201904161097225717.html", "2019-04-16");
-                put("https://www.autohome.com.cn/news/201903/100215882.html", "2019-03-08");
-                put("http://stock.eastmoney.com/a/201904051089554756.html", "2019-04-05");
-                put("http://news.hebei.com.cn/system/2019/04/09/019567589.shtml", "2019-04-09");
-                put("https://www.gamersky.com/review/201904/1172364.shtml", "2019-04-13");
-                put("https://www.gamersky.com/hardware/201810/1118388.shtml?tag=wap", "2018-11-22");
-                put("http://news.bitauto.com/info/9360344.html", "2019-04-16");
-                put("http://news.bitauto.com/xinchexiaoxi/20190209/0709281272.html", "2019-02-10");
-                put("http://news.bitauto.com/hao/wenzhang/1194467", "2019-04-03");
-                put("https://www.takefoto.cn/viewnews-1757723.html", "2019-04-15");
-                put("http://auto.sina.com.cn/news/hy/2019-04-09/detail-ihvhiewr4293148.shtml", "2019-04-09");
-                put("http://365jia.cn/news/2018-12-17/8A1B0D93EAA4F1CB.html", "2018-12-18");
-                put("http://365jia.cn/news/2019-04-14/E2DD9521B5DFB37D.html", "2019-04-14");
-                put("http://news.m.yiche.com/hao/wenzhang/30011872", "2019-04-15");
-                put("http://zjnews.zjol.com.cn/zjnews/nbnews/201904/t20190411_9875072.shtml", "2019-04-10");
-                put("https://36kr.com/p/5188134.html", "2019-03-24");
-                put("https://36kr.com/coop/retail/post/5188446.html", "2019-03-25");
-                put("https://sports.eastday.com/a/191220105653388000000.html", "2019-12-20");
-                put("https://news.hexun.com/2019-04-16/196838758.html", "2019-04-16");
-                put("http://news.hexun.com/2018-07-20/193522374.html", "2018-07-20");
-                put("http://bbs.suyoo.cn/forum.php?mod=viewthread&tid=1137228&extra=page%3D3%26filter%3Dlastpost%26orderby%3Dlastpost%26orderby%3Dlastpost", "2017-11-09");
-                put("http://www.pz.gov.cn/pzweb/xinxiang/XJDetail.aspx?HistoryGuid=0a3665bb-7fb7-4a05-a95a-27b200f8dd81&boxGuid=97c9918c-8575-4a8c-bf29-9a4158d4e82c", "2020-04-05");
-                put("https://bbs.gdmm.com/thread-2663109-1-2.html", "2013-02-05");
-                put("http://www.tmbbs.com/forum.php?mod=viewthread&tid=118120&extra=page%3D10%26filter%3Dtypeid%26typeid%3D40", "2011-10-09");
-                put("http://www.tmbbs.com/forum.php?mod=viewthread&tid=75601&extra=page%3D43%26filter%3Dreply%26orderby%3Dviews", "2011-07-12 ");
-                put("http://www.tmbbs.com/forum.php?mod=viewthread&tid=118120&extra=page%3D9%26filter%3Dtypeid%26typeid%3D40%26orderby%3Ddateline", "2011-10-09");
-                put("http://finance.china.com.cn/industry/ny/20120214/532476.shtml", "2012-02-14");
-                put("https://tech.sina.com.cn/roll/2020-08-24/doc-iivhvpwy2701327.shtml", "2020-08-24");
+                // put("http://www.xinhuanet.com/2019-03/25/c_1124279677.htm", "2019-03-25");
+                // put("https://www.18183.com/yxzjol/201903/1918691.html", "2019-03-22");
+                // put("http://finance.eastmoney.com/a/201904161097225717.html", "2019-04-16");
+                // put("https://www.autohome.com.cn/news/201903/100215882.html", "2019-03-08");
+                // put("http://stock.eastmoney.com/a/201904051089554756.html", "2019-04-05");
+                // put("http://news.hebei.com.cn/system/2019/04/09/019567589.shtml", "2019-04-09");
+                // put("https://www.gamersky.com/review/201904/1172364.shtml", "2019-04-13");
+                // put("https://www.gamersky.com/hardware/201810/1118388.shtml?tag=wap", "2018-11-22");
+                // put("http://news.bitauto.com/info/9360344.html", "2019-04-16");
+                // put("http://news.bitauto.com/xinchexiaoxi/20190209/0709281272.html", "2019-02-10");
+                // put("http://news.bitauto.com/hao/wenzhang/1194467", "2019-04-03");
+                // put("https://www.takefoto.cn/viewnews-1757723.html", "2019-04-15");
+                // put("http://auto.sina.com.cn/news/hy/2019-04-09/detail-ihvhiewr4293148.shtml", "2019-04-09");
+                // put("http://365jia.cn/news/2018-12-17/8A1B0D93EAA4F1CB.html", "2018-12-18");
+                // put("http://365jia.cn/news/2019-04-14/E2DD9521B5DFB37D.html", "2019-04-14");
+                // put("http://news.m.yiche.com/hao/wenzhang/30011872", "2019-04-15");
+                // put("http://zjnews.zjol.com.cn/zjnews/nbnews/201904/t20190411_9875072.shtml", "2019-04-10");
+                // put("https://36kr.com/p/5188134.html", "2019-03-24");
+                // put("https://36kr.com/coop/retail/post/5188446.html", "2019-03-25");
+                // put("https://sports.eastday.com/a/191220105653388000000.html", "2019-12-20");
+                // put("https://news.hexun.com/2019-04-16/196838758.html", "2019-04-16");
+                // put("http://news.hexun.com/2018-07-20/193522374.html", "2018-07-20");
+                // put("http://bbs.suyoo.cn/forum.php?mod=viewthread&tid=1137228&extra=page%3D3%26filter%3Dlastpost%26orderby%3Dlastpost%26orderby%3Dlastpost", "2017-11-09");
+                // put("http://www.pz.gov.cn/pzweb/xinxiang/XJDetail.aspx?HistoryGuid=0a3665bb-7fb7-4a05-a95a-27b200f8dd81&boxGuid=97c9918c-8575-4a8c-bf29-9a4158d4e82c", "2020-04-05");
+                // put("https://bbs.gdmm.com/thread-2663109-1-2.html", "2013-02-05");
+                // put("http://www.tmbbs.com/forum.php?mod=viewthread&tid=118120&extra=page%3D10%26filter%3Dtypeid%26typeid%3D40", "2011-10-09");
+                // put("http://www.tmbbs.com/forum.php?mod=viewthread&tid=75601&extra=page%3D43%26filter%3Dreply%26orderby%3Dviews", "2011-07-12 ");
+                // put("http://www.tmbbs.com/forum.php?mod=viewthread&tid=118120&extra=page%3D9%26filter%3Dtypeid%26typeid%3D40%26orderby%3Ddateline", "2011-10-09");
+                // put("http://finance.china.com.cn/industry/ny/20120214/532476.shtml", "2012-02-14");
+                // put("https://tech.sina.com.cn/roll/2020-08-24/doc-iivhvpwy2701327.shtml", "2020-08-24");
+
+                // put("https://www.ft.com/content/e3320366-02f1-453e-ae42-e4af66a17eb0", "2021-08-12 04:01:00");
+                // put("https://www.ft.com/content/1b1cb1c1-c082-4f7d-b32e-db7fc8013a78", "2020-07-08 19:00:16");
+                // put("https://www.theguardian.com/world/2021/aug/12/afghanistan-taliban-lashkar-gah--army-chief-is-replaced", "2021-08-12 11:09:45");
+                // put("https://www.bbc.com/news/world-asia-58191638", "2021-08-13 00:50:44");
+                // put("https://www.news.com.au/national/breaking-news/live-breaking-news-victoria-lockdown-updates-and-covid19-case-numbers/live-coverage/d2f4b70e390231c6af80f33f6173245a", "2021-08-13 06:26:15");
+                // put("https://www.reuters.com/world/us/us-release-census-data-used-legislative-redistricting-2021-08-12/", "2021-08-13 00:50:02");
+                // put("https://www.aol.com/bachelorette-katie-thurstons-incredibly-tense-061715911.html", "2021-08-10 06:17:15");
+                // put("https://www.huffpost.com/entry/biden-leasing-pause-impact-minimal_n_611580bfe4b01da700f3b276", "2021-08-12 22:08:03");
+                // put("https://news.cnyes.com/news/id/4702127", "2021-08-13 08:00:25");
+                // put("https://nypost.com/2021/08/12/this-afghan-rout-is-entirely-on-joe-biden/", "2021-08-12 21:56:24");
+                // put("https://theconversation.com/could-a-france-style-vaccine-mandate-for-public-spaces-work-in-australia-legally-yes-but-its-complicated-165814", "2021-08-12 20:04:52");
+                // put("https://www.liberation.fr/environnement/climat/fortes-chaleurs-attendues-en-france-sans-egaler-les-records-du-sud-de-leurope-20210812_HVAQZL5WNVFF7FBXJXEXQTS2FA/", "2021-08-12 21:56:24");
+                // put("https://www.glasgowtimes.co.uk/news/19510058.unacceptable-glasgow-resident-waited-eight-months-recycling-bin-emptied/", "2021-08-12 16:50:54");
+                // put("https://www.epochtimes.com/gb/21/8/11/n13155864.htm", "2021-08-12 21:00:07");
+                put("https://www.bangkokpost.com/world/2164823/why-a-hong-kong-artist-chose-self-exile-in-taiwan", "2021-08-13 08:45:00");
 
             }
         };
@@ -68,7 +86,8 @@ public class TimeTests {
         // String url = "https://tech.sina.com.cn/roll/2020-08-24/doc-iivhvpwy2701327.shtml";
         // String url = "http://3g.cnfol.com/bank/yinhangyeneidongtai/20200826/28363160.shtml";
         // String url = "https://m.jrj.com.cn/madapter/bank/2020/08/24092930572952.shtml";
-        String url = "http://www.walekan.com/news/20602";
+        // String url = "https://www.reuters.com/world/middle-east/global-markets-wrapup-2-2021-07-30/";
+        String url = "https://www.ft.com/content/e3320366-02f1-453e-ae42-e4af66a17eb0";
         String time = getHtml(url);
         System.out.println(time);
     }
@@ -144,13 +163,18 @@ public class TimeTests {
     }
 
     private static String getHtml(String url) {
-        try (Response response = OkHttpUtils.client().newCall(OkHttpUtils.request(url)).execute()) {
+
+        OkHttpClient client = OkHttpUtils.builder(null, 3, null)
+                // 增加下载拦截器
+                .addInterceptor(new OkHttpInterceptor())
+                .build();
+        try (Response response = client.newCall(OkHttpUtils.request(url)).execute()) {
             if (response.isSuccessful() && response.body() != null) {
                 byte[] htmlBytes = response.body().bytes();
                 String charset = CharsetUtils.guessCharset(htmlBytes, response);
                 String html = new String(htmlBytes, charset);
-                // System.out.println(html);
-                return Parse.parsePublishTime(html, url);
+                System.out.println(html);
+                return Parse.parsePublishTimeEn(html, url);
             }
 
         } catch (Exception e) {

@@ -89,7 +89,7 @@ public class Parse {
         String tempTitle = title;
         tempTitle = StringUtils.removeStart(tempTitle, "【");
         if (StringUtils.startsWithIgnoreCase(tempTitle, "首页")) {
-            tempTitle = StringUtils.removeAll(tempTitle, "首页( |\\||-|_)*");
+            tempTitle = StringUtils.remove(tempTitle, "首页( |\\||-|_)*");
         }
         String[] split = tempTitle.split(" |\\||-|_|◎|,|，|—|（|：|－|·|\\(|：|｜|【|】");
         String cleanTitle = split.length > 0 ? split[0] : tempTitle;
@@ -113,6 +113,82 @@ public class Parse {
         }
     }
 
+    public static String parsePublishTimeEn(String html, String url) {
+
+        String firstReg = "\"datePublished\"\\s*:\\s*\"([\\d\\-:TZ.+]+)\"";
+        Pattern firstPatternTime = Pattern.compile(firstReg);
+        Matcher firstMatcherTime = firstPatternTime.matcher(html);
+        if (firstMatcherTime.find()) {
+            // System.out.println("res111:" + firstMatcherTime.group());
+            String firstRes = firstMatcherTime.group(1).replace("T", " ").substring(0, 19);
+            // System.out.println("res111:" + firstRes);
+            if (firstRes.length() > 0) {
+                return firstRes;
+            }
+        }
+
+        String secondReg = "(datePublished|published_time)\"\\s+content=\"([\\d\\-:TZ.+]+)\"";
+        Pattern secondPatternTime = Pattern.compile(secondReg);
+        Matcher secondMatcherTime = secondPatternTime.matcher(html);
+        if (secondMatcherTime.find()) {
+            // System.out.println("res222:" + secondMatcherTime.group(2));
+            String secondRes = secondMatcherTime.group(2).replace("T", " ").substring(0, 19);
+            // System.out.println("res222:" + secondRes);
+            if (secondRes.length() > 0) {
+                return secondRes;
+            }
+        }
+
+
+        String ymd = "20\\d{2}[-/年.](0[1-9]|1[0-2]|[1-9])[-/月.](0[1-9]|[1-2][0-9]|3[0-1]|[1-9])[日T]?\\s{0,2}(([0-1][0-9]|2[0-3]|[1-9])[:点时]([0-5][0-9]|[0-9])([:分]([0-5][0-9]|[0-9]))?)?";
+        String md = "(0[1-9]|1[0-2]|[1-9])[-/月.](0[1-9]|[1-2][0-9]|3[0-1]|[1-9])[日T]?\\s{0,2}(([0-1][0-9]|2[0-3]|[1-9])[:点时]([0-5][0-9]|[0-9])([:分]([0-5][0-9]|[0-9]))?)?";
+        String urlTimeReg = "(20)?(1[0-9]|2[0-9]){2}[-/年_]*(0[1-9]|1[0-2])[-/月_]*(0[1-9]|[1-2][0-9]|3[0-1])[^\\d+]+";
+
+        Set<String> resList = new HashSet<>();
+
+        String timeReg = "(20\\d{2}[-/年])(0[1-9]|1[0-2]|[1-9])[-/月](0[1-9]|[1-2][0-9]|3[0-1]|[1-9])[日T]?\\s{0,2}(([0-1][0-9]|2[0-3]|[1-9])[:点时]([0-5][0-9]|[0-9])([:分]([0-5][0-9]|[0-9]))?)?";
+        Pattern patternTime = Pattern.compile(timeReg);
+        Matcher matcherTime = patternTime.matcher(html);
+        while (matcherTime.find()) {
+            String res = matcherTime.group().replace("T", " ");
+            // System.out.println("res1:" + res);
+            resList.add(res);
+        }
+
+        String thirdReg = "(\\d+ (Jan|Feb|Mar|Apr|May|June|July|Aug|Sep|Oct|Nov|Dec) \\d{4} (at|pm) \\d+:\\d+)";
+        Pattern thirdPatternTime = Pattern.compile(thirdReg);
+        Matcher thirdMatcherTime = thirdPatternTime.matcher(html);
+        if (thirdMatcherTime.find()) {
+            // System.out.println("res333:" + thirdMatcherTime.group(0));
+            String thirdRes = thirdMatcherTime.group(0);
+            String[] thirdResArr = thirdRes.split("\\s");
+            HashMap<String,String> monthDict = new HashMap<>();
+            monthDict.put("Jan", "01");monthDict.put("Feb", "02");monthDict.put("Mar", "03");monthDict.put("Apr", "04");
+            monthDict.put("May", "05");monthDict.put("June", "06");monthDict.put("July", "07");monthDict.put("Aug", "08");
+            monthDict.put("Sep", "09");monthDict.put("Oct", "10");monthDict.put("Nov", "11");monthDict.put("Dec", "12");
+            String thirdRes2 = thirdResArr[2] + "-" + monthDict.get(thirdResArr[1]) + "-" + thirdResArr[0] + " " + thirdResArr[4] ;
+            // System.out.println("res333:" + thirdRes2);
+            resList.add(thirdRes2);
+        }
+
+
+        long lastTimeStamp = 0;
+        for (String res2 : resList) {
+            res2 = filter(res2, ymd, md);
+            long timeStamp = Static.strtotime(res2);
+            if (timeStamp > 0 && timeStamp * 1000 <= System.currentTimeMillis()) {
+                if (timeStamp >= lastTimeStamp) {
+                    lastTimeStamp = timeStamp;
+                }
+            }
+        }
+
+        if (lastTimeStamp > 0) {
+            return Static.date("yyyy-MM-dd HH:mm:ss", lastTimeStamp);
+        }
+        return null;
+    }
+
     /**
      * 获取文章发布时间
      *
@@ -128,8 +204,8 @@ public class Parse {
         html = Pattern.compile("时间[\\u4e00-\\u9fa5]+").matcher(html).replaceAll("");
         html = Pattern.compile("<!--.*?-->").matcher(html).replaceAll("");
         html = Pattern.compile("/\\*.*?\\*/").matcher(html).replaceAll("");
-        html = Pattern.compile("<style.*?>.*?</style>").matcher(html).replaceAll("");
-        html = Pattern.compile("<script.*?>.*?</script>").matcher(html).replaceAll("");
+        // html = Pattern.compile("<style.*?>.*?</style>").matcher(html).replaceAll("");
+        // html = Pattern.compile("<script.*?>.*?</script>").matcher(html).replaceAll("");
         html = Pattern.compile("href=[\"\']+.*?[\"\']+").matcher(html).replaceAll("");
         html = Pattern.compile("src=[\"\']+.*?[\"\']+").matcher(html).replaceAll("");
         html = Pattern.compile("url\\(.*?\\)").matcher(html).replaceAll("");
@@ -169,7 +245,7 @@ public class Parse {
         String match1 = matches(first, html, ymd);
         if (!"".equals(match1)) {
             Matcher matcherTime = patternTime.matcher(match1);
-            if (matcherTime.find()) {
+            while(matcherTime.find()) {
                 res = matcherTime.group();
                 resList.add(res);
                 // System.out.println("res1:" + res);
@@ -182,7 +258,7 @@ public class Parse {
             String match2 = matches(first, html, timeReg1);
             if (!"".equals(match2)) {
                 Matcher matcherTime = patternTime.matcher(match2);
-                if (matcherTime.find()) {
+                while (matcherTime.find()) {
                     res = matcherTime.group();
                     resList.add(res);
                     // System.out.println("res2:" + res);
@@ -196,7 +272,7 @@ public class Parse {
                 String match3 = matches(first, html, timeReg2);
                 if (!"".equals(match3)) {
                     Matcher matcherTime = patternTime.matcher(match3);
-                    if (matcherTime.find()) {
+                    while (matcherTime.find()) {
                         res = matcherTime.group();
                         resList.add(res);
                         // System.out.println("res2:" + res);
@@ -210,7 +286,7 @@ public class Parse {
                     String match4 = matches(second, html, ymd);
                     if (!"".equals(match4)) {
                         Matcher matcherTime = patternTime.matcher(match4);
-                        if (matcherTime.find()) {
+                        while (matcherTime.find()) {
                             res = matcherTime.group();
                             resList.add(res);
                             // System.out.println("res3:" + res);
@@ -223,7 +299,7 @@ public class Parse {
 
                         // 额外增加URL提取时间
                         Matcher rm = Pattern.compile(urlTimeReg).matcher(url);
-                        if (rm.find()) {
+                        while (rm.find()) {
                             res = rm.group();
                             // 去除最后面的非数字
                             res = Pattern.compile("[^\\d]+$").matcher(res).replaceAll("");
@@ -296,6 +372,7 @@ public class Parse {
         return null;
     }
 
+
     /**
      * 尝试解析 ICP 信息
      *
@@ -310,7 +387,7 @@ public class Parse {
             icp = matcher.group(0);
         }
         icp = Jsoup.clean(icp, Whitelist.none());
-        icp = StringUtils.replaceAll(icp, " |", "");
+        icp = StringUtils.replace(icp, " |", "");
         icp = StringUtils.substring(icp, 0, 255);
         icp = StringUtils.substring(icp, 0, StringUtils.indexOf(icp, "号") + 1);
 
@@ -444,15 +521,12 @@ public class Parse {
                     link = link.replace("\n", "");
                     link = link.trim();
 
+
                     // 过滤垃圾链接
                     if (!UrlUtils.filterUrl(link)) {
                         continue;
                     }
 
-                    // 过滤特殊链接login等
-                    if (!UrlUtils.filterSpecialUrl(link, null)) {
-                        continue;
-                    }
 
                     // 转换补全相对、绝对路径
                     if (!StringUtils.startsWithIgnoreCase(link, HTTP_PROTOCOL)
@@ -476,6 +550,11 @@ public class Parse {
 
                     // 验证链接
                     if (!UrlUtils.verifyUrl(link)) {
+                        continue;
+                    }
+
+                    // 过滤特殊链接login等
+                    if (!UrlUtils.filterSpecialUrl(link, null)) {
                         continue;
                     }
 
