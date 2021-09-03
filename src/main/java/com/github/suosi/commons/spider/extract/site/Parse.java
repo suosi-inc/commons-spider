@@ -119,8 +119,9 @@ public class Parse {
         Pattern firstPatternTime = Pattern.compile(firstReg);
         Matcher firstMatcherTime = firstPatternTime.matcher(html);
         if (firstMatcherTime.find()) {
-            // System.out.println("res111:" + firstMatcherTime.group());
-            String firstRes = firstMatcherTime.group(1).replace("T", " ").substring(0, 19);
+            // System.out.println("res111:" + firstMatcherTime.group() +  firstMatcherTime.group(1));
+            String firstRes = firstMatcherTime.group(1).replace("T", " ");
+            firstRes = StringUtils.substring(firstRes, 0, 19);
             // System.out.println("res111:" + firstRes);
             if (firstRes.length() > 0) {
                 return firstRes;
@@ -132,7 +133,8 @@ public class Parse {
         Matcher secondMatcherTime = secondPatternTime.matcher(html);
         if (secondMatcherTime.find()) {
             // System.out.println("res222:" + secondMatcherTime.group(2));
-            String secondRes = secondMatcherTime.group(2).replace("T", " ").substring(0, 19);
+            String secondRes = secondMatcherTime.group(2).replace("T", " ");
+            secondRes = StringUtils.substring(secondRes, 0, 19);
             // System.out.println("res222:" + secondRes);
             if (secondRes.length() > 0) {
                 return secondRes;
